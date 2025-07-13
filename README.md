@@ -1,16 +1,36 @@
-# campusquest
+# CampusQuest 🎓
 
-A new Flutter project.
+CampusQuest is a smart campus management application designed to simplify and digitize campus-related activities such as student registration, classroom management, course scheduling, faculty assignments, and more.
 
-## Getting Started
+## 🚀 Features
 
-This project is a starting point for a Flutter application.
+- 👩‍🏫 Manage instructors and classrooms
+- 📚 Organize academic programs and courses
+- 🗓 Assign semesters and time slots
+- 📤 Export student data (e.g., CSV/PDF)
+- 🔐 Role-based access (Admin, Faculty, Student)
+- 📱 Responsive and user-friendly interface
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠 Tech Stack
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Frontend:** Flutter (for Android/iOS/Web)
+- **Backend:** PHP with PDO / Node.js / Firebase (choose accordingly)
+- **Database:** MySQL / Firebase Firestore
+- **Authentication:** Email/Password, Role-based sessions
+- **UI Components:** Material Design, Bootstrap (if web)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📦 Installation
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/369KeYuRmIsTrY/campusquest.git
+cd campusquest
+
+For Flutter Projects
+Make sure you have Flutter installed. Then run:
+
+bash
+
+flutter pub get
+flutter run
