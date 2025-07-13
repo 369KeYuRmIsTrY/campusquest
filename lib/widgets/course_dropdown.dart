@@ -17,10 +17,7 @@ class CourseDropdown extends StatelessWidget {
       children: [
         Text(
           'Select Course:',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey.shade700,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -37,15 +34,16 @@ class CourseDropdown extends StatelessWidget {
               ),
               isExpanded: true,
               underline: const SizedBox(),
-              items: instructorCourses.map((course) {
-                return DropdownMenuItem<String>(
-                  value: course['course'],
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(course['course']),
-                  ),
-                );
-              }).toList(),
+              items:
+                  instructorCourses.map((course) {
+                    return DropdownMenuItem<String>(
+                      value: course['course'],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(course['course']),
+                      ),
+                    );
+                  }).toList(),
               onChanged: (value) => onChanged(value),
             ),
           ),

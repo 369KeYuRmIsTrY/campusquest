@@ -61,8 +61,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Error fetching programs: $e'),
-            backgroundColor: Colors.red.shade700),
+          content: Text('Error fetching programs: $e'),
+          backgroundColor: Colors.red.shade700,
+        ),
       );
       setState(() => _isLoading = false);
     }
@@ -82,8 +83,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Error fetching semesters: $e'),
-            backgroundColor: Colors.red.shade700),
+          content: Text('Error fetching semesters: $e'),
+          backgroundColor: Colors.red.shade700,
+        ),
       );
       setState(() => _isLoading = false);
     }
@@ -101,8 +103,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Error fetching courses: $e'),
-            backgroundColor: Colors.red.shade700),
+          content: Text('Error fetching courses: $e'),
+          backgroundColor: Colors.red.shade700,
+        ),
       );
     }
   }
@@ -120,8 +123,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Error fetching time slots or classrooms: $e'),
-            backgroundColor: Colors.red.shade700),
+          content: Text('Error fetching time slots or classrooms: $e'),
+          backgroundColor: Colors.red.shade700,
+        ),
       );
     }
   }
@@ -135,56 +139,62 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
           .eq('semester_id', semesterId);
 
       final courseIds = timetableResponse.map((t) => t['course_id']).toList();
-      final coursesResponse = courseIds.isNotEmpty
-          ? await _supabase
-              .from('course')
-              .select('course_id, course_name')
-              .inFilter('course_id', courseIds)
-          : [];
+      final coursesResponse =
+          courseIds.isNotEmpty
+              ? await _supabase
+                  .from('course')
+                  .select('course_id, course_name')
+                  .inFilter('course_id', courseIds)
+              : [];
 
       final timeSlotIds =
           timetableResponse.map((t) => t['time_slot_id']).toList();
-      final slotsResponse = timeSlotIds.isNotEmpty
-          ? await _supabase
-              .from('time_slot')
-              .select('time_slot_id, day, start_time, end_time')
-              .inFilter('time_slot_id', timeSlotIds)
-          : [];
+      final slotsResponse =
+          timeSlotIds.isNotEmpty
+              ? await _supabase
+                  .from('time_slot')
+                  .select('time_slot_id, day, start_time, end_time')
+                  .inFilter('time_slot_id', timeSlotIds)
+              : [];
 
       final classroomIds =
           timetableResponse.map((t) => t['classroom_id']).toList();
-      final classroomsResponse = classroomIds.isNotEmpty
-          ? await _supabase
-              .from('classroom')
-              .select('classroom_id, building, room_number')
-              .inFilter('classroom_id', classroomIds)
-          : [];
+      final classroomsResponse =
+          classroomIds.isNotEmpty
+              ? await _supabase
+                  .from('classroom')
+                  .select('classroom_id, building, room_number')
+                  .inFilter('classroom_id', classroomIds)
+              : [];
 
-      final timetableWithDetails = timetableResponse.map((entry) {
-        final course = coursesResponse.firstWhere(
-          (c) => c['course_id'] == entry['course_id'],
-          orElse: () => {'course_name': 'Unknown Course'},
-        );
-        final slot = slotsResponse.firstWhere(
-          (s) => s['time_slot_id'] == entry['time_slot_id'],
-          orElse: () => {'day': 'Unknown', 'start_time': '', 'end_time': ''},
-        );
-        final classroom = classroomsResponse.firstWhere(
-          (c) => c['classroom_id'] == entry['classroom_id'],
-          orElse: () => {'building': 'Unknown', 'room_number': ''},
-        );
-        return {
-          'timetable_id': entry['timetable_id'],
-          'course_id': entry['course_id'],
-          'course': course['course_name'],
-          'day': slot['day'],
-          'time': '${slot['start_time']} - ${slot['end_time']}',
-          'time_slot_id': slot['time_slot_id'],
-          'classroom': '${classroom['building']} - ${classroom['room_number']}',
-          'classroom_id': classroom['classroom_id'],
-          'semester_id': semesterId,
-        };
-      }).toList();
+      final timetableWithDetails =
+          timetableResponse.map((entry) {
+            final course = coursesResponse.firstWhere(
+              (c) => c['course_id'] == entry['course_id'],
+              orElse: () => {'course_name': 'Unknown Course'},
+            );
+            final slot = slotsResponse.firstWhere(
+              (s) => s['time_slot_id'] == entry['time_slot_id'],
+              orElse:
+                  () => {'day': 'Unknown', 'start_time': '', 'end_time': ''},
+            );
+            final classroom = classroomsResponse.firstWhere(
+              (c) => c['classroom_id'] == entry['classroom_id'],
+              orElse: () => {'building': 'Unknown', 'room_number': ''},
+            );
+            return {
+              'timetable_id': entry['timetable_id'],
+              'course_id': entry['course_id'],
+              'course': course['course_name'],
+              'day': slot['day'],
+              'time': '${slot['start_time']} - ${slot['end_time']}',
+              'time_slot_id': slot['time_slot_id'],
+              'classroom':
+                  '${classroom['building']} - ${classroom['room_number']}',
+              'classroom_id': classroom['classroom_id'],
+              'semester_id': semesterId,
+            };
+          }).toList();
 
       setState(() {
         _timetable = timetableWithDetails;
@@ -194,22 +204,27 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Error fetching timetable: $e'),
-            backgroundColor: Colors.red.shade700),
+          content: Text('Error fetching timetable: $e'),
+          backgroundColor: Colors.red.shade700,
+        ),
       );
       setState(() => _isLoading = false);
     }
   }
 
   Future<bool> _checkOneCoursePerDay(
-      int semesterId, int timeSlotId, int courseId) async {
+    int semesterId,
+    int timeSlotId,
+    int courseId,
+  ) async {
     try {
       // Get the day and time for the selected time slot
-      final timeSlot = await _supabase
-          .from('time_slot')
-          .select('day, start_time, end_time')
-          .eq('time_slot_id', timeSlotId)
-          .single();
+      final timeSlot =
+          await _supabase
+              .from('time_slot')
+              .select('day, start_time, end_time')
+              .eq('time_slot_id', timeSlotId)
+              .single();
 
       final day = timeSlot['day'];
       final startTime = timeSlot['start_time'];
@@ -257,14 +272,17 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
   }
 
   Future<bool> _checkClassroomConflict(
-      int timeSlotId, String classroomId) async {
+    int timeSlotId,
+    String classroomId,
+  ) async {
     try {
       // Get the day and time for the selected time slot
-      final timeSlot = await _supabase
-          .from('time_slot')
-          .select('day, start_time, end_time')
-          .eq('time_slot_id', timeSlotId)
-          .single();
+      final timeSlot =
+          await _supabase
+              .from('time_slot')
+              .select('day, start_time, end_time')
+              .eq('time_slot_id', timeSlotId)
+              .single();
 
       final day = timeSlot['day'];
       final startTime = timeSlot['start_time'];
@@ -310,16 +328,20 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
   }
 
   Future<bool> _checkCourseConflict(
-      int courseId, int timeSlotId, int semesterId) async {
+    int courseId,
+    int timeSlotId,
+    int semesterId,
+  ) async {
     try {
       // Check if this course is already scheduled in this time slot
-      final response = await _supabase
-          .from('timetable')
-          .select()
-          .eq('course_id', courseId)
-          .eq('time_slot_id', timeSlotId)
-          .eq('semester_id', semesterId)
-          .maybeSingle();
+      final response =
+          await _supabase
+              .from('timetable')
+              .select()
+              .eq('course_id', courseId)
+              .eq('time_slot_id', timeSlotId)
+              .eq('semester_id', semesterId)
+              .maybeSingle();
       return response != null;
     } catch (e) {
       print('Error checking course conflict: $e');
@@ -328,7 +350,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
   }
 
   Future<bool> _checkInstructorConflict(
-      int instructorId, int timeSlotId, int semesterId) async {
+    int instructorId,
+    int timeSlotId,
+    int semesterId,
+  ) async {
     try {
       // Get all courses taught by this instructor in this semester
       final teaches = await _supabase
@@ -343,13 +368,14 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       final courseIds = teaches.map((t) => t['course_id']).toList();
 
       // Check if any of these courses are scheduled in this time slot
-      final response = await _supabase
-          .from('timetable')
-          .select()
-          .eq('time_slot_id', timeSlotId)
-          .eq('semester_id', semesterId)
-          .inFilter('course_id', courseIds)
-          .maybeSingle();
+      final response =
+          await _supabase
+              .from('timetable')
+              .select()
+              .eq('time_slot_id', timeSlotId)
+              .eq('semester_id', semesterId)
+              .inFilter('course_id', courseIds)
+              .maybeSingle();
 
       return response != null;
     } catch (e) {
@@ -380,15 +406,18 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       ]);
 
       // Filter courses based on type and lecture count
-      final courses = allCourses.where((course) {
-        final isCore = course['category_id'] == 1;
-        final isElective = course['category_id'] == 2;
-        final hasLectures = course['l'] > 0;
-        return hasLectures &&
-            (isCore ||
-                (isElective &&
-                    selectedElectiveCourseIds.contains(course['course_id'])));
-      }).toList();
+      final courses =
+          allCourses.where((course) {
+            final isCore = course['category_id'] == 1;
+            final isElective = course['category_id'] == 2;
+            final hasLectures = course['l'] > 0;
+            return hasLectures &&
+                (isCore ||
+                    (isElective &&
+                        selectedElectiveCourseIds.contains(
+                          course['course_id'],
+                        )));
+          }).toList();
 
       // Group time slots by day
       final slotsByDay = <String, List<Map<String, dynamic>>>{};
@@ -431,14 +460,20 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
           if (slotsAssigned >= lectureCount) break;
 
           // Check if course already has a lecture on this day
-          final dayConflict = await _checkOneCoursePerDay(targetSemesterId,
-              slotsByDay[day]!.first['time_slot_id'], courseId);
+          final dayConflict = await _checkOneCoursePerDay(
+            targetSemesterId,
+            slotsByDay[day]!.first['time_slot_id'],
+            courseId,
+          );
           if (dayConflict) continue;
 
           // Try to assign consecutive slots if possible
           final daySlots = List<Map<String, dynamic>>.from(slotsByDay[day]!);
-          daySlots.sort((a, b) =>
-              (a['start_time'] as String).compareTo(b['start_time'] as String));
+          daySlots.sort(
+            (a, b) => (a['start_time'] as String).compareTo(
+              b['start_time'] as String,
+            ),
+          );
 
           for (final slot in daySlots) {
             if (slotsAssigned >= lectureCount) break;
@@ -446,25 +481,37 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
             final timeSlotId = slot['time_slot_id'];
 
             // Check all conflicts
-            final classroomConflict =
-                await _checkClassroomConflict(timeSlotId, targetClassroomId);
+            final classroomConflict = await _checkClassroomConflict(
+              timeSlotId,
+              targetClassroomId,
+            );
             if (classroomConflict) continue;
 
             final courseConflict = await _checkCourseConflict(
-                courseId, timeSlotId, targetSemesterId);
+              courseId,
+              timeSlotId,
+              targetSemesterId,
+            );
             if (courseConflict) continue;
 
             final instructorConflict = await _checkInstructorConflict(
-                instructorId, timeSlotId, targetSemesterId);
+              instructorId,
+              timeSlotId,
+              targetSemesterId,
+            );
             if (instructorConflict) continue;
 
             try {
-              await _supabase.from('timetable').insert({
-                'course_id': courseId,
-                'semester_id': targetSemesterId,
-                'time_slot_id': timeSlotId,
-                'classroom_id': targetClassroomId,
-              });
+              final response =
+                  await _supabase.from('timetable').insert({
+                    'course_id': courseId,
+                    'semester_id': targetSemesterId,
+                    'time_slot_id': timeSlotId,
+                    'classroom_id': targetClassroomId,
+                  }).select();
+
+              print('Insert response: $response');
+
               slotsAssigned++;
               assignedCourseSlots[courseId] =
                   (assignedCourseSlots[courseId] ?? 0) + 1;
@@ -472,7 +519,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                      'Failed to assign course ${course['course_name']}: $e'),
+                    'Failed to assign course ${course['course_name']}: $e',
+                  ),
                   backgroundColor: Colors.red.shade700,
                 ),
               );
@@ -489,8 +537,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       // Show summary of unassigned courses
       if (unassignedCourses.isNotEmpty) {
         final message = unassignedCourses.entries
-            .map((e) =>
-                '${e.key}: ${e.value} slot${e.value > 1 ? 's' : ''} unassigned')
+            .map(
+              (e) =>
+                  '${e.key}: ${e.value} slot${e.value > 1 ? 's' : ''} unassigned',
+            )
             .join(', ');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -525,6 +575,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     showDialog(
       context: context,
       builder: (context) {
+        bool dialogActive = true;
         return Theme(
           data: ThemeData(
             primarySwatch: Colors.deepPurple,
@@ -542,7 +593,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
             builder: (context, setDialogState) {
               return AlertDialog(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 backgroundColor: Colors.white,
                 title: Text(
                   'Generate Timetable',
@@ -563,20 +615,24 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           value: selectedProgramId,
                           decoration: InputDecoration(
                             labelText: 'Program',
-                            prefixIcon: Icon(Icons.school,
-                                color: Colors.deepPurple.shade700),
+                            prefixIcon: Icon(
+                              Icons.school,
+                              color: Colors.deepPurple.shade700,
+                            ),
                           ),
                           hint: const Text('Select a program'),
-                          items: _programs.map((program) {
-                            return DropdownMenuItem<int>(
-                              value: program['program_id'],
-                              child: Text(
-                                '${program['program_name']} (${program['batch_year']})',
-                                style: TextStyle(
-                                    color: Colors.deepPurple.shade900),
-                              ),
-                            );
-                          }).toList(),
+                          items:
+                              _programs.map((program) {
+                                return DropdownMenuItem<int>(
+                                  value: program['program_id'],
+                                  child: Text(
+                                    '${program['program_name']} (${program['batch_year']})',
+                                    style: TextStyle(
+                                      color: Colors.deepPurple.shade900,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                           onChanged: (value) async {
                             setDialogState(() {
                               selectedProgramId = value;
@@ -595,20 +651,24 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           value: selectedSemesterId,
                           decoration: InputDecoration(
                             labelText: 'Semester',
-                            prefixIcon: Icon(Icons.calendar_today,
-                                color: Colors.deepPurple.shade700),
+                            prefixIcon: Icon(
+                              Icons.calendar_today,
+                              color: Colors.deepPurple.shade700,
+                            ),
                           ),
                           hint: const Text('Select a semester'),
-                          items: _semesters.map((semester) {
-                            return DropdownMenuItem<int>(
-                              value: semester['semester_id'],
-                              child: Text(
-                                'Semester ${semester['semester_number']}',
-                                style: TextStyle(
-                                    color: Colors.deepPurple.shade900),
-                              ),
-                            );
-                          }).toList(),
+                          items:
+                              _semesters.map((semester) {
+                                return DropdownMenuItem<int>(
+                                  value: semester['semester_id'],
+                                  child: Text(
+                                    'Semester ${semester['semester_number']}',
+                                    style: TextStyle(
+                                      color: Colors.deepPurple.shade900,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                           onChanged: (value) async {
                             setDialogState(() {
                               selectedSemesterId = value;
@@ -617,8 +677,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                             });
                             if (value != null) {
                               await _fetchCourses(value);
-                              final semester = _semesters
-                                  .firstWhere((s) => s['semester_id'] == value);
+                              final semester = _semesters.firstWhere(
+                                (s) => s['semester_id'] == value,
+                              );
                               maxElectiveCourses =
                                   semester['elective_courses'] ?? 0;
                               setDialogState(() {});
@@ -630,20 +691,24 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           value: selectedClassroomId,
                           decoration: InputDecoration(
                             labelText: 'Classroom',
-                            prefixIcon: Icon(Icons.room,
-                                color: Colors.deepPurple.shade700),
+                            prefixIcon: Icon(
+                              Icons.room,
+                              color: Colors.deepPurple.shade700,
+                            ),
                           ),
                           hint: const Text('Select a classroom'),
-                          items: _classrooms.map((classroom) {
-                            return DropdownMenuItem<String>(
-                              value: classroom['classroom_id'],
-                              child: Text(
-                                '${classroom['building']} - ${classroom['room_number']}',
-                                style: TextStyle(
-                                    color: Colors.deepPurple.shade900),
-                              ),
-                            );
-                          }).toList(),
+                          items:
+                              _classrooms.map((classroom) {
+                                return DropdownMenuItem<String>(
+                                  value: classroom['classroom_id'],
+                                  child: Text(
+                                    '${classroom['building']} - ${classroom['room_number']}',
+                                    style: TextStyle(
+                                      color: Colors.deepPurple.shade900,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                           onChanged: (value) {
                             setDialogState(() {
                               selectedClassroomId = value;
@@ -673,18 +738,24 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: _courses
-                                .where((course) => course['category_id'] == 1)
-                                .map((course) {
-                              return Chip(
-                                label: Text(
-                                  '${course['course_name']} (${course['l']} lectures)',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor: Colors.green.shade600,
-                                elevation: 2,
-                              );
-                            }).toList(),
+                            children:
+                                _courses
+                                    .where(
+                                      (course) => course['category_id'] == 1,
+                                    )
+                                    .map((course) {
+                                      return Chip(
+                                        label: Text(
+                                          '${course['course_name']} (${course['l']} lectures)',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        backgroundColor: Colors.green.shade600,
+                                        elevation: 2,
+                                      );
+                                    })
+                                    .toList(),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -698,51 +769,63 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: _courses
-                                .where((course) => course['category_id'] == 2)
-                                .map((course) {
-                              final isSelected = selectedElectiveCourseIds
-                                  .contains(course['course_id']);
-                              return FilterChip(
-                                label: Text(
-                                  '${course['course_name']} (${course['l']} lectures)',
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Colors.blue.shade900,
-                                  ),
-                                ),
-                                selected: isSelected,
-                                onSelected: (selected) {
-                                  setDialogState(() {
-                                    if (selected) {
-                                      if (selectedElectiveCourseIds.length <
-                                          maxElectiveCourses) {
-                                        selectedElectiveCourseIds
-                                            .add(course['course_id']);
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Maximum elective courses ($maxElectiveCourses) reached.'),
-                                            backgroundColor:
-                                                Colors.red.shade700,
+                            children:
+                                _courses
+                                    .where(
+                                      (course) => course['category_id'] == 2,
+                                    )
+                                    .map((course) {
+                                      final isSelected =
+                                          selectedElectiveCourseIds.contains(
+                                            course['course_id'],
+                                          );
+                                      return FilterChip(
+                                        label: Text(
+                                          '${course['course_name']} (${course['l']} lectures)',
+                                          style: TextStyle(
+                                            color:
+                                                isSelected
+                                                    ? Colors.white
+                                                    : Colors.blue.shade900,
                                           ),
-                                        );
-                                      }
-                                    } else {
-                                      selectedElectiveCourseIds
-                                          .remove(course['course_id']);
-                                    }
-                                  });
-                                },
-                                selectedColor: Colors.blue.shade600,
-                                checkmarkColor: Colors.white,
-                                backgroundColor: Colors.blue.shade100,
-                                elevation: isSelected ? 4 : 1,
-                              );
-                            }).toList(),
+                                        ),
+                                        selected: isSelected,
+                                        onSelected: (selected) {
+                                          setDialogState(() {
+                                            if (selected) {
+                                              if (selectedElectiveCourseIds
+                                                      .length <
+                                                  maxElectiveCourses) {
+                                                selectedElectiveCourseIds.add(
+                                                  course['course_id'],
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Maximum elective courses ($maxElectiveCourses) reached.',
+                                                    ),
+                                                    backgroundColor:
+                                                        Colors.red.shade700,
+                                                  ),
+                                                );
+                                              }
+                                            } else {
+                                              selectedElectiveCourseIds.remove(
+                                                course['course_id'],
+                                              );
+                                            }
+                                          });
+                                        },
+                                        selectedColor: Colors.blue.shade600,
+                                        checkmarkColor: Colors.white,
+                                        backgroundColor: Colors.blue.shade100,
+                                        elevation: isSelected ? 4 : 1,
+                                      );
+                                    })
+                                    .toList(),
                           ),
                         ],
                       ],
@@ -751,72 +834,89 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                 ),
                 actions: [
                   TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      dialogActive = false;
+                      Navigator.pop(context);
+                    },
                     child: Text(
                       'Cancel',
                       style: TextStyle(color: Colors.grey.shade700),
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: _isGenerating
-                        ? null
-                        : () async {
-                            if (selectedProgramId == null ||
-                                selectedSemesterId == null ||
-                                selectedClassroomId == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text(
-                                      'Please complete all selections.'),
-                                  backgroundColor: Colors.red.shade700,
-                                ),
-                              );
-                              return;
-                            }
-                            setDialogState(() => _isGenerating = true);
-                            try {
-                              await _generateLectureTimetableAvoidingConflicts(
-                                selectedSemesterId!,
-                                selectedClassroomId!,
-                                selectedElectiveCourseIds,
-                              );
-                              Navigator.pop(context);
-                              await _fetchTimetable(selectedSemesterId!);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text(
-                                      'Timetable generated successfully!'),
-                                  backgroundColor: Colors.green.shade700,
-                                ),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content:
-                                      Text('Error generating timetable: $e'),
-                                  backgroundColor: Colors.red.shade700,
-                                ),
-                              );
-                            } finally {
-                              setDialogState(() => _isGenerating = false);
-                            }
-                          },
+                    onPressed:
+                        _isGenerating
+                            ? null
+                            : () async {
+                              if (selectedProgramId == null ||
+                                  selectedSemesterId == null ||
+                                  selectedClassroomId == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text(
+                                      'Please complete all selections.',
+                                    ),
+                                    backgroundColor: Colors.red.shade700,
+                                  ),
+                                );
+                                return;
+                              }
+                              setDialogState(() => _isGenerating = true);
+                              try {
+                                print('selectedProgramId: $selectedProgramId');
+                                print(
+                                  'selectedSemesterId: $selectedSemesterId',
+                                );
+                                await _generateLectureTimetableAvoidingConflicts(
+                                  selectedSemesterId!,
+                                  selectedClassroomId!,
+                                  selectedElectiveCourseIds,
+                                );
+                                dialogActive = false;
+                                Navigator.pop(context);
+                                await _fetchTimetable(selectedSemesterId!);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text(
+                                      'Timetable generated successfully!',
+                                    ),
+                                    backgroundColor: Colors.green.shade700,
+                                  ),
+                                );
+                              } catch (e) {
+                                if (dialogActive) {
+                                  setDialogState(() => _isGenerating = false);
+                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Error generating timetable: $e',
+                                    ),
+                                    backgroundColor: Colors.red.shade700,
+                                  ),
+                                );
+                              }
+                            },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: _isGenerating
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation(Colors.white),
-                            ),
-                          )
-                        : const Text('Generate'),
+                    child:
+                        _isGenerating
+                            ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : const Text('Generate'),
                   ),
                 ],
               );
@@ -852,6 +952,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       showDialog(
         context: context,
         builder: (context) {
+          bool dialogActive = true;
           return Theme(
             data: ThemeData(
               primarySwatch: Colors.deepPurple,
@@ -876,7 +977,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
 
                     return AlertDialog(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       backgroundColor: Colors.white,
                       contentPadding: EdgeInsets.all(padding),
                       content: SizedBox(
@@ -906,28 +1008,37 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                             value: selectedCourseId,
                                             decoration: InputDecoration(
                                               labelText: 'Course',
-                                              prefixIcon: Icon(Icons.book,
-                                                  color: Colors
-                                                      .deepPurple.shade700),
-                                              labelStyle:
-                                                  TextStyle(fontSize: fontSize),
+                                              prefixIcon: Icon(
+                                                Icons.book,
+                                                color:
+                                                    Colors.deepPurple.shade700,
+                                              ),
+                                              labelStyle: TextStyle(
+                                                fontSize: fontSize,
+                                              ),
                                             ),
-                                            hint: Text('Select a course',
-                                                style: TextStyle(
-                                                    fontSize: fontSize)),
-                                            items: _courses.map((course) {
-                                              return DropdownMenuItem<int>(
-                                                value: course['course_id'],
-                                                child: Text(
-                                                  '${course['course_name']} (${course['l']} lectures)',
-                                                  style: TextStyle(
-                                                    fontSize: fontSize,
-                                                    color: Colors
-                                                        .deepPurple.shade900,
-                                                  ),
-                                                ),
-                                              );
-                                            }).toList(),
+                                            hint: Text(
+                                              'Select a course',
+                                              style: TextStyle(
+                                                fontSize: fontSize,
+                                              ),
+                                            ),
+                                            items:
+                                                _courses.map((course) {
+                                                  return DropdownMenuItem<int>(
+                                                    value: course['course_id'],
+                                                    child: Text(
+                                                      '${course['course_name']} (${course['l']} lectures)',
+                                                      style: TextStyle(
+                                                        fontSize: fontSize,
+                                                        color:
+                                                            Colors
+                                                                .deepPurple
+                                                                .shade900,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }).toList(),
                                             onChanged: (value) {
                                               setDialogState(() {
                                                 selectedCourseId = value;
@@ -939,28 +1050,37 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                             value: selectedTimeSlotId,
                                             decoration: InputDecoration(
                                               labelText: 'Time Slot',
-                                              prefixIcon: Icon(Icons.schedule,
-                                                  color: Colors
-                                                      .deepPurple.shade700),
-                                              labelStyle:
-                                                  TextStyle(fontSize: fontSize),
+                                              prefixIcon: Icon(
+                                                Icons.schedule,
+                                                color:
+                                                    Colors.deepPurple.shade700,
+                                              ),
+                                              labelStyle: TextStyle(
+                                                fontSize: fontSize,
+                                              ),
                                             ),
-                                            hint: Text('Select a time slot',
-                                                style: TextStyle(
-                                                    fontSize: fontSize)),
-                                            items: _timeSlots.map((slot) {
-                                              return DropdownMenuItem<int>(
-                                                value: slot['time_slot_id'],
-                                                child: Text(
-                                                  '${slot['day']} ${slot['start_time']} - ${slot['end_time']}',
-                                                  style: TextStyle(
-                                                    fontSize: fontSize,
-                                                    color: Colors
-                                                        .deepPurple.shade900,
-                                                  ),
-                                                ),
-                                              );
-                                            }).toList(),
+                                            hint: Text(
+                                              'Select a time slot',
+                                              style: TextStyle(
+                                                fontSize: fontSize,
+                                              ),
+                                            ),
+                                            items:
+                                                _timeSlots.map((slot) {
+                                                  return DropdownMenuItem<int>(
+                                                    value: slot['time_slot_id'],
+                                                    child: Text(
+                                                      '${slot['day']} ${slot['start_time']} - ${slot['end_time']}',
+                                                      style: TextStyle(
+                                                        fontSize: fontSize,
+                                                        color:
+                                                            Colors
+                                                                .deepPurple
+                                                                .shade900,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }).toList(),
                                             onChanged: (value) {
                                               setDialogState(() {
                                                 selectedTimeSlotId = value;
@@ -976,28 +1096,35 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                         value: selectedClassroomId,
                                         decoration: InputDecoration(
                                           labelText: 'Classroom',
-                                          prefixIcon: Icon(Icons.room,
-                                              color:
-                                                  Colors.deepPurple.shade700),
-                                          labelStyle:
-                                              TextStyle(fontSize: fontSize),
+                                          prefixIcon: Icon(
+                                            Icons.room,
+                                            color: Colors.deepPurple.shade700,
+                                          ),
+                                          labelStyle: TextStyle(
+                                            fontSize: fontSize,
+                                          ),
                                         ),
-                                        hint: Text('Select a classroom',
-                                            style:
-                                                TextStyle(fontSize: fontSize)),
-                                        items: _classrooms.map((classroom) {
-                                          return DropdownMenuItem<String>(
-                                            value: classroom['classroom_id'],
-                                            child: Text(
-                                              '${classroom['building']} - ${classroom['room_number']}',
-                                              style: TextStyle(
-                                                fontSize: fontSize,
-                                                color:
-                                                    Colors.deepPurple.shade900,
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
+                                        hint: Text(
+                                          'Select a classroom',
+                                          style: TextStyle(fontSize: fontSize),
+                                        ),
+                                        items:
+                                            _classrooms.map((classroom) {
+                                              return DropdownMenuItem<String>(
+                                                value:
+                                                    classroom['classroom_id'],
+                                                child: Text(
+                                                  '${classroom['building']} - ${classroom['room_number']}',
+                                                  style: TextStyle(
+                                                    fontSize: fontSize,
+                                                    color:
+                                                        Colors
+                                                            .deepPurple
+                                                            .shade900,
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
                                         onChanged: (value) {
                                           setDialogState(() {
                                             selectedClassroomId = value;
@@ -1014,25 +1141,34 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                       value: selectedCourseId,
                                       decoration: InputDecoration(
                                         labelText: 'Course',
-                                        prefixIcon: Icon(Icons.book,
-                                            color: Colors.deepPurple.shade700),
-                                        labelStyle:
-                                            TextStyle(fontSize: fontSize),
+                                        prefixIcon: Icon(
+                                          Icons.book,
+                                          color: Colors.deepPurple.shade700,
+                                        ),
+                                        labelStyle: TextStyle(
+                                          fontSize: fontSize,
+                                        ),
                                       ),
-                                      hint: Text('Select a course',
-                                          style: TextStyle(fontSize: fontSize)),
-                                      items: _courses.map((course) {
-                                        return DropdownMenuItem<int>(
-                                          value: course['course_id'],
-                                          child: Text(
-                                            '${course['course_name']} (${course['l']} lectures)',
-                                            style: TextStyle(
-                                              fontSize: fontSize,
-                                              color: Colors.deepPurple.shade900,
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
+                                      hint: Text(
+                                        'Select a course',
+                                        style: TextStyle(fontSize: fontSize),
+                                      ),
+                                      items:
+                                          _courses.map((course) {
+                                            return DropdownMenuItem<int>(
+                                              value: course['course_id'],
+                                              child: Text(
+                                                '${course['course_name']} (${course['l']} lectures)',
+                                                style: TextStyle(
+                                                  fontSize: fontSize,
+                                                  color:
+                                                      Colors
+                                                          .deepPurple
+                                                          .shade900,
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
                                       onChanged: (value) {
                                         setDialogState(() {
                                           selectedCourseId = value;
@@ -1044,25 +1180,34 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                       value: selectedTimeSlotId,
                                       decoration: InputDecoration(
                                         labelText: 'Time Slot',
-                                        prefixIcon: Icon(Icons.schedule,
-                                            color: Colors.deepPurple.shade700),
-                                        labelStyle:
-                                            TextStyle(fontSize: fontSize),
+                                        prefixIcon: Icon(
+                                          Icons.schedule,
+                                          color: Colors.deepPurple.shade700,
+                                        ),
+                                        labelStyle: TextStyle(
+                                          fontSize: fontSize,
+                                        ),
                                       ),
-                                      hint: Text('Select a time slot',
-                                          style: TextStyle(fontSize: fontSize)),
-                                      items: _timeSlots.map((slot) {
-                                        return DropdownMenuItem<int>(
-                                          value: slot['time_slot_id'],
-                                          child: Text(
-                                            '${slot['day']} ${slot['start_time']} - ${slot['end_time']}',
-                                            style: TextStyle(
-                                              fontSize: fontSize,
-                                              color: Colors.deepPurple.shade900,
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
+                                      hint: Text(
+                                        'Select a time slot',
+                                        style: TextStyle(fontSize: fontSize),
+                                      ),
+                                      items:
+                                          _timeSlots.map((slot) {
+                                            return DropdownMenuItem<int>(
+                                              value: slot['time_slot_id'],
+                                              child: Text(
+                                                '${slot['day']} ${slot['start_time']} - ${slot['end_time']}',
+                                                style: TextStyle(
+                                                  fontSize: fontSize,
+                                                  color:
+                                                      Colors
+                                                          .deepPurple
+                                                          .shade900,
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
                                       onChanged: (value) {
                                         setDialogState(() {
                                           selectedTimeSlotId = value;
@@ -1074,25 +1219,34 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                       value: selectedClassroomId,
                                       decoration: InputDecoration(
                                         labelText: 'Classroom',
-                                        prefixIcon: Icon(Icons.room,
-                                            color: Colors.deepPurple.shade700),
-                                        labelStyle:
-                                            TextStyle(fontSize: fontSize),
+                                        prefixIcon: Icon(
+                                          Icons.room,
+                                          color: Colors.deepPurple.shade700,
+                                        ),
+                                        labelStyle: TextStyle(
+                                          fontSize: fontSize,
+                                        ),
                                       ),
-                                      hint: Text('Select a classroom',
-                                          style: TextStyle(fontSize: fontSize)),
-                                      items: _classrooms.map((classroom) {
-                                        return DropdownMenuItem<String>(
-                                          value: classroom['classroom_id'],
-                                          child: Text(
-                                            '${classroom['building']} - ${classroom['room_number']}',
-                                            style: TextStyle(
-                                              fontSize: fontSize,
-                                              color: Colors.deepPurple.shade900,
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
+                                      hint: Text(
+                                        'Select a classroom',
+                                        style: TextStyle(fontSize: fontSize),
+                                      ),
+                                      items:
+                                          _classrooms.map((classroom) {
+                                            return DropdownMenuItem<String>(
+                                              value: classroom['classroom_id'],
+                                              child: Text(
+                                                '${classroom['building']} - ${classroom['room_number']}',
+                                                style: TextStyle(
+                                                  fontSize: fontSize,
+                                                  color:
+                                                      Colors
+                                                          .deepPurple
+                                                          .shade900,
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
                                       onChanged: (value) {
                                         setDialogState(() {
                                           selectedClassroomId = value;
@@ -1107,7 +1261,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       ),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            dialogActive = false;
+                            Navigator.pop(context);
+                          },
                           child: Text(
                             'Cancel',
                             style: TextStyle(
@@ -1117,170 +1274,232 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: _isAddingCourse
-                              ? null
-                              : () async {
-                                  if (selectedCourseId == null ||
-                                      selectedTimeSlotId == null ||
-                                      selectedClassroomId == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text(
-                                            'Please complete all selections.'),
-                                        backgroundColor: Colors.red.shade700,
-                                      ),
-                                    );
-                                    return;
-                                  }
-
-                                  setDialogState(() => _isAddingCourse = true);
-
-                                  try {
-                                    // Check for instructor assignment
-                                    final instructorEntry = await _supabase
-                                        .from('teaches')
-                                        .select('instructor_id')
-                                        .eq('course_id', selectedCourseId!)
-                                        .eq('semester_id', semesterId)
-                                        .maybeSingle();
-
-                                    if (instructorEntry == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                          onPressed:
+                              _isAddingCourse
+                                  ? null
+                                  : () async {
+                                    if (selectedCourseId == null ||
+                                        selectedTimeSlotId == null ||
+                                        selectedClassroomId == null) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: const Text(
-                                              'No instructor assigned for this course.'),
+                                            'Please complete all selections.',
+                                          ),
                                           backgroundColor: Colors.red.shade700,
                                         ),
                                       );
-                                      setDialogState(
-                                          () => _isAddingCourse = false);
                                       return;
                                     }
 
-                                    // Check all conflicts
-                                    final conflicts = await Future.wait([
-                                      _checkClassroomConflict(
+                                    setDialogState(
+                                      () => _isAddingCourse = true,
+                                    );
+
+                                    try {
+                                      // Check for instructor assignment
+                                      final instructorEntries = await _supabase
+                                          .from('teaches')
+                                          .select('instructor_id')
+                                          .eq('course_id', selectedCourseId!)
+                                          .eq('semester_id', semesterId);
+
+                                      print(
+                                        'Instructor entries: $instructorEntries',
+                                      );
+
+                                      if (instructorEntries == null ||
+                                          instructorEntries.isEmpty) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: const Text(
+                                              'No instructor assigned for this course.',
+                                            ),
+                                            backgroundColor:
+                                                Colors.red.shade700,
+                                          ),
+                                        );
+                                        setDialogState(
+                                          () => _isAddingCourse = false,
+                                        );
+                                        return;
+                                      }
+
+                                      final instructorEntry =
+                                          instructorEntries.first;
+
+                                      // Check all conflicts
+                                      final conflicts = await Future.wait([
+                                        _checkClassroomConflict(
                                           selectedTimeSlotId!,
-                                          selectedClassroomId!),
-                                      _checkCourseConflict(selectedCourseId!,
-                                          selectedTimeSlotId!, semesterId),
-                                      _checkInstructorConflict(
+                                          selectedClassroomId!,
+                                        ),
+                                        _checkCourseConflict(
+                                          selectedCourseId!,
+                                          selectedTimeSlotId!,
+                                          semesterId,
+                                        ),
+                                        _checkInstructorConflict(
                                           instructorEntry['instructor_id'],
                                           selectedTimeSlotId!,
-                                          semesterId),
-                                      _checkOneCoursePerDay(
+                                          semesterId,
+                                        ),
+                                        _checkOneCoursePerDay(
                                           semesterId,
                                           selectedTimeSlotId!,
-                                          selectedCourseId!),
-                                    ]);
+                                          selectedCourseId!,
+                                        ),
+                                      ]);
 
-                                    if (conflicts[0]) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      if (conflicts[0]) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: const Text(
+                                              'Classroom is already booked for this time slot.',
+                                            ),
+                                            backgroundColor:
+                                                Colors.red.shade700,
+                                          ),
+                                        );
+                                        setDialogState(
+                                          () => _isAddingCourse = false,
+                                        );
+                                        return;
+                                      }
+
+                                      if (conflicts[1]) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: const Text(
+                                              'Course is already scheduled in this time slot.',
+                                            ),
+                                            backgroundColor:
+                                                Colors.red.shade700,
+                                          ),
+                                        );
+                                        setDialogState(
+                                          () => _isAddingCourse = false,
+                                        );
+                                        return;
+                                      }
+
+                                      if (conflicts[2]) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: const Text(
+                                              'Instructor is already scheduled in this time slot.',
+                                            ),
+                                            backgroundColor:
+                                                Colors.red.shade700,
+                                          ),
+                                        );
+                                        setDialogState(
+                                          () => _isAddingCourse = false,
+                                        );
+                                        return;
+                                      }
+
+                                      if (conflicts[3]) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: const Text(
+                                              'This course already has a lecture scheduled on this day.',
+                                            ),
+                                            backgroundColor:
+                                                Colors.red.shade700,
+                                          ),
+                                        );
+                                        setDialogState(
+                                          () => _isAddingCourse = false,
+                                        );
+                                        return;
+                                      }
+
+                                      // Add the course to timetable
+                                      final response =
+                                          await _supabase
+                                              .from('timetable')
+                                              .insert({
+                                                'course_id': selectedCourseId,
+                                                'semester_id': semesterId,
+                                                'time_slot_id':
+                                                    selectedTimeSlotId,
+                                                'classroom_id':
+                                                    selectedClassroomId,
+                                              })
+                                              .select();
+
+                                      print('Insert response: $response');
+
+                                      Navigator.pop(context);
+                                      await _fetchTimetable(semesterId);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: const Text(
-                                              'Classroom is already booked for this time slot.'),
+                                            'Course added successfully!',
+                                          ),
+                                          backgroundColor:
+                                              Colors.green.shade700,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Error adding course: $e',
+                                          ),
                                           backgroundColor: Colors.red.shade700,
                                         ),
                                       );
+                                    } finally {
                                       setDialogState(
-                                          () => _isAddingCourse = false);
-                                      return;
-                                    }
-
-                                    if (conflicts[1]) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: const Text(
-                                              'Course is already scheduled in this time slot.'),
-                                          backgroundColor: Colors.red.shade700,
-                                        ),
+                                        () => _isAddingCourse = false,
                                       );
-                                      setDialogState(
-                                          () => _isAddingCourse = false);
-                                      return;
                                     }
-
-                                    if (conflicts[2]) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: const Text(
-                                              'Instructor is already scheduled in this time slot.'),
-                                          backgroundColor: Colors.red.shade700,
-                                        ),
-                                      );
-                                      setDialogState(
-                                          () => _isAddingCourse = false);
-                                      return;
-                                    }
-
-                                    if (conflicts[3]) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: const Text(
-                                              'This course already has a lecture scheduled on this day.'),
-                                          backgroundColor: Colors.red.shade700,
-                                        ),
-                                      );
-                                      setDialogState(
-                                          () => _isAddingCourse = false);
-                                      return;
-                                    }
-
-                                    // Add the course to timetable
-                                    await _supabase.from('timetable').insert({
-                                      'course_id': selectedCourseId,
-                                      'semester_id': semesterId,
-                                      'time_slot_id': selectedTimeSlotId,
-                                      'classroom_id': selectedClassroomId,
-                                    });
-
-                                    Navigator.pop(context);
-                                    await _fetchTimetable(semesterId);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text(
-                                            'Course added successfully!'),
-                                        backgroundColor: Colors.green.shade700,
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Error adding course: $e'),
-                                        backgroundColor: Colors.red.shade700,
-                                      ),
-                                    );
-                                  } finally {
-                                    setDialogState(
-                                        () => _isAddingCourse = false);
-                                  }
-                                },
+                                  },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.deepPurple,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            minimumSize:
-                                Size(isLargeScreen ? 120 : 100, buttonHeight),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            minimumSize: Size(
+                              isLargeScreen ? 120 : 100,
+                              buttonHeight,
+                            ),
                           ),
-                          child: _isAddingCourse
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor:
-                                        AlwaysStoppedAnimation(Colors.white),
+                          child:
+                              _isAddingCourse
+                                  ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                  : Text(
+                                    'Add',
+                                    style: TextStyle(fontSize: fontSize),
                                   ),
-                                )
-                              : Text('Add',
-                                  style: TextStyle(fontSize: fontSize)),
                         ),
                       ],
                     );
@@ -1349,13 +1568,20 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     }
   }
 
-  Future<void> _editTimetableEntry(int timetableId, int newTimeSlotId,
-      String newClassroomId, int semesterId) async {
+  Future<void> _editTimetableEntry(
+    int timetableId,
+    int newTimeSlotId,
+    String newClassroomId,
+    int semesterId,
+  ) async {
     try {
-      await _supabase.from('timetable').update({
-        'time_slot_id': newTimeSlotId,
-        'classroom_id': newClassroomId
-      }).eq('timetable_id', timetableId);
+      await _supabase
+          .from('timetable')
+          .update({
+            'time_slot_id': newTimeSlotId,
+            'classroom_id': newClassroomId,
+          })
+          .eq('timetable_id', timetableId);
       await _fetchTimetable(semesterId);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1366,8 +1592,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Error updating timetable: $e'),
-            backgroundColor: Colors.red.shade700),
+          content: Text('Error updating timetable: $e'),
+          backgroundColor: Colors.red.shade700,
+        ),
       );
     }
   }
@@ -1383,13 +1610,15 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
         return Theme(
           data: ThemeData(primarySwatch: Colors.deepPurple),
           child: AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             title: Text(
               'Edit Timetable Entry: ${entry['course']}',
               style: TextStyle(
-                  color: Colors.deepPurple.shade700,
-                  fontWeight: FontWeight.bold),
+                color: Colors.deepPurple.shade700,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1405,15 +1634,16 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  items: _timeSlots.map((slot) {
-                    return DropdownMenuItem<int>(
-                      value: slot['time_slot_id'],
-                      child: Text(
-                        '${slot['day']} ${slot['start_time']} - ${slot['end_time']}',
-                        style: TextStyle(color: Colors.deepPurple.shade900),
-                      ),
-                    );
-                  }).toList(),
+                  items:
+                      _timeSlots.map((slot) {
+                        return DropdownMenuItem<int>(
+                          value: slot['time_slot_id'],
+                          child: Text(
+                            '${slot['day']} ${slot['start_time']} - ${slot['end_time']}',
+                            style: TextStyle(color: Colors.deepPurple.shade900),
+                          ),
+                        );
+                      }).toList(),
                   onChanged: (value) => selectedTimeSlotId = value,
                 ),
                 const SizedBox(height: 16),
@@ -1428,15 +1658,16 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  items: _classrooms.map((classroom) {
-                    return DropdownMenuItem<String>(
-                      value: classroom['classroom_id'],
-                      child: Text(
-                        '${classroom['building']} - ${classroom['room_number']}',
-                        style: TextStyle(color: Colors.deepPurple.shade900),
-                      ),
-                    );
-                  }).toList(),
+                  items:
+                      _classrooms.map((classroom) {
+                        return DropdownMenuItem<String>(
+                          value: classroom['classroom_id'],
+                          child: Text(
+                            '${classroom['building']} - ${classroom['room_number']}',
+                            style: TextStyle(color: Colors.deepPurple.shade900),
+                          ),
+                        );
+                      }).toList(),
                   onChanged: (value) => selectedClassroomId = value,
                 ),
               ],
@@ -1456,21 +1687,27 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: const Text(
-                            'Please select both time slot and classroom.'),
+                          'Please select both time slot and classroom.',
+                        ),
                         backgroundColor: Colors.red.shade700,
                       ),
                     );
                     return;
                   }
-                  _editTimetableEntry(entry['timetable_id'],
-                      selectedTimeSlotId!, selectedClassroomId!, semesterId);
+                  _editTimetableEntry(
+                    entry['timetable_id'],
+                    selectedTimeSlotId!,
+                    selectedClassroomId!,
+                    semesterId,
+                  );
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 child: const Text('Save'),
               ),
@@ -1486,15 +1723,19 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Text(
             'Delete Timetable Entry',
             style: TextStyle(
-                color: Colors.deepPurple.shade700, fontWeight: FontWeight.bold),
+              color: Colors.deepPurple.shade700,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: const Text(
-              'Are you sure you want to delete this timetable entry?'),
+            'Are you sure you want to delete this timetable entry?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -1512,7 +1753,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                 backgroundColor: Colors.red.shade700,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: const Text('Delete'),
             ),
@@ -1527,15 +1769,19 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Text(
             'Delete Entire Timetable',
             style: TextStyle(
-                color: Colors.deepPurple.shade700, fontWeight: FontWeight.bold),
+              color: Colors.deepPurple.shade700,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: const Text(
-              'Are you sure you want to delete the entire timetable for this semester?'),
+            'Are you sure you want to delete the entire timetable for this semester?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -1553,7 +1799,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                 backgroundColor: Colors.red.shade700,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: const Text('Delete'),
             ),
@@ -1585,9 +1832,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Timetable for Semester ${_semesters.firstWhere((s) => s['semester_id'] == _timetable.first['semester_id'], orElse: () => {
-                        'semester_number': 'Unknown'
-                      })['semester_number']}',
+                  'Timetable for Semester ${_semesters.firstWhere((s) => s['semester_id'] == _timetable.first['semester_id'], orElse: () => {'semester_number': 'Unknown'})['semester_number']}',
                   style: pw.TextStyle(
                     font: font,
                     fontSize: 20,
@@ -1611,7 +1856,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           child: pw.Text(
                             'Course',
                             style: pw.TextStyle(
-                                font: font, fontWeight: pw.FontWeight.bold),
+                              font: font,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
                         ),
                         pw.Padding(
@@ -1619,7 +1866,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           child: pw.Text(
                             'Day',
                             style: pw.TextStyle(
-                                font: font, fontWeight: pw.FontWeight.bold),
+                              font: font,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
                         ),
                         pw.Padding(
@@ -1627,7 +1876,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           child: pw.Text(
                             'Time',
                             style: pw.TextStyle(
-                                font: font, fontWeight: pw.FontWeight.bold),
+                              font: font,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
                         ),
                         pw.Padding(
@@ -1635,7 +1886,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           child: pw.Text(
                             'Classroom',
                             style: pw.TextStyle(
-                                font: font, fontWeight: pw.FontWeight.bold),
+                              font: font,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -1645,23 +1898,31 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                         children: [
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(8),
-                            child: pw.Text(entry['course'],
-                                style: pw.TextStyle(font: font)),
+                            child: pw.Text(
+                              entry['course'],
+                              style: pw.TextStyle(font: font),
+                            ),
                           ),
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(8),
-                            child: pw.Text(entry['day'],
-                                style: pw.TextStyle(font: font)),
+                            child: pw.Text(
+                              entry['day'],
+                              style: pw.TextStyle(font: font),
+                            ),
                           ),
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(8),
-                            child: pw.Text(entry['time'],
-                                style: pw.TextStyle(font: font)),
+                            child: pw.Text(
+                              entry['time'],
+                              style: pw.TextStyle(font: font),
+                            ),
                           ),
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(8),
-                            child: pw.Text(entry['classroom'],
-                                style: pw.TextStyle(font: font)),
+                            child: pw.Text(
+                              entry['classroom'],
+                              style: pw.TextStyle(font: font),
+                            ),
                           ),
                         ],
                       ),
@@ -1680,19 +1941,17 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       if (kIsWeb) {
         final blob = html.Blob([bytes]);
         final url = html.Url.createObjectUrlFromBlob(blob);
-        final anchor = html.AnchorElement(href: url)
-          ..setAttribute('download', filename)
-          ..click();
+        final anchor =
+            html.AnchorElement(href: url)
+              ..setAttribute('download', filename)
+              ..click();
         html.Url.revokeObjectUrl(url);
       } else if (Platform.isAndroid ||
           Platform.isIOS ||
           Platform.isMacOS ||
           Platform.isWindows ||
           Platform.isLinux) {
-        await Printing.sharePdf(
-          bytes: bytes,
-          filename: filename,
-        );
+        await Printing.sharePdf(bytes: bytes, filename: filename);
       } else {
         throw UnsupportedError('PDF sharing not supported on this platform.');
       }
@@ -1726,12 +1985,14 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
             builder: (context, setDialogState) {
               return AlertDialog(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 title: Text(
                   'Select Program and Semester',
                   style: TextStyle(
-                      color: Colors.deepPurple.shade700,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.deepPurple.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1748,15 +2009,18 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                         ),
                       ),
                       hint: const Text('Select a program'),
-                      items: _programs.map((program) {
-                        return DropdownMenuItem<int>(
-                          value: program['program_id'],
-                          child: Text(
-                            '${program['program_name']} (${program['batch_year']})',
-                            style: TextStyle(color: Colors.deepPurple.shade900),
-                          ),
-                        );
-                      }).toList(),
+                      items:
+                          _programs.map((program) {
+                            return DropdownMenuItem<int>(
+                              value: program['program_id'],
+                              child: Text(
+                                '${program['program_name']} (${program['batch_year']})',
+                                style: TextStyle(
+                                  color: Colors.deepPurple.shade900,
+                                ),
+                              ),
+                            );
+                          }).toList(),
                       onChanged: (value) async {
                         setDialogState(() {
                           selectedProgramId = value;
@@ -1782,15 +2046,18 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                         ),
                       ),
                       hint: const Text('Select a semester'),
-                      items: _semesters.map((semester) {
-                        return DropdownMenuItem<int>(
-                          value: semester['semester_id'],
-                          child: Text(
-                            'Semester ${semester['semester_number']}',
-                            style: TextStyle(color: Colors.deepPurple.shade900),
-                          ),
-                        );
-                      }).toList(),
+                      items:
+                          _semesters.map((semester) {
+                            return DropdownMenuItem<int>(
+                              value: semester['semester_id'],
+                              child: Text(
+                                'Semester ${semester['semester_number']}',
+                                style: TextStyle(
+                                  color: Colors.deepPurple.shade900,
+                                ),
+                              ),
+                            );
+                          }).toList(),
                       onChanged: (value) {
                         setDialogState(() {
                           selectedSemesterId = value;
@@ -1814,7 +2081,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: const Text(
-                                'Please select both program and semester.'),
+                              'Please select both program and semester.',
+                            ),
                             backgroundColor: Colors.red.shade700,
                           ),
                         );
@@ -1831,7 +2099,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       backgroundColor: Colors.deepPurple,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     child: const Text('View Timetable'),
                   ),
@@ -1850,7 +2119,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Timetable Admin',
-        userEmail: loginController.studentName ??
+        userEmail:
+            loginController.studentName ??
             loginController.email.split('@').first,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -1862,389 +2132,440 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
           },
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _selectedProgramId == null
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _selectedProgramId == null
               ? Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Programs',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple.shade700,
-                        ),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Programs',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple.shade700,
                       ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _programs.length,
-                          itemBuilder: (context, index) {
-                            final program = _programs[index];
-                            return Card(
-                              elevation: 4,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.all(16),
-                                title: Text(
-                                  '${program['program_name']} (${program['batch_year']})',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        setState(() {
-                                          _selectedProgramId =
-                                              program['program_id'];
-                                          _semesters.clear();
-                                          _timetable.clear();
-                                        });
-                                        _fetchSemesters(program['program_id'])
-                                            .then((_) {
-                                          _showProgramAndSemesterSelection();
-                                        });
-                                      },
-                                      icon: const Icon(Icons.visibility,
-                                          size: 20),
-                                      label: const Text('View'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blue.shade600,
-                                        foregroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        elevation: 2,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    ElevatedButton.icon(
-                                      onPressed: () async {
-                                        setState(() {
-                                          _selectedProgramId =
-                                              program['program_id'];
-                                        });
-                                        await _fetchTimeSlotsAndClassrooms();
-                                        await _fetchSemesters(
-                                            program['program_id']);
-                                        _showAddTimetableForm();
-                                      },
-                                      icon: const Icon(Icons.add, size: 20),
-                                      label: const Text('Add'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.deepPurple,
-                                        foregroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        elevation: 2,
-                                      ),
-                                    ),
-                                  ],
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _programs.length,
+                        itemBuilder: (context, index) {
+                          final program = _programs[index];
+                          return Card(
+                            elevation: 4,
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(16),
+                              title: Text(
+                                '${program['program_name']} (${program['batch_year']})',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.deepPurple,
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : _selectedSemesterId == null
-                  ? Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Select Semester',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple.shade700,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          if (_semesters.isEmpty)
-                            const Center(
-                              child: Text(
-                                'No semesters found for this program.',
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.grey),
-                              ),
-                            )
-                          else
-                            DropdownButtonFormField<int>(
-                              value: _selectedSemesterId,
-                              decoration: InputDecoration(
-                                labelText: 'Semester',
-                                filled: true,
-                                fillColor: Colors.blue.shade50,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              hint: const Text('Select a semester'),
-                              items: _semesters.map((semester) {
-                                return DropdownMenuItem<int>(
-                                  value: semester['semester_id'],
-                                  child: Text(
-                                    'Semester ${semester['semester_number']}',
-                                    style: TextStyle(
-                                        color: Colors.deepPurple.shade900),
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (value) async {
-                                if (value != null) {
-                                  setState(() {
-                                    _selectedSemesterId = value;
-                                  });
-                                  await _fetchTimetable(value);
-                                }
-                              },
-                            ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedProgramId = null;
-                                _semesters.clear();
-                                _timetable.clear();
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey.shade600,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                            ),
-                            child: const Text('Back to Programs'),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Timetable for Semester ${_semesters.firstWhere((s) => s['semester_id'] == _selectedSemesterId, orElse: () => {
-                                  'semester_number': 'Unknown'
-                                })['semester_number']}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple.shade700,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final buttonWidth = constraints.maxWidth > 600
-                                  ? 200.0
-                                  : (constraints.maxWidth - 32) / 2;
-                              return Column(
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        width: buttonWidth,
-                                        child: ElevatedButton.icon(
-                                          onPressed: () => _showAddCourseForm(
-                                              _selectedSemesterId!),
-                                          icon: const Icon(Icons.add_circle,
-                                              size: 20),
-                                          label: const Text('Add'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.green.shade600,
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            elevation: 2,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 12),
-                                          ),
-                                        ),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedProgramId =
+                                            program['program_id'];
+                                        _semesters.clear();
+                                        _timetable.clear();
+                                      });
+                                      _fetchSemesters(
+                                        program['program_id'],
+                                      ).then((_) {
+                                        _showProgramAndSemesterSelection();
+                                      });
+                                    },
+                                    icon: const Icon(
+                                      Icons.visibility,
+                                      size: 20,
+                                    ),
+                                    label: const Text('View'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue.shade600,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
-                                      SizedBox(
-                                        width: buttonWidth,
-                                        child: ElevatedButton.icon(
-                                          onPressed: () =>
-                                              _showDeleteTimetableDialog(
-                                                  _selectedSemesterId!),
-                                          icon: const Icon(Icons.delete_forever,
-                                              size: 20),
-                                          label: const Text('Delete'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.red.shade700,
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            elevation: 2,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 12),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                      elevation: 2,
+                                    ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        width: buttonWidth,
-                                        child: ElevatedButton.icon(
-                                          onPressed: _exportTimetableToPDF,
-                                          icon: const Icon(Icons.picture_as_pdf,
-                                              size: 20),
-                                          label: const Text('Export'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.blue.shade600,
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            elevation: 2,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 12),
-                                          ),
-                                        ),
+                                  const SizedBox(width: 8),
+                                  ElevatedButton.icon(
+                                    onPressed: () async {
+                                      setState(() {
+                                        _selectedProgramId =
+                                            program['program_id'];
+                                      });
+                                      await _fetchTimeSlotsAndClassrooms();
+                                      await _fetchSemesters(
+                                        program['program_id'],
+                                      );
+                                      _showAddTimetableForm();
+                                    },
+                                    icon: const Icon(Icons.add, size: 20),
+                                    label: const Text('Add'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.deepPurple,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
-                                      SizedBox(
-                                        width: buttonWidth,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _selectedProgramId = null;
-                                              _selectedSemesterId = null;
-                                              _timetable.clear();
-                                              _semesters.clear();
-                                              _courses.clear();
-                                            });
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.grey.shade600,
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            elevation: 2,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 12),
-                                          ),
-                                          child: const Text('Back to Programs'),
-                                        ),
-                                      ),
-                                    ],
+                                      elevation: 2,
+                                    ),
                                   ),
                                 ],
-                              );
-                            },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : _selectedSemesterId == null
+              ? Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Select Semester',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_semesters.isEmpty)
+                      const Center(
+                        child: Text(
+                          'No semesters found for this program.',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      )
+                    else
+                      DropdownButtonFormField<int>(
+                        value: _selectedSemesterId,
+                        decoration: InputDecoration(
+                          labelText: 'Semester',
+                          filled: true,
+                          fillColor: Colors.blue.shade50,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
                           ),
-                          const SizedBox(height: 16),
-                          Expanded(
-                            child: _timetable.isEmpty
-                                ? const Center(
-                                    child: Text(
-                                      'No timetable entries found for this semester.',
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.grey),
+                        ),
+                        hint: const Text('Select a semester'),
+                        items:
+                            _semesters.map((semester) {
+                              return DropdownMenuItem<int>(
+                                value: semester['semester_id'],
+                                child: Text(
+                                  'Semester ${semester['semester_number']}',
+                                  style: TextStyle(
+                                    color: Colors.deepPurple.shade900,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                        onChanged: (value) async {
+                          if (value != null) {
+                            setState(() {
+                              _selectedSemesterId = value;
+                            });
+                            await _fetchTimetable(value);
+                          }
+                        },
+                      ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedProgramId = null;
+                          _semesters.clear();
+                          _timetable.clear();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade600,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text('Back to Programs'),
+                    ),
+                  ],
+                ),
+              )
+              : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Timetable for Semester ${_semesters.firstWhere((s) => s['semester_id'] == _selectedSemesterId, orElse: () => {'semester_number': 'Unknown'})['semester_number']}',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final buttonWidth =
+                            constraints.maxWidth > 600
+                                ? 200.0
+                                : (constraints.maxWidth - 32) / 2;
+                        return Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: buttonWidth,
+                                  child: ElevatedButton.icon(
+                                    onPressed:
+                                        () => _showAddCourseForm(
+                                          _selectedSemesterId!,
+                                        ),
+                                    icon: const Icon(
+                                      Icons.add_circle,
+                                      size: 20,
                                     ),
-                                  )
-                                : Card(
-                                    elevation: 4,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: DataTable(
-                                          columnSpacing: 20,
-                                          headingRowColor:
-                                              WidgetStateProperty.all(
-                                                  Colors.deepPurple.shade50),
-                                          dataRowColor:
-                                              WidgetStateProperty.resolveWith(
-                                                  (states) => states.contains(
-                                                          WidgetState.hovered)
-                                                      ? Colors.blue.shade50
-                                                      : Colors.white),
-                                          columns: const [
-                                            DataColumn(
-                                              label: Text('Course',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                    label: const Text('Add'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green.shade600,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 2,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: buttonWidth,
+                                  child: ElevatedButton.icon(
+                                    onPressed:
+                                        () => _showDeleteTimetableDialog(
+                                          _selectedSemesterId!,
+                                        ),
+                                    icon: const Icon(
+                                      Icons.delete_forever,
+                                      size: 20,
+                                    ),
+                                    label: const Text('Delete'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red.shade700,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 2,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: buttonWidth,
+                                  child: ElevatedButton.icon(
+                                    onPressed: _exportTimetableToPDF,
+                                    icon: const Icon(
+                                      Icons.picture_as_pdf,
+                                      size: 20,
+                                    ),
+                                    label: const Text('Export'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue.shade600,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 2,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: buttonWidth,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedProgramId = null;
+                                        _selectedSemesterId = null;
+                                        _timetable.clear();
+                                        _semesters.clear();
+                                        _courses.clear();
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey.shade600,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 2,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                    child: const Text('Back to Programs'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child:
+                          _timetable.isEmpty
+                              ? const Center(
+                                child: Text(
+                                  'No timetable entries found for this semester.',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              )
+                              : Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: DataTable(
+                                      columnSpacing: 20,
+                                      headingRowColor: WidgetStateProperty.all(
+                                        Colors.deepPurple.shade50,
+                                      ),
+                                      dataRowColor:
+                                          WidgetStateProperty.resolveWith(
+                                            (states) =>
+                                                states.contains(
+                                                      WidgetState.hovered,
+                                                    )
+                                                    ? Colors.blue.shade50
+                                                    : Colors.white,
+                                          ),
+                                      columns: const [
+                                        DataColumn(
+                                          label: Text(
+                                            'Course',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            DataColumn(
-                                              label: Text('Day',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Day',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            DataColumn(
-                                              label: Text('Time',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Time',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            DataColumn(
-                                              label: Text('Classroom',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Classroom',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            DataColumn(
-                                              label: Text('Actions',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Actions',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                          ],
-                                          rows: _timetable.map((entry) {
+                                          ),
+                                        ),
+                                      ],
+                                      rows:
+                                          _timetable.map((entry) {
                                             return DataRow(
                                               cells: [
-                                                DataCell(Text(entry['course'],
+                                                DataCell(
+                                                  Text(
+                                                    entry['course'],
                                                     style: const TextStyle(
-                                                        fontSize: 14))),
-                                                DataCell(Text(entry['day'],
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    entry['day'],
                                                     style: const TextStyle(
-                                                        fontSize: 14))),
-                                                DataCell(Text(entry['time'],
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    entry['time'],
                                                     style: const TextStyle(
-                                                        fontSize: 14))),
-                                                DataCell(Text(
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
                                                     entry['classroom'],
                                                     style: const TextStyle(
-                                                        fontSize: 14))),
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
                                                 DataCell(
                                                   Row(
                                                     mainAxisSize:
@@ -2252,23 +2573,26 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                                     children: [
                                                       IconButton(
                                                         icon: const Icon(
-                                                            Icons.edit,
-                                                            color: Colors.blue),
-                                                        onPressed: () =>
-                                                            _showEditDialog(
-                                                                entry),
+                                                          Icons.edit,
+                                                          color: Colors.blue,
+                                                        ),
+                                                        onPressed:
+                                                            () =>
+                                                                _showEditDialog(
+                                                                  entry,
+                                                                ),
                                                         tooltip: 'Edit Entry',
                                                       ),
                                                       IconButton(
                                                         icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red),
-                                                        onPressed: () =>
-                                                            _showDeleteEntryDialog(
-                                                                entry[
-                                                                    'timetable_id'],
-                                                                entry[
-                                                                    'semester_id']),
+                                                          Icons.delete,
+                                                          color: Colors.red,
+                                                        ),
+                                                        onPressed:
+                                                            () => _showDeleteEntryDialog(
+                                                              entry['timetable_id'],
+                                                              entry['semester_id'],
+                                                            ),
                                                         tooltip: 'Delete Entry',
                                                       ),
                                                     ],
@@ -2277,14 +2601,14 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                               ],
                                             );
                                           }).toList(),
-                                        ),
-                                      ),
                                     ),
                                   ),
-                          ),
-                        ],
-                      ),
+                                ),
+                              ),
                     ),
+                  ],
+                ),
+              ),
     );
   }
 }

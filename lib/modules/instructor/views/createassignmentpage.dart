@@ -4,22 +4,31 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:campusquest/widgets/common_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:campusquest/controllers/login_controller.dart';
 import 'package:campusquest/theme/theme.dart';
+import 'package:campusquest/utils/open_file_plus.dart';
 
 class Course {
   final String courseId;
   final String courseName;
-  Course({required this.courseId, required this.courseName});
+  final int semesterId;
+  final int semesterNumber;
+  Course({
+    required this.courseId,
+    required this.courseName,
+    required this.semesterId,
+    required this.semesterNumber,
+  });
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       courseId: json['course_id'].toString(),
       courseName: json['course_name'] ?? 'Unnamed Course',
+      semesterId: json['semester_id'] as int? ?? 1,
+      semesterNumber: json['semester_number'] as int? ?? 1,
     );
   }
 }
@@ -49,8 +58,6 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
   bool _isSaving = false;
   final GlobalKey<RefreshIndicatorState> _refreshKey =
       GlobalKey<RefreshIndicatorState>();
-  int?
-  _semesterId; // Assuming a fixed semester for simplicity; adjust as needed
 
   // Instructor information
   int? _instructorId;
@@ -119,9 +126,7 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
       if (_instructorId != null) {
         await Future.wait([_fetchCourses(), _fetchAssignments()]);
         if (courses.isNotEmpty && selectedCourseId == null) {
-          setState(
-            () => selectedCourseId = courses.first.courseId,
-          ); // Default to first course
+          setState(() => selectedCourseId = courses.first.courseId);
         }
       }
     } catch (e) {
@@ -181,15 +186,28 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
     try {
       final response = await supabase
           .from('teaches')
-          .select('course:course_id(course_id, course_name)')
+          .select(
+            'course:course_id(course_id, course_name, semester_id), semester:semester_id(semester_id, semester_number)',
+          )
           .eq('instructor_id', _instructorId!);
 
+      print('Teaches query response: $response');
       setState(() {
         courses =
             response
-                .map<Course>((json) => Course.fromJson(json['course']))
+                .map<Course>(
+                  (json) => Course.fromJson({
+                    'course_id': json['course']['course_id'],
+                    'course_name': json['course']['course_name'],
+                    'semester_id': json['semester']['semester_id'],
+                    'semester_number': json['semester']['semester_number'],
+                  }),
+                )
                 .toList();
       });
+      print(
+        'Processed courses with semester numbers: ${courses.map((c) => '${c.courseName} (Sem ${c.semesterNumber})').join(', ')}',
+      );
     } catch (e) {
       _showErrorMessage('Error fetching courses: $e');
     }
@@ -224,9 +242,15 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
     if (!_validateInputs()) return;
     setState(() => _isSaving = true);
     try {
+      // Find the selected course to get its semester_id
+      final selectedCourse = courses.firstWhere(
+        (course) => course.courseId == selectedCourseId,
+        orElse: () => throw Exception('Selected course not found'),
+      );
+
       final assignmentData = {
-        'course_id': int.parse(selectedCourseId!), // Single course ID
-        'semester_id': _semesterId ?? 1, // Default to 1; adjust as needed
+        'course_id': int.parse(selectedCourseId!),
+        'semester_id': selectedCourse.semesterId,
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'file_path': _uploadedFileUrl,
@@ -234,6 +258,10 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
         'max_marks': int.parse(_maxMarksController.text.trim()),
         'created_by': _instructorId!,
       };
+      print('Creating assignment with data: $assignmentData');
+      print(
+        'Selected course: ${selectedCourse.courseName} (Sem ${selectedCourse.semesterNumber}, ID: ${selectedCourse.semesterId})',
+      );
       if (_isEditing && _currentEditId != null) {
         await supabase
             .from('assignment')
@@ -370,42 +398,24 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
 
   Future<void> _downloadFile(String url, String fileName) async {
     try {
-      final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        await _downloadAndSaveFile(url, fileName);
-      }
-    } catch (e) {
-      _showErrorMessage('Error handling file: $e');
-    }
-  }
-
-  Future<void> _downloadAndSaveFile(String url, String fileName) async {
-    try {
       setState(() => _isLoading = true);
+
+      // Download the file first
       final dir = await getTemporaryDirectory();
       final filePath = '${dir.path}/$fileName';
       final response = await http.get(Uri.parse(url));
+
       if (response.statusCode == 200) {
         final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
-        if (await canLaunchUrl(Uri.file(filePath))) {
-          await launchUrl(
-            Uri.file(filePath),
-            mode: LaunchMode.externalApplication,
-          );
-        } else {
-          _showErrorMessage(
-            'File downloaded to $filePath but cannot be opened',
-            Colors.orange,
-          );
-        }
+
+        // Use FileOpener to open the file
+        await FileOpener.openEventFile(context, filePath);
       } else {
         _showErrorMessage('Failed to download file');
       }
     } catch (e) {
-      _showErrorMessage('Error downloading file: $e');
+      _showErrorMessage('Error handling file: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -566,7 +576,9 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
                         courses.map((course) {
                           return DropdownMenuItem<String>(
                             value: course.courseId,
-                            child: Text(course.courseName),
+                            child: Text(
+                              '${course.courseName} (Sem ${course.semesterNumber})',
+                            ),
                           );
                         }).toList(),
                     onChanged: (value) {

@@ -38,14 +38,16 @@ class ClassroomController extends ChangeNotifier {
       _isSearching = false;
     } else {
       final query = searchController.text.toLowerCase();
-      _filteredClassrooms = _classrooms.where((classroom) {
-        final building = classroom['building'].toString().toLowerCase();
-        final roomNumber = classroom['room_number'].toString().toLowerCase();
-        final capacity = classroom['capacity'].toString();
-        return building.contains(query) ||
-            roomNumber.contains(query) ||
-            capacity.contains(query);
-      }).toList();
+      _filteredClassrooms =
+          _classrooms.where((classroom) {
+            final building = classroom['building'].toString().toLowerCase();
+            final roomNumber =
+                classroom['room_number'].toString().toLowerCase();
+            final capacity = classroom['capacity'].toString();
+            return building.contains(query) ||
+                roomNumber.contains(query) ||
+                capacity.contains(query);
+          }).toList();
       _isSearching = true;
     }
     notifyListeners();
@@ -74,7 +76,9 @@ class ClassroomController extends ChangeNotifier {
   }
 
   Future<void> deleteClassroom(String classroomId) async {
-    final index = _filteredClassrooms.indexWhere((c) => c['classroom_id'] == classroomId);
+    final index = _filteredClassrooms.indexWhere(
+      (c) => c['classroom_id'] == classroomId,
+    );
     if (index == -1) return;
 
     final deletedClassroom = _filteredClassrooms[index];
@@ -82,7 +86,9 @@ class ClassroomController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _supabase.from('classroom').delete().match({'classroom_id': classroomId});
+      await _supabase.from('classroom').delete().match({
+        'classroom_id': classroomId,
+      });
       _classrooms.removeWhere((c) => c['classroom_id'] == classroomId);
     } catch (e) {
       _filteredClassrooms.insert(index, deletedClassroom);
@@ -99,10 +105,9 @@ class ClassroomController extends ChangeNotifier {
   }) async {
     try {
       if (classroomId != null) {
-        await _supabase
-            .from('classroom')
-            .update({'capacity': capacity})
-            .match({'classroom_id': classroomId});
+        await _supabase.from('classroom').update({'capacity': capacity}).match({
+          'classroom_id': classroomId,
+        });
       } else {
         await _supabase.from('classroom').insert({
           'building': building,

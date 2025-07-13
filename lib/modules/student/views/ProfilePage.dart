@@ -66,8 +66,10 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() => _isLoading = true);
 
     try {
-      final loginController =
-          Provider.of<LoginController>(context, listen: false);
+      final loginController = Provider.of<LoginController>(
+        context,
+        listen: false,
+      );
       final studentId = loginController.studentId;
 
       if (studentId == null) {
@@ -75,27 +77,31 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       // Fetch student data
-      final studentResponse = await _supabase
-          .from('student')
-          .select(
-              '*, department:dept_name(*), program:program_id(*), users:user_id(*)')
-          .eq('student_id', studentId)
-          .single();
+      final studentResponse =
+          await _supabase
+              .from('student')
+              .select(
+                '*, department:dept_name(*), program:program_id(*), users:user_id(*)',
+              )
+              .eq('student_id', studentId)
+              .single();
 
       // Fetch current semester details
-      final semesterResponse = await _supabase
-          .from('semester')
-          .select()
-          .eq('program_id', studentResponse['program_id'])
-          .eq('semester_number', studentResponse['current_semester'])
-          .single();
+      final semesterResponse =
+          await _supabase
+              .from('semester')
+              .select()
+              .eq('program_id', studentResponse['program_id'])
+              .eq('semester_number', studentResponse['current_semester'])
+              .single();
 
       // Fetch enrolled courses with category details
       final enrollmentResponse = await _supabase
           .from('enrollment')
           .select(
-              '*, course:course_id(course_name, l, t, p, c, category:coursecategories(category_name))')
-          .eq('student_id', studentId)
+            '*, course:course_id(course_name, l, t, p, c, category:coursecategories(category_name))',
+          )
+          .eq('student_id', studentResponse['student_id'])
           .eq('semester_id', semesterResponse['semester_id']);
 
       // Fetch available elective courses
@@ -106,6 +112,8 @@ class _ProfilePageState extends State<ProfilePage> {
           .eq('category.category_name', 'Elective');
 
       setState(() {
+        print(studentResponse);
+        print(studentId);
         _studentData = studentResponse;
         _profileImageUrl = _studentData['profile_picture_path'];
         _currentSemesterId = semesterResponse['semester_id'];
@@ -113,10 +121,16 @@ class _ProfilePageState extends State<ProfilePage> {
         _coreCourses = semesterResponse['core_courses'];
         _electiveCourses = semesterResponse['elective_courses'];
         _enrolledCourses = List<Map<String, dynamic>>.from(enrollmentResponse);
-        _availableElectives = List<Map<String, dynamic>>.from(electiveResponse)
-            .where((course) => !_enrolledCourses.any(
-                (enrolled) => enrolled['course_id'] == course['course_id']))
-            .toList();
+        _availableElectives =
+            List<Map<String, dynamic>>.from(electiveResponse)
+                .where(
+                  (course) =>
+                      !_enrolledCourses.any(
+                        (enrolled) =>
+                            enrolled['course_id'] == course['course_id'],
+                      ),
+                )
+                .toList();
 
         // Initialize form controllers
         _nameController.text = _studentData['name'] ?? '';
@@ -129,8 +143,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
         if (_studentData['date_of_birth'] != null) {
           _selectedDate = DateTime.parse(_studentData['date_of_birth']);
-          _dobController.text =
-              DateFormat('MMM dd, yyyy').format(_selectedDate!);
+          _dobController.text = DateFormat(
+            'MMM dd, yyyy',
+          ).format(_selectedDate!);
         }
 
         _isLoading = false;
@@ -144,8 +159,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _pickImage() async {
     try {
-      final XFile? pickedFile =
-          await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+      );
       if (pickedFile != null) {
         setState(() {
           _profileImage = kIsWeb ? null : File(pickedFile.path);
@@ -214,8 +230,10 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() => _isLoading = true);
 
     try {
-      final loginController =
-          Provider.of<LoginController>(context, listen: false);
+      final loginController = Provider.of<LoginController>(
+        context,
+        listen: false,
+      );
       final studentId = loginController.studentId;
 
       if (studentId == null) {
@@ -227,18 +245,21 @@ class _ProfilePageState extends State<ProfilePage> {
         profilePicturePath = await _uploadProfileImage(studentId);
       }
 
-      await _supabase.from('student').update({
-        'name': _nameController.text,
-        'address': _addressController.text,
-        'city': _cityController.text,
-        'state': _stateController.text,
-        'country': _countryController.text,
-        'postal_code': _postalCodeController.text,
-        'gender': _selectedGender,
-        'date_of_birth': _selectedDate?.toIso8601String(),
-        'profile_picture_path': profilePicturePath,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('student_id', studentId);
+      await _supabase
+          .from('student')
+          .update({
+            'name': _nameController.text,
+            'address': _addressController.text,
+            'city': _cityController.text,
+            'state': _stateController.text,
+            'country': _countryController.text,
+            'postal_code': _postalCodeController.text,
+            'gender': _selectedGender,
+            'date_of_birth': _selectedDate?.toIso8601String(),
+            'profile_picture_path': profilePicturePath,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('student_id', studentId);
 
       _showSuccessMessage('Profile updated successfully');
       setState(() {
@@ -255,8 +276,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _enrollInElective(int courseId) async {
-    final loginController =
-        Provider.of<LoginController>(context, listen: false);
+    final loginController = Provider.of<LoginController>(
+      context,
+      listen: false,
+    );
     final studentId = loginController.studentId;
 
     if (_enrolledCourses.length >= _maxCourses) {
@@ -264,20 +287,24 @@ class _ProfilePageState extends State<ProfilePage> {
       return;
     }
 
-    final currentElectives = _enrolledCourses
-        .where((course) =>
-            course['course']['category']['category_name'] == 'Elective')
-        .length;
+    final currentElectives =
+        _enrolledCourses
+            .where(
+              (course) =>
+                  course['course']['category']['category_name'] == 'Elective',
+            )
+            .length;
     if (currentElectives >= _electiveCourses) {
       _showErrorMessage(
-          'Maximum elective course limit reached ($_electiveCourses electives).');
+        'Maximum elective course limit reached ($_electiveCourses electives).',
+      );
       return;
     }
 
     setState(() => _isLoading = true);
     try {
       await _supabase.from('enrollment').insert({
-        'student_id': studentId,
+        'student_id': _studentData['student_id'],
         'course_id': courseId,
         'semester_id': _currentSemesterId,
         'enrollment_status': 'Active',
@@ -295,10 +322,13 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _logout() async {
     setState(() => _isLoading = true);
     try {
-      final loginController =
-          Provider.of<LoginController>(context, listen: false);
+      final loginController = Provider.of<LoginController>(
+        context,
+        listen: false,
+      );
       print(
-          'Current session before logout: ${Supabase.instance.client.auth.currentSession}');
+        'Current session before logout: ${Supabase.instance.client.auth.currentSession}',
+      );
       await loginController.logout();
       if (!mounted) return;
       _showSuccessMessage('Logged out successfully');
@@ -319,11 +349,13 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(children: [
-          const Icon(Icons.error, color: Colors.white),
-          const SizedBox(width: 8),
-          Expanded(child: Text(message)),
-        ]),
+        content: Row(
+          children: [
+            const Icon(Icons.error, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -336,11 +368,13 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(children: [
-          const Icon(Icons.check_circle, color: Colors.white),
-          const SizedBox(width: 8),
-          Text(message),
-        ]),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -350,10 +384,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildReadOnlyProfile() {
-    final dateOfBirth = _studentData['date_of_birth'] != null
-        ? DateFormat('MMM dd, yyyy')
-            .format(DateTime.parse(_studentData['date_of_birth']))
-        : 'Not Available';
+    final dateOfBirth =
+        _studentData['date_of_birth'] != null
+            ? DateFormat(
+              'MMM dd, yyyy',
+            ).format(DateTime.parse(_studentData['date_of_birth']))
+            : 'Not Available';
 
     return Column(
       children: [
@@ -362,38 +398,84 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.deepPurple.shade100,
           backgroundImage:
               _profileImageUrl != null ? NetworkImage(_profileImageUrl!) : null,
-          child: _profileImageUrl == null
-              ? const Icon(Icons.person, size: 60, color: Colors.deepPurple)
-              : null,
+          child:
+              _profileImageUrl == null
+                  ? const Icon(Icons.person, size: 60, color: Colors.deepPurple)
+                  : null,
         ),
         const SizedBox(height: 16),
-        Text(_studentData['name'] ?? 'Student',
-            style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.veryDarkBlue)),
-        Text(_studentData['roll_number'] ?? 'Roll Number Not Available',
-            style: TextStyle(fontSize: 16, color: Colors.grey.shade700)),
+        Text(
+          _studentData['name'] ?? 'Student',
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.veryDarkBlue,
+          ),
+        ),
+        Text(
+          _studentData['roll_number'] ?? 'Roll Number Not Available',
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+        ),
         const SizedBox(height: 24),
         Card(
           elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Basic Information',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.veryDarkBlue)),
+                const Text(
+                  'Basic Information',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.veryDarkBlue,
+                  ),
+                ),
                 const Divider(),
-                _infoRow('Date of Birth', dateOfBirth),
-                _infoRow('Gender', _studentData['gender'] ?? 'Not Specified'),
-                _infoRow('Email',
-                    _studentData['users']?['email'] ?? 'Not Available'),
+                _infoRowWithIcon(
+                  Icons.person,
+                  'Student ID',
+                  _studentData['student_id']?.toString() ?? 'N/A',
+                ),
+                _infoRowWithIcon(
+                  Icons.apartment,
+                  'Department',
+                  _studentData['department']?['dept_name'] ?? 'N/A',
+                ),
+                _infoRowWithIcon(
+                  Icons.school,
+                  'Program ID',
+                  _studentData['program']?['program_id']?.toString() ?? 'N/A',
+                ),
+                _infoRowWithIcon(
+                  Icons.calendar_today,
+                  'Semester',
+                  _studentData['current_semester']?.toString() ?? 'N/A',
+                ),
+                _infoRowWithIcon(
+                  Icons.calendar_today,
+                  'Address',
+                  _studentData['address'] ?? 'N/A',
+                ),
+                _infoRowWithIcon(
+                  Icons.calendar_today,
+                  'City',
+                  _studentData['city'] ?? 'N/A',
+                ),
+                _infoRowWithIcon(
+                  Icons.calendar_today,
+                  'State',
+                  _studentData['state'] ?? 'N/A',
+                ),
+                _infoRowWithIcon(
+                  Icons.calendar_today,
+                  'Country',
+                  _studentData['country'] ?? 'N/A',
+                ),
               ],
             ),
           ),
@@ -401,29 +483,36 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(height: 16),
         Card(
           elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Academic Information',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.veryDarkBlue)),
+                const Text(
+                  'Academic Information',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.veryDarkBlue,
+                  ),
+                ),
                 const Divider(),
-                _infoRow('Department',
-                    _studentData['department']?['dept_name'] ?? 'Not Assigned'),
                 _infoRow(
-                    'Program',
-                    _studentData['program']?['program_name'] ??
-                        'Not Available'),
+                  'Department',
+                  _studentData['department']?['dept_name'] ?? 'Not Assigned',
+                ),
                 _infoRow(
-                    'Current Semester',
-                    _studentData['current_semester']?.toString() ??
-                        'Not Available'),
+                  'Program',
+                  _studentData['program']?['program_name'] ?? 'Not Available',
+                ),
+                _infoRow(
+                  'Current Semester',
+                  _studentData['current_semester']?.toString() ??
+                      'Not Available',
+                ),
               ],
             ),
           ),
@@ -431,25 +520,31 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(height: 16),
         Card(
           elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Contact Information',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.veryDarkBlue)),
+                const Text(
+                  'Contact Information',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.veryDarkBlue,
+                  ),
+                ),
                 const Divider(),
                 _infoRow('Address', _studentData['address'] ?? 'Not Available'),
                 _infoRow('City', _studentData['city'] ?? 'Not Available'),
                 _infoRow('State', _studentData['state'] ?? 'Not Available'),
                 _infoRow('Country', _studentData['country'] ?? 'Not Available'),
-                _infoRow('Postal Code',
-                    _studentData['postal_code'] ?? 'Not Available'),
+                _infoRow(
+                  'Postal Code',
+                  _studentData['postal_code'] ?? 'Not Available',
+                ),
               ],
             ),
           ),
@@ -457,8 +552,9 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(height: 16),
         Card(
           elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -467,75 +563,86 @@ class _ProfilePageState extends State<ProfilePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Enrolled Courses',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.veryDarkBlue)),
+                    const Text(
+                      'Enrolled Courses',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.veryDarkBlue,
+                      ),
+                    ),
                     ElevatedButton.icon(
-                      onPressed: _isLoading
-                          ? null
-                          : () => _showElectiveSelectionDialog(),
+                      onPressed:
+                          _isLoading
+                              ? null
+                              : () => _showElectiveSelectionDialog(),
                       icon: const Icon(Icons.add),
                       label: const Text('Add Elective'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.veryDarkBlue,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            side: BorderSide(color: AppTheme.veryDarkBlue)),
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: AppTheme.veryDarkBlue),
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const Divider(),
                 if (_enrolledCourses.isEmpty)
-                  const Text('No courses enrolled yet.',
-                      style: TextStyle(color: Colors.grey))
+                  const Text(
+                    'No courses enrolled yet.',
+                    style: TextStyle(color: Colors.grey),
+                  )
                 else
-                  ..._enrolledCourses.map((course) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          children: [
-                            Icon(
-                              course['course']['category']['category_name'] ==
-                                      'Core'
-                                  ? Icons.book
-                                  : Icons.bookmark,
-                              color: Colors.deepPurple,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    course['course']['course_name'],
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500),
+                  ..._enrolledCourses.map(
+                    (course) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            course['course']['category']['category_name'] ==
+                                    'Core'
+                                ? Icons.book
+                                : Icons.bookmark,
+                            color: Colors.deepPurple,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  course['course']['course_name'],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  Text(
-                                    'L:${course['course']['l']} T:${course['course']['t']} P:${course['course']['p']} C:${course['course']['c']}',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey.shade700),
+                                ),
+                                Text(
+                                  'L:${course['course']['l']} T:${course['course']['t']} P:${course['course']['p']} C:${course['course']['c']}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade700,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            Chip(
-                              label: Text(course['enrollment_status']),
-                              backgroundColor: course['enrollment_status'] ==
-                                      'Active'
-                                  ? Colors.green.shade100
-                                  : course['enrollment_status'] == 'Completed'
-                                      ? Colors.blue.shade100
-                                      : Colors.red.shade100,
-                            ),
-                          ],
-                        ),
-                      )),
+                          ),
+                          Chip(
+                            label: Text(course['enrollment_status']),
+                            backgroundColor:
+                                course['enrollment_status'] == 'Active'
+                                    ? Colors.green.shade100
+                                    : course['enrollment_status'] == 'Completed'
+                                    ? Colors.blue.shade100
+                                    : Colors.red.shade100,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 8),
                 Text(
                   'Course Limits: Total ${_enrolledCourses.length}/$_maxCourses | Electives ${_enrolledCourses.where((c) => c['course']['category']['category_name'] == 'Elective').length}/$_electiveCourses',
@@ -557,11 +664,14 @@ class _ProfilePageState extends State<ProfilePage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.veryDarkBlue,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: AppTheme.veryDarkBlue)),
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: AppTheme.veryDarkBlue),
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -572,10 +682,13 @@ class _ProfilePageState extends State<ProfilePage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],
@@ -587,58 +700,81 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showElectiveSelectionDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Elective Course',
-            style: TextStyle(color: Colors.deepPurple)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        content: _availableElectives.isEmpty
-            ? const Text('No elective courses available for this semester.',
-                style: TextStyle(color: Colors.grey))
-            : SizedBox(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: _availableElectives
-                        .map((course) => Card(
-                              elevation: 2,
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: ListTile(
-                                title: Text(
-                                  course['course_name'],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                subtitle: Text(
-                                  'L:${course['l']} T:${course['t']} P:${course['p']} C:${course['c']}',
-                                  style: TextStyle(color: Colors.grey.shade700),
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.add_circle,
-                                      color: Colors.deepPurple),
-                                  onPressed: _isLoading
-                                      ? null
-                                      : () {
-                                          _enrollInElective(
-                                              course['course_id']);
-                                          Navigator.pop(context);
-                                        },
-                                ),
-                              ),
-                            ))
-                        .toList(),
-                  ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text(
+              'Select Elective Course',
+              style: TextStyle(color: Colors.deepPurple),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            content:
+                _availableElectives.isEmpty
+                    ? const Text(
+                      'No elective courses available for this semester.',
+                      style: TextStyle(color: Colors.grey),
+                    )
+                    : SizedBox(
+                      width: double.maxFinite,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children:
+                              _availableElectives
+                                  .map(
+                                    (course) => Card(
+                                      elevation: 2,
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 4,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: ListTile(
+                                        title: Text(
+                                          course['course_name'],
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          'L:${course['l']} T:${course['t']} P:${course['p']} C:${course['c']}',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade700,
+                                          ),
+                                        ),
+                                        trailing: IconButton(
+                                          icon: const Icon(
+                                            Icons.add_circle,
+                                            color: Colors.deepPurple,
+                                          ),
+                                          onPressed:
+                                              _isLoading
+                                                  ? null
+                                                  : () {
+                                                    _enrollInElective(
+                                                      course['course_id'],
+                                                    );
+                                                    Navigator.pop(context);
+                                                  },
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.deepPurple),
                 ),
               ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel',
-                style: TextStyle(color: Colors.deepPurple)),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -653,28 +789,36 @@ class _ProfilePageState extends State<ProfilePage> {
               CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.deepPurple.shade100,
-                backgroundImage: _profileImage != null
-                    ? kIsWeb
-                        ? null
-                        : FileImage(_profileImage!) as ImageProvider
-                    : _pickedXFile != null && kIsWeb
+                backgroundImage:
+                    _profileImage != null
+                        ? kIsWeb
+                            ? null
+                            : FileImage(_profileImage!) as ImageProvider
+                        : _pickedXFile != null && kIsWeb
                         ? NetworkImage(_pickedXFile!.path)
                         : _profileImageUrl != null
-                            ? NetworkImage(_profileImageUrl!)
-                            : null,
-                child: (_profileImage == null &&
-                        _pickedXFile == null &&
-                        _profileImageUrl == null)
-                    ? const Icon(Icons.person,
-                        size: 60, color: Colors.deepPurple)
-                    : null,
+                        ? NetworkImage(_profileImageUrl!)
+                        : null,
+                child:
+                    (_profileImage == null &&
+                            _pickedXFile == null &&
+                            _profileImageUrl == null)
+                        ? const Icon(
+                          Icons.person,
+                          size: 60,
+                          color: Colors.deepPurple,
+                        )
+                        : null,
               ),
               CircleAvatar(
                 radius: 20,
                 backgroundColor: Colors.deepPurple,
                 child: IconButton(
-                  icon: const Icon(Icons.camera_alt,
-                      size: 18, color: Colors.white),
+                  icon: const Icon(
+                    Icons.camera_alt,
+                    size: 18,
+                    color: Colors.white,
+                  ),
                   onPressed: _pickImage,
                 ),
               ),
@@ -683,45 +827,58 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 24),
           Card(
             elevation: 4,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Personal Information',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.veryDarkBlue)),
+                  const Text(
+                    'Personal Information',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.veryDarkBlue,
+                    ),
+                  ),
                   const Divider(),
                   TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(
-                        labelText: 'Full Name',
-                        prefixIcon:
-                            Icon(Icons.person, color: Colors.deepPurple)),
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Please enter your name'
-                        : null,
+                      labelText: 'Full Name',
+                      prefixIcon: Icon(Icons.person, color: Colors.deepPurple),
+                    ),
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Please enter your name'
+                                : null,
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     value: _selectedGender,
                     decoration: const InputDecoration(
-                        labelText: 'Gender',
-                        prefixIcon:
-                            Icon(Icons.people, color: Colors.deepPurple)),
-                    items: ['Male', 'Female', 'Other', 'Prefer not to say']
-                        .map((gender) => DropdownMenuItem(
-                            value: gender, child: Text(gender)))
-                        .toList(),
-                    onChanged: (value) =>
-                        setState(() => _selectedGender = value),
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Please select your gender'
-                        : null,
+                      labelText: 'Gender',
+                      prefixIcon: Icon(Icons.people, color: Colors.deepPurple),
+                    ),
+                    items:
+                        ['Male', 'Female', 'Other', 'Prefer not to say']
+                            .map(
+                              (gender) => DropdownMenuItem(
+                                value: gender,
+                                child: Text(gender),
+                              ),
+                            )
+                            .toList(),
+                    onChanged:
+                        (value) => setState(() => _selectedGender = value),
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Please select your gender'
+                                : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -729,11 +886,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     readOnly: true,
                     decoration: InputDecoration(
                       labelText: 'Date of Birth',
-                      prefixIcon: const Icon(Icons.calendar_today,
-                          color: Colors.deepPurple),
+                      prefixIcon: const Icon(
+                        Icons.calendar_today,
+                        color: Colors.deepPurple,
+                      ),
                       suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_month,
-                            color: Colors.deepPurple),
+                        icon: const Icon(
+                          Icons.calendar_month,
+                          color: Colors.deepPurple,
+                        ),
                         onPressed: () => _selectDate(context),
                       ),
                     ),
@@ -746,55 +907,68 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 16),
           Card(
             elevation: 4,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Contact Information',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.veryDarkBlue)),
+                  const Text(
+                    'Contact Information',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.veryDarkBlue,
+                    ),
+                  ),
                   const Divider(),
                   TextFormField(
                     controller: _addressController,
                     decoration: const InputDecoration(
-                        labelText: 'Address',
-                        prefixIcon: Icon(Icons.home, color: Colors.deepPurple)),
+                      labelText: 'Address',
+                      prefixIcon: Icon(Icons.home, color: Colors.deepPurple),
+                    ),
                     maxLines: 2,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _cityController,
                     decoration: const InputDecoration(
-                        labelText: 'City',
-                        prefixIcon: Icon(Icons.location_city,
-                            color: Colors.deepPurple)),
+                      labelText: 'City',
+                      prefixIcon: Icon(
+                        Icons.location_city,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _stateController,
                     decoration: const InputDecoration(
-                        labelText: 'State/Province',
-                        prefixIcon: Icon(Icons.map, color: Colors.deepPurple)),
+                      labelText: 'State/Province',
+                      prefixIcon: Icon(Icons.map, color: Colors.deepPurple),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _countryController,
                     decoration: const InputDecoration(
-                        labelText: 'Country',
-                        prefixIcon: Icon(Icons.flag, color: Colors.deepPurple)),
+                      labelText: 'Country',
+                      prefixIcon: Icon(Icons.flag, color: Colors.deepPurple),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _postalCodeController,
                     decoration: const InputDecoration(
-                        labelText: 'Postal Code',
-                        prefixIcon: Icon(Icons.markunread_mailbox,
-                            color: Colors.deepPurple)),
+                      labelText: 'Postal Code',
+                      prefixIcon: Icon(
+                        Icons.markunread_mailbox,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ],
@@ -818,10 +992,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         _studentData['postal_code'] ?? '';
                     _selectedGender = _studentData['gender'];
                     if (_studentData['date_of_birth'] != null) {
-                      _selectedDate =
-                          DateTime.parse(_studentData['date_of_birth']);
-                      _dobController.text =
-                          DateFormat('MMM dd, yyyy').format(_selectedDate!);
+                      _selectedDate = DateTime.parse(
+                        _studentData['date_of_birth'],
+                      );
+                      _dobController.text = DateFormat(
+                        'MMM dd, yyyy',
+                      ).format(_selectedDate!);
                     } else {
                       _selectedDate = null;
                       _dobController.text = '';
@@ -835,28 +1011,35 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey.shade300,
                   foregroundColor: Colors.black87,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
               ElevatedButton.icon(
                 onPressed: _isLoading ? null : _updateProfile,
-                icon: _isLoading
-                    ? Container(
-                        width: 24,
-                        height: 24,
-                        padding: const EdgeInsets.all(2.0),
-                        child: const CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 3),
-                      )
-                    : const Icon(Icons.save),
+                icon:
+                    _isLoading
+                        ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
+                        : const Icon(Icons.save),
                 label: Text(_isLoading ? 'Saving...' : 'Save Changes'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   disabledBackgroundColor: Colors.deepPurple.withOpacity(0.5),
                 ),
               ),
@@ -875,13 +1058,32 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w500, color: AppTheme.veryDarkBlue)),
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: AppTheme.veryDarkBlue,
+              ),
+            ),
           ),
           Expanded(
-              child:
-                  Text(value, style: const TextStyle(color: Colors.black87))),
+            child: Text(value, style: const TextStyle(color: Colors.black87)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoRowWithIcon(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.deepPurple, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text('$label: $value', style: const TextStyle(fontSize: 16)),
+          ),
         ],
       ),
     );
@@ -892,19 +1094,23 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'My Profile',
-        userEmail: Provider.of<LoginController>(context).studentName ??
+        userEmail:
+            Provider.of<LoginController>(context).studentName ??
             Provider.of<LoginController>(context).email.split('@').first,
       ),
       body: SafeArea(
-        child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: Colors.deepPurple))
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: _isEditing
-                    ? _buildEditableProfile()
-                    : _buildReadOnlyProfile(),
-              ),
+        child:
+            _isLoading
+                ? const Center(
+                  child: CircularProgressIndicator(color: Colors.deepPurple),
+                )
+                : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child:
+                      _isEditing
+                          ? _buildEditableProfile()
+                          : _buildReadOnlyProfile(),
+                ),
       ),
     );
   }

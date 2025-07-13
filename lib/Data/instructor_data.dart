@@ -1,4 +1,4 @@
-// List of uploaded course materials
+// / List of uploaded course materials
 final List<Map<String, String>> courseMaterials = [
   {'title': 'Lecture 1 - Introduction', 'file': 'lecture1.pdf'},
   {'title': 'Lecture 2 - Advanced Topics', 'file': 'lecture2.pdf'},

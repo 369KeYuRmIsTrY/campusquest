@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,6 +14,7 @@ import '../../../widgets/bottomnavigationbar.dart';
 import '../../widgets/bottomnavigationbar.dart';
 import '../../../theme/theme.dart';
 import 'package:open_file/open_file.dart';
+import 'package:campusquest/utils/open_file_plus.dart';
 
 class AddEventPage extends StatefulWidget {
   final int? currentUserId;
@@ -317,16 +319,11 @@ class _AddEventPageState extends State<AddEventPage>
       if (response.statusCode == 200) {
         final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
-        if (await canLaunchUrl(Uri.file(filePath))) {
-          await launchUrl(
-            Uri.file(filePath),
-            mode: LaunchMode.externalApplication,
-          );
-        } else {
-          _showErrorMessage(
-            'File downloaded to $filePath but cannot be opened',
-            Colors.orange,
-          );
+
+        // Use open_file package to open the file
+        final result = await OpenFile.open(filePath);
+        if (result.type != ResultType.done) {
+          _showErrorMessage('Error opening file: ${result.message}');
         }
       } else {
         _showErrorMessage('Failed to download file');
@@ -353,9 +350,7 @@ class _AddEventPageState extends State<AddEventPage>
             action != null
                 ? const Duration(seconds: 5)
                 : const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(8),
         action: action,
       ),
     );
@@ -372,9 +367,7 @@ class _AddEventPageState extends State<AddEventPage>
           ],
         ),
         backgroundColor: Colors.red.shade700,
-        behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(8),
       ),
     );
   }
@@ -718,20 +711,6 @@ class _AddEventPageState extends State<AddEventPage>
           style: const TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 24),
-        if (!_isSearching)
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ),
-            onPressed: () => _showAddEditDialog(),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Event'),
-          ),
       ],
     );
   }
@@ -790,13 +769,37 @@ class _AddEventPageState extends State<AddEventPage>
               ),
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
-        child: FloatingActionButton.extended(
-          onPressed: () => _showAddEditDialog(),
-          icon: const Icon(Icons.add),
-          label: const Text('Add Event'),
-          backgroundColor: AppTheme.veryDarkBlue,
-          foregroundColor: Colors.white,
-          elevation: 4,
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.velvetTealDark,
+                AppTheme.velvetTeal,
+                AppTheme.velvetTealLight,
+              ],
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: FloatingActionButton.extended(
+            onPressed: () => _showAddEditDialog(),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Event'),
+            backgroundColor: Colors.transparent,
+            foregroundColor: AppTheme.velvetTealDark,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/theme.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -29,48 +29,48 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 0,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-          ),
-        ),
-      ),
-      title: showSearch && isSearching
-          ? TextField(
-              controller: searchController,
-              style: const TextStyle(color: Colors.white),
-              cursorColor: Colors.white,
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.2),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
+      backgroundColor: AppTheme.yachtClubBlue,
+      title:
+          showSearch && isSearching
+              ? TextField(
+                controller: searchController,
+                style: const TextStyle(color: AppTheme.yachtClubLight),
+                cursorColor: AppTheme.yachtClubLight,
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  hintStyle: TextStyle(
+                    color: AppTheme.yachtClubLight.withOpacity(0.7),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppTheme.yachtClubLight,
+                  ),
+                  filled: true,
+                  fillColor: AppTheme.yachtClubLight.withOpacity(0.2),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                onChanged: onSearchChanged,
+              )
+              : Text(
+                title,
+                style: const TextStyle(
+                  color: AppTheme.yachtClubLight,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              onChanged: onSearchChanged,
-            )
-          : Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
       leading: leading,
       actions: [
         if (showSearch)
           IconButton(
-            icon: Icon(isSearching ? Icons.close : Icons.search,
-                color: Colors.white),
+            icon: Icon(
+              isSearching ? Icons.close : Icons.search,
+              color: AppTheme.yachtClubLight,
+            ),
             onPressed: onSearchToggle,
           ),
         Row(
@@ -81,7 +81,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: Text(
                 userEmail,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppTheme.yachtClubLight,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),
@@ -89,8 +89,10 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             // Notification icon
             IconButton(
-              icon:
-                  const Icon(Icons.notifications_outlined, color: Colors.white),
+              icon: const Icon(
+                Icons.notifications_outlined,
+                color: AppTheme.yachtClubLight,
+              ),
               onPressed: onNotificationPressed,
             ),
           ],
@@ -153,16 +155,11 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: AppTheme.yachtClubBlue,
       child: Column(
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF131047), Color(0xFF2C2966)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            decoration: const BoxDecoration(color: AppTheme.yachtClubBlue),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -173,16 +170,20 @@ class _AnimatedDrawerState extends State<AnimatedDrawer>
                 //   backgroundColor: Colors.transparent,
                 // ),
                 SizedBox(
-                    height:
-                        10), // Optional: remove if you don't want extra space
+                  height: 10,
+                ), // Optional: remove if you don't want extra space
                 Text(
                   'Admin',
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                    color: AppTheme.yachtClubLight,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   'admin',
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(
+                    color: AppTheme.yachtClubLight.withOpacity(0.7),
+                  ),
                 ),
               ],
             ),

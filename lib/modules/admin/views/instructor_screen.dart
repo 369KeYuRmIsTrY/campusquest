@@ -31,7 +31,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
     'Professor',
     'Lecturer',
     'Assistant Professor',
-    'Adjunct'
+    'Adjunct',
   ];
 
   @override
@@ -41,10 +41,14 @@ class _AddInstructorPageState extends State<AddInstructorPage>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _fabAnimation =
-        CurvedAnimation(parent: _animationController, curve: Curves.elasticOut);
-    Future.delayed(const Duration(milliseconds: 500),
-        () => _animationController.forward());
+    _fabAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.elasticOut,
+    );
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => _animationController.forward(),
+    );
 
     _searchController.addListener(_filterInstructors);
     _fetchData();
@@ -92,14 +96,17 @@ class _AddInstructorPageState extends State<AddInstructorPage>
     setState(() {
       _isSearching = query.isNotEmpty;
       if (_isSearching) {
-        _instructors = _instructors.where((instructor) {
-          final name = instructor['name'].toString().toLowerCase();
-          final email = instructor['users']['email'].toString().toLowerCase();
-          final dept = (instructor['dept_name'] ?? '').toString().toLowerCase();
-          return name.contains(query) ||
-              email.contains(query) ||
-              dept.contains(query);
-        }).toList();
+        _instructors =
+            _instructors.where((instructor) {
+              final name = instructor['name'].toString().toLowerCase();
+              final email =
+                  instructor['users']['email'].toString().toLowerCase();
+              final dept =
+                  (instructor['dept_name'] ?? '').toString().toLowerCase();
+              return name.contains(query) ||
+                  email.contains(query) ||
+                  dept.contains(query);
+            }).toList();
       } else {
         _fetchInstructors();
       }
@@ -108,15 +115,19 @@ class _AddInstructorPageState extends State<AddInstructorPage>
 
   void _showAddEditDialog({Map<String, dynamic>? instructor}) {
     final bool isEditing = instructor != null;
-    final nameController =
-        TextEditingController(text: isEditing ? instructor!['name'] : '');
+    final nameController = TextEditingController(
+      text: isEditing ? instructor!['name'] : '',
+    );
     String? selectedDesignation = isEditing ? instructor!['designation'] : null;
     final qualificationController = TextEditingController(
-        text: isEditing ? instructor!['qualification'] : '');
+      text: isEditing ? instructor!['qualification'] : '',
+    );
     final emailController = TextEditingController(
-        text: isEditing ? instructor!['users']['email'] : '');
+      text: isEditing ? instructor!['users']['email'] : '',
+    );
     final phoneController = TextEditingController(
-        text: isEditing ? instructor!['users']['phone_number'] : '');
+      text: isEditing ? instructor!['users']['phone_number'] : '',
+    );
     String? selectedDept = isEditing ? instructor!['dept_name'] : null;
 
     showGeneralDialog(
@@ -126,25 +137,34 @@ class _AddInstructorPageState extends State<AddInstructorPage>
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Container(),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation =
-            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(
-            opacity:
-                Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
             child: AlertDialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: Row(
                 children: [
-                  Icon(isEditing ? Icons.edit_note : Icons.person_add,
-                      color: Colors.blue),
+                  Icon(
+                    isEditing ? Icons.edit_note : Icons.person_add,
+                    color: Colors.blue,
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Instructor' : 'Add New Instructor',
                     style: const TextStyle(
-                        color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                      color: AppTheme.velvetTealDark,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -158,45 +178,61 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                         controller: nameController,
                         labelText: 'Name',
                         prefixIcon: Icons.person,
-                        validator: (value) =>
-                            value!.isEmpty ? 'Name is required' : null,
+                        validator:
+                            (value) =>
+                                value!.isEmpty ? 'Name is required' : null,
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
                         value: selectedDept,
-                        decoration:
-                            _inputDecoration('Department', Icons.business),
-                        items: _departments
-                            .map((dept) => DropdownMenuItem<String>(
-                                  value: dept['dept_name'],
-                                  child: Text(dept['dept_name']),
-                                ))
-                            .toList(),
+                        decoration: _inputDecoration(
+                          'Department',
+                          Icons.business,
+                        ),
+                        items:
+                            _departments
+                                .map(
+                                  (dept) => DropdownMenuItem<String>(
+                                    value: dept['dept_name'],
+                                    child: Text(dept['dept_name']),
+                                  ),
+                                )
+                                .toList(),
                         onChanged: (value) => selectedDept = value,
-                        validator: (value) =>
-                            value == null ? 'Department is required' : null,
+                        validator:
+                            (value) =>
+                                value == null ? 'Department is required' : null,
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
                         value: selectedDesignation,
                         decoration: _inputDecoration('Designation', Icons.work),
-                        items: _designations
-                            .map((designation) => DropdownMenuItem<String>(
-                                  value: designation,
-                                  child: Text(designation),
-                                ))
-                            .toList(),
+                        items:
+                            _designations
+                                .map(
+                                  (designation) => DropdownMenuItem<String>(
+                                    value: designation,
+                                    child: Text(designation),
+                                  ),
+                                )
+                                .toList(),
                         onChanged: (value) => selectedDesignation = value,
-                        validator: (value) =>
-                            value == null ? 'Designation is required' : null,
+                        validator:
+                            (value) =>
+                                value == null
+                                    ? 'Designation is required'
+                                    : null,
                       ),
                       const SizedBox(height: 16),
                       _buildTextField(
                         controller: qualificationController,
                         labelText: 'Qualification',
                         prefixIcon: Icons.school,
-                        validator: (value) =>
-                            value!.isEmpty ? 'Qualification is required' : null,
+                        validator:
+                            (value) =>
+                                value!.isEmpty
+                                    ? 'Qualification is required'
+                                    : null,
                       ),
                       const SizedBox(height: 16),
                       _buildTextField(
@@ -206,8 +242,9 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value!.isEmpty) return 'Email is required';
-                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                              .hasMatch(value)) {
+                          if (!RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          ).hasMatch(value)) {
                             return 'Enter a valid email';
                           }
                           return null;
@@ -219,8 +256,11 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                         labelText: 'Phone Number',
                         prefixIcon: Icons.phone,
                         keyboardType: TextInputType.phone,
-                        validator: (value) =>
-                            value!.isEmpty ? 'Phone number is required' : null,
+                        validator:
+                            (value) =>
+                                value!.isEmpty
+                                    ? 'Phone number is required'
+                                    : null,
                       ),
                     ],
                   ),
@@ -230,47 +270,62 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                 TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.cancel, color: Colors.grey),
-                  label: const Text('Cancel',
-                      style: TextStyle(color: Colors.grey)),
+                  label: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       Navigator.pop(context);
                       try {
                         if (isEditing) {
-                          await _supabase.from('instructor').update({
-                            'name': nameController.text,
-                            'dept_name': selectedDept,
-                            'designation': selectedDesignation,
-                            'qualification': qualificationController.text,
-                          }).match(
-                              {'instructor_id': instructor!['instructor_id']});
-                          await _supabase.from('users').update({
-                            'email': emailController.text,
-                            'phone_number': phoneController.text,
-                          }).match({'id': instructor!['user_id']});
-                          _showSuccessMessage(
-                              'Instructor updated successfully');
-                        } else {
-                          // Insert user with role set to 'instructor'
-                          final userResponse = await _supabase
+                          await _supabase
+                              .from('instructor')
+                              .update({
+                                'name': nameController.text,
+                                'dept_name': selectedDept,
+                                'designation': selectedDesignation,
+                                'qualification': qualificationController.text,
+                              })
+                              .match({
+                                'instructor_id': instructor!['instructor_id'],
+                              });
+                          await _supabase
                               .from('users')
-                              .insert({
+                              .update({
                                 'email': emailController.text,
                                 'phone_number': phoneController.text,
-                                'role': 'instructor', // Explicitly set the role
                               })
-                              .select('id')
-                              .single();
+                              .match({'id': instructor!['user_id']});
+                          _showSuccessMessage(
+                            'Instructor updated successfully',
+                          );
+                        } else {
+                          // Insert user with role set to 'instructor'
+                          final userResponse =
+                              await _supabase
+                                  .from('users')
+                                  .insert({
+                                    'email': emailController.text,
+                                    'phone_number': phoneController.text,
+                                    'role':
+                                        'instructor', // Explicitly set the role
+                                  })
+                                  .select('id')
+                                  .single();
                           await _supabase.from('instructor').insert({
                             'user_id': userResponse['id'],
                             'name': nameController.text,
@@ -299,10 +354,19 @@ class _AddInstructorPageState extends State<AddInstructorPage>
 
   Future<void> _deleteInstructor(int instructorId) async {
     try {
-      await _supabase
-          .from('instructor')
-          .delete()
-          .match({'instructor_id': instructorId});
+      // Step 1: Get the user_id for this instructor
+      final instructor =
+          await _supabase
+              .from('instructor')
+              .select('user_id')
+              .eq('instructor_id', instructorId)
+              .single();
+
+      final userId = instructor['user_id'];
+
+      // Step 2: Delete the user (this will cascade and delete the instructor)
+      await _supabase.from('users').delete().match({'id': userId});
+
       _showSuccessMessage('Instructor deleted successfully');
       _fetchInstructors();
     } catch (e) {
@@ -315,144 +379,168 @@ class _AddInstructorPageState extends State<AddInstructorPage>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24), topRight: Radius.circular(24)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.shade50,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24)),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade400,
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            instructor['name'],
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
-                          ),
-                          Text(
-                            instructor['designation'],
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.deepPurple.shade700),
-                          ),
-                        ],
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1))
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.deepPurple.shade50,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade400,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    instructor['name'],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ),
+                                  Text(
+                                    instructor['designation'],
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.deepPurple.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              right: 16,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.deepPurple,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailItem(
+                                icon: Icons.business,
+                                title: 'Department',
+                                value: instructor['dept_name'] ?? 'N/A',
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.work,
+                                title: 'Designation',
+                                value: instructor['designation'],
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.school,
+                                title: 'Qualification',
+                                value: instructor['qualification'],
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.email,
+                                title: 'Email',
+                                value: instructor['users']['email'],
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.phone,
+                                title: 'Phone',
+                                value:
+                                    instructor['users']['phone_number'] ??
+                                    'N/A',
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.tag,
+                                title: 'Instructor ID',
+                                value: instructor['instructor_id'].toString(),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildActionButton(
+                                    label: 'Edit',
+                                    icon: Icons.edit,
+                                    color: Colors.blue,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _showAddEditDialog(
+                                        instructor: instructor,
+                                      );
+                                    },
+                                  ),
+                                  _buildActionButton(
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    onTap: () async {
+                                      Navigator.pop(context);
+                                      await _deleteInstructor(
+                                        instructor['instructor_id'],
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          child: const Icon(Icons.close,
-                              color: Colors.deepPurple, size: 22),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailItem(
-                          icon: Icons.business,
-                          title: 'Department',
-                          value: instructor['dept_name'] ?? 'N/A'),
-                      _buildDetailItem(
-                          icon: Icons.work,
-                          title: 'Designation',
-                          value: instructor['designation']),
-                      _buildDetailItem(
-                          icon: Icons.school,
-                          title: 'Qualification',
-                          value: instructor['qualification']),
-                      _buildDetailItem(
-                          icon: Icons.email,
-                          title: 'Email',
-                          value: instructor['users']['email']),
-                      _buildDetailItem(
-                          icon: Icons.phone,
-                          title: 'Phone',
-                          value: instructor['users']['phone_number'] ?? 'N/A'),
-                      _buildDetailItem(
-                          icon: Icons.tag,
-                          title: 'Instructor ID',
-                          value: instructor['instructor_id'].toString()),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            label: 'Edit',
-                            icon: Icons.edit,
-                            color: Colors.blue,
-                            onTap: () {
-                              Navigator.pop(context);
-                              _showAddEditDialog(instructor: instructor);
-                            },
-                          ),
-                          _buildActionButton(
-                            label: 'Delete',
-                            icon: Icons.delete,
-                            color: Colors.red,
-                            onTap: () async {
-                              Navigator.pop(context);
-                              await _deleteInstructor(
-                                  instructor['instructor_id']);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -488,8 +576,10 @@ class _AddInstructorPageState extends State<AddInstructorPage>
         ),
         filled: true,
         fillColor: enabled ? Colors.deepPurple.shade50 : Colors.grey.shade100,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 12,
+        ),
       ),
     );
   }
@@ -555,18 +645,17 @@ class _AddInstructorPageState extends State<AddInstructorPage>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.person_outline,
-          size: 80,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.person_outline, size: 80, color: Colors.grey),
         const SizedBox(height: 16),
         Text(
           _isSearching
               ? 'No instructors match your search'
               : 'No instructors found',
           style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -576,47 +665,6 @@ class _AddInstructorPageState extends State<AddInstructorPage>
           style: const TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 24),
-        if (!_isSearching)
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-              ),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.darkBlue.withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(30),
-                onTap: () => _showAddEditDialog(),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.add, color: Colors.white),
-                      SizedBox(width: 10),
-                      Text('Add Instructor',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
@@ -651,8 +699,10 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                               color: Colors.deepPurple.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.person,
-                                color: Colors.deepPurple),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.deepPurple,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -662,16 +712,18 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                                 Text(
                                   instructor['name'],
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   instructor['designation'],
                                   style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 14),
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -688,8 +740,10 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                   children: [
                     const Icon(Icons.business, size: 16, color: Colors.grey),
                     const SizedBox(width: 4),
-                    Text('Dept: ${instructor['dept_name'] ?? 'N/A'}',
-                        style: const TextStyle(color: Colors.grey)),
+                    Text(
+                      'Dept: ${instructor['dept_name'] ?? 'N/A'}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -698,15 +752,15 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () =>
-                          _showAddEditDialog(instructor: instructor),
+                      onPressed:
+                          () => _showAddEditDialog(instructor: instructor),
                       tooltip: 'Edit',
                       splashRadius: 24,
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () =>
-                          _deleteInstructor(instructor['instructor_id']),
+                      onPressed:
+                          () => _deleteInstructor(instructor['instructor_id']),
                       tooltip: 'Delete',
                       splashRadius: 24,
                     ),
@@ -720,8 +774,11 @@ class _AddInstructorPageState extends State<AddInstructorPage>
     );
   }
 
-  Widget _buildDetailItem(
-      {required IconData icon, required String title, required String value}) {
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -729,19 +786,26 @@ class _AddInstructorPageState extends State<AddInstructorPage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8)),
+              color: Colors.deepPurple.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Icon(icon, color: Colors.deepPurple),
           ),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500)),
+              Text(
+                title,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ],
@@ -749,11 +813,12 @@ class _AddInstructorPageState extends State<AddInstructorPage>
     );
   }
 
-  Widget _buildActionButton(
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -768,8 +833,10 @@ class _AddInstructorPageState extends State<AddInstructorPage>
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 8),
-            Text(label,
-                style: TextStyle(color: color, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
@@ -782,7 +849,8 @@ class _AddInstructorPageState extends State<AddInstructorPage>
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Instructors',
-        userEmail: loginController.studentName ??
+        userEmail:
+            loginController.studentName ??
             loginController.email.split('@').first,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -803,44 +871,70 @@ class _AddInstructorPageState extends State<AddInstructorPage>
           });
         },
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: Colors.deepPurple),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Loading instructors...',
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
-            )
-          : RefreshIndicator(
-              key: _refreshKey,
-              color: Colors.deepPurple,
-              onRefresh: _fetchData,
-              child: _instructors.isEmpty
-                  ? Center(child: _buildEmptyState())
-                  : Scrollbar(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _instructors.length,
-                        itemBuilder: (context, index) =>
-                            _buildInstructorCard(_instructors[index], index),
-                      ),
+      body:
+          _isLoading
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(color: Colors.deepPurple),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading instructors...',
+                      style: TextStyle(color: Colors.grey.shade700),
                     ),
-            ),
+                  ],
+                ),
+              )
+              : RefreshIndicator(
+                key: _refreshKey,
+                color: Colors.deepPurple,
+                onRefresh: _fetchData,
+                child:
+                    _instructors.isEmpty
+                        ? Center(child: _buildEmptyState())
+                        : Scrollbar(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: _instructors.length,
+                            itemBuilder:
+                                (context, index) => _buildInstructorCard(
+                                  _instructors[index],
+                                  index,
+                                ),
+                          ),
+                        ),
+              ),
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
-        child: FloatingActionButton.extended(
-          onPressed: () => _showAddEditDialog(),
-          icon: const Icon(Icons.add),
-          label: const Text('Add Instructor'),
-          backgroundColor: AppTheme.darkBlue,
-          foregroundColor: Colors.white,
-          elevation: 4,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.velvetTealDark,
+                AppTheme.velvetTeal,
+                AppTheme.velvetTealLight,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.velvetTealDark.withOpacity(0.2),
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: FloatingActionButton.extended(
+            onPressed: () => _showAddEditDialog(),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Instructor'),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

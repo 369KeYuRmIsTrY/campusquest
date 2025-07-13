@@ -20,8 +20,12 @@ class AdminDashboardController extends ChangeNotifier {
     try {
       final programsResponse = await supabase.from('Programs').select('count');
       final studentsResponse = await supabase.from('student').select('count');
-      final instructorsResponse = await supabase.from('instructor').select('count');
-      final classroomsResponse = await supabase.from('classroom').select('count');
+      final instructorsResponse = await supabase
+          .from('instructor')
+          .select('count');
+      final classroomsResponse = await supabase
+          .from('classroom')
+          .select('count');
       final coursesResponse = await supabase.from('course').select('count');
 
       _programsCount = programsResponse[0]['count'] ?? 0;

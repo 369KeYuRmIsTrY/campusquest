@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:campusquest/modules/instructor/views/StudentResultsPage.dart';
 import 'dart:ui';
+import 'package:campusquest/widgets/bottomnavigationbar.dart';
 
 import '../../../controllers/theme_controller.dart';
 
@@ -208,12 +209,15 @@ class _InstructorDashboardState extends State<InstructorDashboard> {
       // Fetch courses count
       final coursesResponse = await _supabase
           .from('teaches')
-          .select()
+          .select(
+            'course:course_id(course_id, course_name, semester_id), semester:semester_id(semester_id, semester_number)',
+          )
           .eq('instructor_id', instructorId);
       final coursesCount = coursesResponse.length;
 
       // Fetch students count
-      final courseIds = coursesResponse.map((c) => c['course_id']).toList();
+      final courseIds =
+          coursesResponse.map((c) => c['course']['course_id']).toList();
       if (courseIds.isNotEmpty) {
         final studentsResponse = await _supabase
             .from('enrollment')
@@ -259,136 +263,54 @@ class _InstructorDashboardState extends State<InstructorDashboard> {
               ),
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+      drawer: CustomDrawer(
+        username: instructorName,
+        role: designation,
+        onLogout: _logout,
+        onSettings: () {
+          // handle settings
+        },
+        onMenuTap: (index) {
+          // handle menu navigation by index
+          switch (index) {
+            case 0:
+              Navigator.pop(context);
+              break;
+            case 1:
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UploadMaterialsPage(),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                        ),
-                        child:
-                            _profileImageUrl != null &&
-                                    _profileImageUrl!.isNotEmpty
-                                ? CircleAvatar(
-                                  backgroundColor: AppTheme.veryDarkBlue,
-                                  radius: 36,
-                                  backgroundImage: NetworkImage(
-                                    _profileImageUrl!,
-                                  ),
-                                )
-                                : CircleAvatar(
-                                  backgroundColor: AppTheme.veryDarkBlue,
-                                  radius: 36,
-                                  child: Text(
-                                    instructorName.isNotEmpty
-                                        ? instructorName[0].toUpperCase()
-                                        : "I",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    instructorName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    designation,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.dashboard, color: Colors.deepPurple),
-              title: const Text('Dashboard'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.upload_file, color: Colors.blue),
-              title: const Text('Upload Materials'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const UploadMaterialsPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.calendar_today, color: Colors.green),
-              title: const Text('Attendance'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AttendancePage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.people, color: Colors.orange),
-              title: const Text('Students'),
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to students page
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.grade, color: Colors.purple),
-              title: const Text('Upload Results'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const StudentResultsPage(),
-                  ),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings, color: Colors.grey),
-              title: const Text('Settings'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text('Logout'),
-              onTap: _logout,
-            ),
-          ],
-        ),
+              );
+              break;
+            case 2:
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AttendancePage()),
+              );
+              break;
+            case 3:
+              Navigator.pop(context);
+              // Navigate to students page
+              break;
+            case 4:
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StudentResultsPage(),
+                ),
+              );
+              break;
+            case 5:
+              Navigator.pop(context);
+              // Add navigation if needed
+              break;
+          }
+        },
       ),
       body:
           isLoading
@@ -646,29 +568,31 @@ class _InstructorDashboardState extends State<InstructorDashboard> {
                                   ),
                                 ),
                                 const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    _buildCounterCard(
-                                      'Materials',
-                                      _notesCount,
-                                      Colors.blue,
-                                      Icons.book,
-                                    ),
-                                    _buildCounterCard(
-                                      'Classes',
-                                      _coursesCount,
-                                      Colors.green,
-                                      Icons.calendar_today,
-                                    ),
-                                    _buildCounterCard(
-                                      'Students',
-                                      _studentsCount,
-                                      Colors.orange,
-                                      Icons.people,
-                                    ),
-                                  ],
+                                SizedBox(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      _buildCounterCard(
+                                        'Materials',
+                                        _notesCount,
+                                        Colors.blue,
+                                        Icons.book,
+                                      ),
+                                      _buildCounterCard(
+                                        'Classes',
+                                        _coursesCount,
+                                        Colors.green,
+                                        Icons.calendar_today,
+                                      ),
+                                      _buildCounterCard(
+                                        'Students',
+                                        _studentsCount,
+                                        Colors.orange,
+                                        Icons.people,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -888,7 +812,7 @@ class _InstructorDashboardState extends State<InstructorDashboard> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1004,4 +928,143 @@ class _InstructorDashboardState extends State<InstructorDashboard> {
 
 extension on PostgrestFilterBuilder<PostgrestList> {
   any(String s, List list) {}
+}
+
+class CustomDrawer extends StatelessWidget {
+  final String username;
+  final String role;
+  final VoidCallback? onLogout;
+  final VoidCallback? onSettings;
+  final Function(int)? onMenuTap;
+
+  const CustomDrawer({
+    Key? key,
+    required this.username,
+    required this.role,
+    this.onLogout,
+    this.onSettings,
+    this.onMenuTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color(0xFF2A6472), // AppBar color
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(color: Color(0xFF2A6472)),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 36,
+                    backgroundColor: Colors.white,
+                    child: Text(
+                      username.isNotEmpty ? username[0].toUpperCase() : '',
+                      style: const TextStyle(
+                        fontSize: 36,
+                        color: Color(0xFF2A6472),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    role,
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _buildDrawerItem(
+                  icon: Icons.dashboard,
+                  iconColor: Color(0xFF9B59B6), // purple
+                  text: 'Dashboard',
+                  onTap: () => onMenuTap?.call(0),
+                ),
+                _buildDrawerItem(
+                  icon: Icons.upload_file,
+                  iconColor: Color(0xFF2980B9), // blue
+                  text: 'Upload Materials',
+                  onTap: () => onMenuTap?.call(1),
+                ),
+                _buildDrawerItem(
+                  icon: Icons.event_available,
+                  iconColor: Color(0xFF27AE60), // green
+                  text: 'Attendance',
+                  onTap: () => onMenuTap?.call(2),
+                ),
+                _buildDrawerItem(
+                  icon: Icons.people,
+                  iconColor: Color(0xFFF39C12), // orange
+                  text: 'Students',
+                  onTap: () => onMenuTap?.call(3),
+                ),
+                _buildDrawerItem(
+                  icon: Icons.star,
+                  iconColor: Color(0xFFE84393), // pink
+                  text: 'Upload Results',
+                  onTap: () => onMenuTap?.call(4),
+                ),
+                const Divider(color: Colors.white24, thickness: 1),
+                _buildDrawerItem(
+                  icon: Icons.settings,
+                  iconColor: Colors.white70,
+                  text: 'Settings',
+                  onTap: onSettings,
+                ),
+                _buildDrawerItem(
+                  icon: Icons.logout,
+                  iconColor: Colors.redAccent,
+                  text: 'Logout',
+                  textColor: Colors.redAccent,
+                  onTap: onLogout,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String text,
+    VoidCallback? onTap,
+    Color iconColor = Colors.white,
+    Color textColor = Colors.white,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: iconColor),
+      title: Text(text, style: TextStyle(color: textColor, fontSize: 16)),
+      onTap: onTap,
+    );
+  }
+}
+
+class InstructorDashboardEntry extends StatelessWidget {
+  const InstructorDashboardEntry({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const BottomBar();
+  }
 }

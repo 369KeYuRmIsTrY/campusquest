@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'SubMissionPage.dart'; // Updated SubmissionPage
 import '../../../widgets/subject_card.dart';
 import '../../../widgets/common_app_bar.dart';
+import 'package:campusquest/utils/open_file_plus.dart';
 
 class AssignmentsPage extends StatefulWidget {
   const AssignmentsPage({super.key});
@@ -34,19 +35,28 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
         _errorMessage = null;
       });
 
-      final loginController =
-          Provider.of<LoginController>(context, listen: false);
+      final loginController = Provider.of<LoginController>(
+        context,
+        listen: false,
+      );
       final studentId = loginController.studentId;
+      final userId = loginController.userId;
 
-      if (studentId == null) {
-        throw Exception('Student ID is null. Please log in.');
+      if (studentId == null || userId == null) {
+        throw Exception('Student ID or User ID is null. Please log in.');
       }
 
-      // Fetch enrollments
+      print(
+        'Fetching assignments for student ID: $studentId, user ID: $userId',
+      );
+
+      // Fetch enrollments using user_id (not student_id)
       final enrollments = await _supabase
           .from('enrollment')
           .select('course_id')
-          .eq('student_id', studentId);
+          .eq('student_id', int.parse(userId));
+
+      print('Enrollments found: $enrollments');
 
       if (enrollments.isEmpty) {
         setState(() {
@@ -58,24 +68,29 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
 
       final courseIds =
           enrollments.map((e) => e['course_id'] as int).toSet().toList();
+      print('Course IDs: $courseIds');
 
       // Fetch courses
       final courses = await _supabase
           .from('course')
           .select('course_id, course_name')
           .inFilter('course_id', courseIds);
+      print('Courses found: $courses');
 
       // Fetch assignments and submissions
       final assignmentsResponse = await _supabase
           .from('assignment')
           .select(
-              'assignment_id, course_id, title, due_date, description, file_path')
+            'assignment_id, course_id, title, due_date, description, file_path',
+          )
           .inFilter('course_id', courseIds);
+      print('Assignments found: $assignmentsResponse');
 
       final submissionsResponse = await _supabase
           .from('submission')
           .select('assignment_id, submission_date')
           .eq('student_id', studentId);
+      print('Submissions found: $submissionsResponse');
 
       final submittedAssignmentIds =
           submissionsResponse.map((s) => s['assignment_id'] as int).toSet();
@@ -83,37 +98,47 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
       // Process data
       List<Map<String, dynamic>> coursesWithAssignments = [];
       for (var course in courses) {
-        final courseAssignments = assignmentsResponse
-            .where(
-                (assignment) => assignment['course_id'] == course['course_id'])
-            .map((assignment) {
-          final dueDate = DateTime.parse(assignment['due_date']);
-          final now = DateTime.now();
-          final isSubmitted =
-              submittedAssignmentIds.contains(assignment['assignment_id']);
-          final isOverdue = dueDate.isBefore(now) && !isSubmitted;
-          final isDueSoon =
-              dueDate.difference(now).inDays <= 3 && !isSubmitted && !isOverdue;
+        final courseAssignments =
+            assignmentsResponse
+                .where(
+                  (assignment) =>
+                      assignment['course_id'] == course['course_id'],
+                )
+                .map((assignment) {
+                  final dueDate = DateTime.parse(assignment['due_date']);
+                  final now = DateTime.now();
+                  final isSubmitted = submittedAssignmentIds.contains(
+                    assignment['assignment_id'],
+                  );
+                  final isOverdue = dueDate.isBefore(now) && !isSubmitted;
+                  final isDueSoon =
+                      dueDate.difference(now).inDays <= 3 &&
+                      !isSubmitted &&
+                      !isOverdue;
 
-          return {
-            'id': assignment['assignment_id'],
-            'title': assignment['title'] ?? 'Untitled',
-            'description': assignment['description'] ?? '',
-            'file_path': assignment['file_path'] ?? '',
-            'due_date': dueDate,
-            'formatted_due_date': DateFormat('MMM dd, yyyy').format(dueDate),
-            'is_submitted': isSubmitted,
-            'is_overdue': isOverdue,
-            'is_due_soon': isDueSoon,
-          };
-        }).toList();
+                  return {
+                    'id': assignment['assignment_id'],
+                    'title': assignment['title'] ?? 'Untitled',
+                    'description': assignment['description'] ?? '',
+                    'file_path': assignment['file_path'] ?? '',
+                    'due_date': dueDate,
+                    'formatted_due_date': DateFormat(
+                      'MMM dd, yyyy',
+                    ).format(dueDate),
+                    'is_submitted': isSubmitted,
+                    'is_overdue': isOverdue,
+                    'is_due_soon': isDueSoon,
+                  };
+                })
+                .toList();
 
         // Apply filter
         var filteredAssignments = courseAssignments;
         if (_filter == 'Due') {
-          filteredAssignments = courseAssignments
-              .where((a) => !a['is_submitted'] && !a['is_overdue'])
-              .toList();
+          filteredAssignments =
+              courseAssignments
+                  .where((a) => !a['is_submitted'] && !a['is_overdue'])
+                  .toList();
         } else if (_filter == 'Submitted') {
           filteredAssignments =
               courseAssignments.where((a) => a['is_submitted']).toList();
@@ -128,6 +153,7 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
         }
       }
 
+      print('Final courses with assignments: $coursesWithAssignments');
       setState(() {
         _coursesData = coursesWithAssignments;
         _isLoading = false;
@@ -146,25 +172,30 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
       backgroundColor: Colors.grey.shade100,
       appBar: CommonAppBar(
         title: 'Assignments',
-        userEmail: Provider.of<LoginController>(context).studentName ??
+        userEmail:
+            Provider.of<LoginController>(context).studentName ??
             Provider.of<LoginController>(context).email.split('@').first,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _errorMessage != null
               ? Center(
-                  child: Text(_errorMessage!,
-                      style: const TextStyle(color: Colors.red)))
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              )
               : _coursesData.isEmpty
-                  ? const Center(child: Text('No assignments found.'))
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _coursesData.length,
-                      itemBuilder: (context, index) {
-                        final course = _coursesData[index];
-                        return _buildCourseSection(course);
-                      },
-                    ),
+              ? const Center(child: Text('No assignments found.'))
+              : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _coursesData.length,
+                itemBuilder: (context, index) {
+                  final course = _coursesData[index];
+                  return _buildCourseSection(course);
+                },
+              ),
     );
   }
 
@@ -177,40 +208,65 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(course['code']),
-        children: (course['assignments'] as List).map((assignment) {
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: assignment['is_submitted']
-                  ? Colors.green
-                  : assignment['is_overdue']
-                      ? Colors.red
-                      : assignment['is_due_soon']
+        children:
+            (course['assignments'] as List).map((assignment) {
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor:
+                      assignment['is_submitted']
+                          ? Colors.green
+                          : assignment['is_overdue']
+                          ? Colors.red
+                          : assignment['is_due_soon']
                           ? Colors.orange
                           : Colors.blue,
-              child: Icon(
-                assignment['is_submitted'] ? Icons.check : Icons.assignment,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(assignment['title']),
-            subtitle: Text('Due: ${assignment['formatted_due_date']}'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SubmissionPage(
-                    title: assignment['title'],
-                    subject: course['name'],
-                    assignmentId: assignment['id'],
-                    dueDate: assignment['due_date'],
-                    description: assignment['description'],
-                    filePath: assignment['file_path'],
+                  child: Icon(
+                    assignment['is_submitted'] ? Icons.check : Icons.assignment,
+                    color: Colors.white,
                   ),
                 ),
+                title: Text(assignment['title']),
+                subtitle: Text('Due: ${assignment['formatted_due_date']}'),
+                trailing:
+                    assignment['file_path'] != null &&
+                            assignment['file_path'].toString().isNotEmpty
+                        ? IconButton(
+                          icon: Icon(Icons.file_open),
+                          onPressed: () {
+                            if (assignment['file_path'].toString().startsWith(
+                              'http',
+                            )) {
+                              FileOpener.downloadAndOpenFile(
+                                context,
+                                assignment['file_path'],
+                              );
+                            } else {
+                              FileOpener.openEventFile(
+                                context,
+                                assignment['file_path'],
+                              );
+                            }
+                          },
+                        )
+                        : null,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => SubmissionPage(
+                            title: assignment['title'],
+                            subject: course['name'],
+                            assignmentId: assignment['id'],
+                            dueDate: assignment['due_date'],
+                            description: assignment['description'],
+                            filePath: assignment['file_path'],
+                          ),
+                    ),
+                  );
+                },
               );
-            },
-          );
-        }).toList(),
+            }).toList(),
       ),
     );
   }

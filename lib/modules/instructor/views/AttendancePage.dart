@@ -3,25 +3,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import '../../../Data/holiday_data.dart';
-import 'package:campusquest/widgets/common_app_bar.dart';
-import 'package:provider/provider.dart';
-import 'package:campusquest/controllers/login_controller.dart';
-import 'package:campusquest/modules/instructor/views/InstructorDashboard.dart';
 
 class Course {
-  final String courseId;
+  final int courseId;
   final String courseName;
-  final int semesterId; // Added to store semester_id
+  final int semesterId;
+  final int semesterNumber; // Added to store semester_number
   Course({
     required this.courseId,
     required this.courseName,
     required this.semesterId,
+    required this.semesterNumber,
   });
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
-      courseId: json['course_id'].toString(),
+      courseId: json['course_id'] as int,
       courseName: json['course_name'] ?? 'Unnamed Course',
-      semesterId: json['semester_id'] as int? ?? 1, // Fallback to 1 if null
+      semesterId: json['semester_id'] as int? ?? 1,
+      semesterNumber:
+          json['semester_number'] as int? ?? 1, // Fallback to 1 if null
     );
   }
 }
@@ -55,7 +55,7 @@ class _AttendancePageState extends State<AttendancePage>
   final TextEditingController _attendanceDateController =
       TextEditingController();
   List<Course> courses = [];
-  String? selectedCourseId;
+  int? selectedCourseId;
   int? selectedSemesterId; // Dynamic semester_id
   List<Student> students = [];
   bool _isLoading = false;
@@ -114,8 +114,7 @@ class _AttendancePageState extends State<AttendancePage>
         if (courses.isNotEmpty) {
           setState(() {
             selectedCourseId = courses.first.courseId;
-            selectedSemesterId =
-                courses.first.semesterId; // Set initial semester_id
+            selectedSemesterId = courses.first.semesterId;
           });
           await _fetchStudentsAndAttendance();
         }
@@ -179,7 +178,7 @@ class _AttendancePageState extends State<AttendancePage>
       final response = await supabase
           .from('teaches')
           .select(
-            'course:course_id(course_id, course_name, semester_id), semester_id',
+            'course:course_id(course_id, course_name, semester_id), semester:semester_id(semester_id, semester_number)',
           )
           .eq('instructor_id', _instructorId!);
       print('Teaches query response: $response');
@@ -190,12 +189,15 @@ class _AttendancePageState extends State<AttendancePage>
                   (json) => Course.fromJson({
                     'course_id': json['course']['course_id'],
                     'course_name': json['course']['course_name'],
-                    'semester_id':
-                        json['course']['semester_id'] ?? json['semester_id'],
+                    'semester_id': json['semester']['semester_id'],
+                    'semester_number': json['semester']['semester_number'],
                   }),
                 )
                 .toList();
       });
+      print(
+        'Processed courses with semester numbers: ${courses.map((c) => '${c.courseName} (Sem ${c.semesterNumber})').join(', ')}',
+      );
       if (courses.isEmpty) {
         _showErrorMessage('No courses assigned to this instructor');
       }
@@ -223,19 +225,28 @@ class _AttendancePageState extends State<AttendancePage>
       final rawEnrollment = await supabase
           .from('enrollment')
           .select('*')
-          .eq('course_id', int.parse(selectedCourseId!))
+          .eq('course_id', selectedCourseId!)
           .eq('semester_id', selectedSemesterId!);
       print('Raw enrollment data: $rawEnrollment');
 
-      // Fetch enrolled students
+      // Fetch enrolled students with student details through users table
       final enrollmentResponse = await supabase
           .from('enrollment')
-          .select(
-            'student:student_id!inner(student_id, name), enrollment_status',
-          )
-          .eq('course_id', int.parse(selectedCourseId!))
+          .select('''
+      student_id,
+      enrollment_status,
+      student (
+        student_id,
+        name,
+        user_id,
+        users (
+          id,
+          email
+        )
+      )
+    ''')
+          .eq('course_id', selectedCourseId!)
           .eq('semester_id', selectedSemesterId!);
-      // Removed .eq('enrollment_status', 'Active') to debug
 
       print('Enrollment query response: $enrollmentResponse');
 
@@ -250,18 +261,19 @@ class _AttendancePageState extends State<AttendancePage>
         return;
       }
 
-      // Process students
-      final studentsList = List<Student>.from(
-        enrollmentResponse.map((json) {
-          final studentData = json['student'] as Map<String, dynamic>;
-          final student = Student.fromJson(studentData);
-          student.status =
-              json['enrollment_status'] == 'Active'
-                  ? 'Present'
-                  : 'Absent'; // Default based on status
-          return student;
-        }),
-      );
+      // Process students directly from enrollment response
+      final studentsList =
+          enrollmentResponse.map((enrollment) {
+            final student = enrollment['student'];
+            return Student(
+              studentId: student['student_id'] as int,
+              name: student['name'] as String,
+              status:
+                  enrollment['enrollment_status'] == 'Active'
+                      ? 'Present'
+                      : 'Absent',
+            );
+          }).toList();
       print(
         'Fetched students: ${studentsList.map((s) => "${s.name} (ID: ${s.studentId})").join(', ')}',
       );
@@ -270,7 +282,7 @@ class _AttendancePageState extends State<AttendancePage>
       final attendanceResponse = await supabase
           .from('attendance')
           .select('student_id, status')
-          .eq('course_id', int.parse(selectedCourseId!))
+          .eq('course_id', selectedCourseId!)
           .eq('semester_id', selectedSemesterId!)
           .eq('attendance_date', _attendanceDateController.text);
 
@@ -305,26 +317,80 @@ class _AttendancePageState extends State<AttendancePage>
     }
     setState(() => _isLoading = true);
     try {
-      final attendanceData =
+      // First, check if attendance records already exist for this date
+      final existingAttendance = await supabase
+          .from('attendance')
+          .select('attendance_id, student_id, status')
+          .eq('course_id', selectedCourseId!)
+          .eq('semester_id', selectedSemesterId!)
+          .eq('attendance_date', _attendanceDateController.text);
+
+      print('Existing attendance records: $existingAttendance');
+
+      // Create a map of existing attendance records by student_id
+      final existingAttendanceMap = {
+        for (var record in existingAttendance)
+          record['student_id'] as int: record['attendance_id'] as int,
+      };
+
+      // Separate students into updates and inserts
+      final List<Map<String, dynamic>> updates = [];
+      final List<Map<String, dynamic>> inserts = [];
+
+      for (final student in students) {
+        final attendanceRecord = {
+          'student_id': student.studentId,
+          'course_id': selectedCourseId!,
+          'semester_id': selectedSemesterId!,
+          'attendance_date': _attendanceDateController.text,
+          'status': student.status,
+        };
+
+        if (existingAttendanceMap.containsKey(student.studentId)) {
+          // Update existing record
+          attendanceRecord['attendance_id'] =
+              existingAttendanceMap[student.studentId]!;
+          updates.add(attendanceRecord);
+        } else {
+          // Insert new record
+          inserts.add(attendanceRecord);
+        }
+      }
+
+      print('Records to update: ${updates.length}');
+      print('Records to insert: ${inserts.length}');
+
+      // Delete existing attendance records for this date, course, and semester
+      await supabase
+          .from('attendance')
+          .delete()
+          .eq('course_id', selectedCourseId!)
+          .eq('semester_id', selectedSemesterId!)
+          .eq('attendance_date', _attendanceDateController.text);
+
+      // Insert all attendance records as new
+      final allAttendanceData =
           students
               .map(
                 (student) => {
                   'student_id': student.studentId,
-                  'course_id': int.parse(selectedCourseId!),
+                  'course_id': selectedCourseId!,
                   'semester_id': selectedSemesterId!,
                   'attendance_date': _attendanceDateController.text,
                   'status': student.status,
                 },
               )
               .toList();
-      print('Saving attendance data: $attendanceData');
-      await supabase
-          .from('attendance')
-          .upsert(
-            attendanceData,
-            onConflict: 'student_id, course_id, semester_id, attendance_date',
-          );
+
+      if (allAttendanceData.isNotEmpty) {
+        await supabase.from('attendance').insert(allAttendanceData);
+        print('Inserted ${allAttendanceData.length} attendance records');
+      }
+
       _showSuccessMessage('Attendance saved successfully');
+
+      // Refresh the attendance data to show updated statuses
+      await _fetchStudentsAndAttendance();
     } catch (e) {
       print('Save attendance error: $e');
       _showErrorMessage('Error saving attendance: $e');
@@ -382,6 +448,126 @@ class _AttendancePageState extends State<AttendancePage>
       student.status = newStatus;
       _statusCategories[newStatus]!.add(student);
     });
+  }
+
+  Widget _buildDatePickerField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF6BAED6), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () async {
+            final pickedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime.now(),
+              selectableDayPredicate: (DateTime date) {
+                // Disable weekends, holidays, and future dates
+                final today = DateTime.now();
+                final todayOnly = DateTime(today.year, today.month, today.day);
+                final selectedDate = DateTime(date.year, date.month, date.day);
+
+                return !HolidayManager.isHoliday(date) &&
+                    selectedDate.isBefore(
+                      todayOnly.add(const Duration(days: 1)),
+                    );
+              },
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: const Color(0xFF2171B5),
+                      onPrimary: Colors.white,
+                      surface: Colors.white,
+                      onSurface: Colors.black,
+                    ),
+                    dialogBackgroundColor: Colors.white,
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            if (pickedDate != null) {
+              setState(() {
+                _attendanceDateController.text = DateFormat(
+                  'yyyy-MM-dd',
+                ).format(pickedDate);
+                _checkIfHoliday(pickedDate);
+              });
+              _fetchStudentsAndAttendance();
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2171B5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.calendar_today,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Attendance Date',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _attendanceDateController.text.isEmpty
+                            ? 'Select Date'
+                            : DateFormat('EEEE, MMMM d, yyyy').format(
+                              DateFormat(
+                                'yyyy-MM-dd',
+                              ).parse(_attendanceDateController.text),
+                            ),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2171B5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_drop_down,
+                  color: Color(0xFF2171B5),
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildTextField({
@@ -760,6 +946,23 @@ class _AttendancePageState extends State<AttendancePage>
 
   @override
   Widget build(BuildContext context) {
+    // Create unique course-semester combinations
+    final uniqueCourseSemesters = <String, Course>{};
+    for (var course in courses) {
+      final key = '${course.courseId}_${course.semesterId}';
+      uniqueCourseSemesters[key] = course;
+    }
+    final uniqueCourses = uniqueCourseSemesters.values.toList();
+
+    // Ensure selectedCourseId is valid
+    if (uniqueCourses.isEmpty) {
+      selectedCourseId = null;
+    } else if (selectedCourseId == null ||
+        !uniqueCourses.any((c) => c.courseId == selectedCourseId)) {
+      selectedCourseId = uniqueCourses.first.courseId;
+      selectedSemesterId = uniqueCourses.first.semesterId;
+    }
+
     final selectedDate = DateFormat(
       'yyyy-MM-dd',
     ).parse(_attendanceDateController.text);
@@ -767,18 +970,58 @@ class _AttendancePageState extends State<AttendancePage>
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
-      appBar: CommonAppBar(
-        title: 'Attendance',
-        userEmail: Provider.of<LoginController>(context).email.split('@').first,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => InstructorDashboard()),
-            );
-          },
+      appBar: AppBar(
+        title: const Text(
+          'Attendance',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFFEFF3FF), // Very light blue for text
+          ),
         ),
+        backgroundColor: const Color(0xFF2A6472), // Color from your image
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: DropdownButton<String>(
+              value:
+                  selectedCourseId != null && selectedSemesterId != null
+                      ? '${selectedCourseId}_$selectedSemesterId'
+                      : null,
+              icon: const Icon(Icons.arrow_drop_down, color: Color(0xFFEFF3FF)),
+              dropdownColor: const Color(0xFF2A6472),
+              style: const TextStyle(color: Color(0xFFEFF3FF), fontSize: 16),
+              underline: Container(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  final parts = newValue.split('_');
+                  final courseId = int.parse(parts[0]);
+                  final semesterId = int.parse(parts[1]);
+                  setState(() {
+                    selectedCourseId = courseId;
+                    selectedSemesterId = semesterId;
+                  });
+                  _fetchStudentsAndAttendance();
+                }
+              },
+              items:
+                  uniqueCourses.map<DropdownMenuItem<String>>((Course course) {
+                    final key = '${course.courseId}_${course.semesterId}';
+                    return DropdownMenuItem<String>(
+                      value: key,
+                      child: Text(
+                        '${course.courseName} (Sem ${course.semesterNumber})',
+                        style: const TextStyle(color: Color(0xFFEFF3FF)),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Color(0xFFEFF3FF)),
+            onPressed: () => _refreshKey.currentState?.show(),
+          ),
+        ],
       ),
       body:
           _isLoading
@@ -811,50 +1054,7 @@ class _AttendancePageState extends State<AttendancePage>
                         children: [
                           Row(
                             children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  controller: _attendanceDateController,
-                                  labelText: 'Attendance Date',
-                                  prefixIcon: Icons.calendar_today,
-                                  readOnly: true,
-                                  onTap: () async {
-                                    final pickedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2101),
-                                      selectableDayPredicate: (DateTime date) {
-                                        // Disable weekends and holidays
-                                        return !HolidayManager.isHoliday(date);
-                                      },
-                                      builder: (context, child) {
-                                        return Theme(
-                                          data: Theme.of(context).copyWith(
-                                            colorScheme: ColorScheme.light(
-                                              primary: Colors.indigo.shade700,
-                                              onPrimary: Colors.white,
-                                              surface: Colors.white,
-                                              onSurface: Colors.black,
-                                            ),
-                                            dialogBackgroundColor: Colors.white,
-                                          ),
-                                          child: child!,
-                                        );
-                                      },
-                                    );
-                                    if (pickedDate != null) {
-                                      setState(() {
-                                        _attendanceDateController
-                                            .text = DateFormat(
-                                          'yyyy-MM-dd',
-                                        ).format(pickedDate);
-                                        _checkIfHoliday(pickedDate);
-                                      });
-                                      _fetchStudentsAndAttendance();
-                                    }
-                                  },
-                                ),
-                              ),
+                              Expanded(child: _buildDatePickerField()),
                               const SizedBox(width: 16),
                               _buildSummaryBadge(),
                             ],
@@ -934,7 +1134,7 @@ class _AttendancePageState extends State<AttendancePage>
                     else
                       Expanded(
                         child:
-                            selectedCourseId == null || courses.isEmpty
+                            selectedCourseId == null || uniqueCourses.isEmpty
                                 ? _buildNoCourses()
                                 : students.isEmpty
                                 ? _buildNoStudents()
@@ -944,7 +1144,7 @@ class _AttendancePageState extends State<AttendancePage>
                 ),
               ),
       floatingActionButton:
-          !isHoliday && students.isNotEmpty
+          !isHoliday && students.isNotEmpty && uniqueCourses.isNotEmpty
               ? ScaleTransition(
                 scale: _fabAnimation,
                 child: GestureDetector(

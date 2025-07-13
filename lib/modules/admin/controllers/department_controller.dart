@@ -84,8 +84,7 @@ class DepartmentController {
       filteredDepartments = _departments.where((dept) {
         final deptName = dept['dept_name'].toString().toLowerCase();
         final building = dept['building'].toString().toLowerCase();
-        final budget = dept['budget'].toString();
-        return deptName.contains(query) || building.contains(query) || budget.contains(query);
+        return deptName.contains(query) || building.contains(query);
       }).toList();
       isSearching = true;
     });
@@ -130,7 +129,6 @@ class DepartmentController {
     final bool isEditing = department != null;
     final deptNameController = TextEditingController(text: isEditing ? department!['dept_name'] : '');
     final buildingController = TextEditingController(text: isEditing ? department!['building'] : '');
-    final budgetController = TextEditingController(text: isEditing ? department!['budget']?.toString() : '');
 
     showGeneralDialog(
       context: context,
@@ -175,13 +173,6 @@ class DepartmentController {
                       labelText: 'Building',
                       prefixIcon: Icons.location_city,
                     ),
-                    const SizedBox(height: 16),
-                    _buildTextField(
-                      controller: budgetController,
-                      labelText: 'Budget',
-                      prefixIcon: Icons.attach_money,
-                      keyboardType: TextInputType.number,
-                    ),
                   ],
                 ),
               ),
@@ -201,16 +192,9 @@ class DepartmentController {
                   onPressed: () async {
                     final deptName = deptNameController.text.trim();
                     final building = buildingController.text.trim();
-                    final budgetText = budgetController.text.trim();
 
-                    if (deptName.isEmpty || building.isEmpty || budgetText.isEmpty) {
+                    if (deptName.isEmpty || building.isEmpty) {
                       showErrorMessage('All fields are required');
-                      return;
-                    }
-
-                    final budget = double.tryParse(budgetText);
-                    if (budget == null || budget <= 0) {
-                      showErrorMessage('Budget must be a positive number');
                       return;
                     }
 
@@ -218,14 +202,12 @@ class DepartmentController {
                       if (isEditing) {
                         await _supabase.from('department').update({
                           'building': building,
-                          'budget': budget,
                         }).match({'dept_name': department!['dept_name']});
                         showSuccessMessage('Department updated successfully');
                       } else {
                         await _supabase.from('department').insert({
                           'dept_name': deptName,
                           'building': building,
-                          'budget': budget,
                         });
                         showSuccessMessage('Department added successfully');
                       }
@@ -454,12 +436,6 @@ class DepartmentController {
                         title: 'Building',
                         value: department['building'],
                       ),
-                      const Divider(),
-                      _buildDetailItem(
-                        icon: Icons.attach_money,
-                        title: 'Budget',
-                        value: '\$${department['budget'].toStringAsFixed(2)}',
-                      ),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -618,14 +594,6 @@ class DepartmentController {
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    Text(
-                      '\$${department['budget'].toStringAsFixed(2)}',
-                      style: TextStyle(
-                        color: Colors.green.shade800,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],

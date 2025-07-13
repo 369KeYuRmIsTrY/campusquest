@@ -6,6 +6,7 @@ import '../controllers/login_controller.dart';
 import '../modules/admin/views/AdminDashboard.dart';
 import '../modules/admin/views/EventsPage.dart';
 import '../modules/admin/views/TimetablePage.dart';
+import '../modules/admin/views/timetablescreen.dart';
 import '../modules/instructor/views/AttendancePage.dart';
 import '../modules/instructor/views/ClassSchedule.dart';
 import '../modules/instructor/views/InstructorDashboard.dart';
@@ -16,6 +17,7 @@ import '../modules/student/views/ProfilePage.dart';
 import '../modules/student/views/TimetablePage.dart';
 import '../theme/theme.dart'; // Import AppTheme
 import '../modules/student/views/ExamsPage.dart';
+import '../modules/student/views/StudentEventsPage.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({Key? key}) : super(key: key);
@@ -27,6 +29,22 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int _currentIndex = 0;
 
+  final List<IconData> navIcons = [
+    Icons.dashboard,
+    Icons.person,
+    Icons.event,
+    Icons.timelapse,
+    // ...add more as needed
+  ];
+
+  final List<String> navLabels = [
+    'Dashboard',
+    'Instructor',
+    'Events',
+    'Time Table',
+    // ...add more as needed
+  ];
+
   @override
   Widget build(BuildContext context) {
     final loginController = Provider.of<LoginController>(context);
@@ -34,8 +52,6 @@ class _BottomBarState extends State<BottomBar> {
 
     final roleBasedPages = _getRoleBasedPages(userRole);
     final roleBasedNavItems = _getRoleBasedNavItems(userRole);
-
-    // final theme = Theme.of(context); // Access the current theme
 
     return Scaffold(
       body: AnimatedSwitcher(
@@ -49,30 +65,72 @@ class _BottomBarState extends State<BottomBar> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-          ),
-        ),
-        child: BottomNavigationBar(
-          backgroundColor:
-              Colors.transparent, // Set to transparent to show the gradient
-          selectedItemColor:
-              Colors.white, // Changed to white for visibility on dark gradient
-          unselectedItemColor:
-              AppTheme.greyishBlue, // Use greyishBlue for unselected items
-          currentIndex: _currentIndex,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          items: roleBasedNavItems,
+        height: 70,
+        color: AppTheme.yachtClubBlue,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(roleBasedNavItems.length, (index) {
+            final isSelected = _currentIndex == index;
+            final iconData = getIconData(roleBasedNavItems[index]);
+            final label = getLabel(roleBasedNavItems[index]);
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOutBack,
+                    child: Transform.translate(
+                      offset: Offset(0, isSelected ? -20 : 0),
+                      child:
+                          isSelected
+                              ? Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppTheme.yachtClubLight,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  iconData,
+                                  size: 30,
+                                  color: AppTheme.yachtClubBlue,
+                                ),
+                              )
+                              : Icon(
+                                iconData,
+                                size: 24,
+                                color: AppTheme.yachtClubLight,
+                              ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color:
+                          isSelected ? AppTheme.yachtClubLight : Colors.black,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ),
       ),
     );
@@ -85,24 +143,22 @@ class _BottomBarState extends State<BottomBar> {
           const AdminDashboard(),
           const AddInstructorPage(),
           const AddEventPage(),
-          const TimetablePageAdmin()
+          const TimetableScreen(),
         ];
       case 'instructor':
         return [
           const InstructorDashboard(),
           const ClassSchedule(),
           const UploadAssignmentsPage(),
-          const AttendancePage()
+          const AttendancePage(),
         ];
       case 'student':
       default:
         return [
           StudentDashboard(),
+          const StudentEventsPage(),
           TimetablePage(),
-          AssignmentsPage(),
-          ExamsPage(),
-          const NotesPage(),
-          ProfilePage()
+          ProfilePage(),
         ];
     }
   }
@@ -112,38 +168,64 @@ class _BottomBarState extends State<BottomBar> {
       case 'admin':
         return [
           BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard), label: 'Dashboard'),
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person), label: 'Instructor'),
+            icon: Icon(Icons.person),
+            label: 'Instructor',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.timelapse), label: 'Time Table'),
+            icon: Icon(Icons.timelapse),
+            label: 'Time Table',
+          ),
         ];
       case 'instructor':
         return [
           BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard), label: 'Dashboard'),
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.schedule), label: 'Schedule'),
+            icon: Icon(Icons.schedule),
+            label: 'Schedule',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.menu_book), label: 'Assignments'),
+            icon: Icon(Icons.menu_book),
+            label: 'Assignments',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.check_circle), label: 'Attendance'),
+            icon: Icon(Icons.check_circle),
+            label: 'Attendance',
+          ),
         ];
       case 'student':
       default:
         return [
           BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard), label: 'Dashboard'),
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.access_time), label: 'Timetable'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.assignment), label: 'Assignments'),
-          BottomNavigationBarItem(icon: Icon(Icons.fact_check), label: 'Exams'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Notes'),
+            icon: Icon(Icons.access_time),
+            label: 'Timetable',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ];
     }
+  }
+
+  IconData getIconData(BottomNavigationBarItem item) {
+    if (item.icon is Icon) {
+      return (item.icon as Icon).icon!;
+    }
+    return Icons.circle;
+  }
+
+  String getLabel(BottomNavigationBarItem item) {
+    return item.label ?? '';
   }
 }
 

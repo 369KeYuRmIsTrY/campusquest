@@ -459,59 +459,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
     // List of drawer items (icon, label, onTap)
     final drawerItems = [
       {
-        'icon': Icons.dashboard,
-        'label': 'Dashboard',
-        'onTap': () {
-          Navigator.pop(context);
-        },
-      },
-      {
-        'icon': Icons.person,
-        'label': 'Instructors',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddInstructorPage()),
-          );
-        },
-      },
-      {
-        'icon': Icons.event,
-        'label': 'Events',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddEventPage()),
-          );
-        },
-      },
-      {
-        'icon': Icons.schedule,
-        'label': 'Timetable',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const TimetablePageAdmin()),
-          );
-        },
-      },
-      {
-        'icon': Icons.book,
-        'label': 'Courses',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CourseScreen()),
-          );
-        },
-      },
-      {
         'icon': Icons.class_,
-        'label': 'Classrooms',
+        'label': 'Manage Classrooms',
         'onTap': () {
           Navigator.pop(context);
           Navigator.push(
@@ -522,7 +471,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       {
         'icon': Icons.business,
-        'label': 'Departments',
+        'label': 'Manage Departments',
         'onTap': () {
           Navigator.pop(context);
           Navigator.push(
@@ -533,7 +482,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       {
         'icon': Icons.layers,
-        'label': 'Programs',
+        'label': 'Manage Programs',
         'onTap': () {
           Navigator.pop(context);
           Navigator.push(
@@ -543,49 +492,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
         },
       },
       {
-        'icon': Icons.assignment,
-        'label': 'Assignments',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => CreateAssignmentFormPage(
-                    courseId: '',
-                    semesterId: '',
-                    dueDate: DateTime.now(),
-                    onAssignmentCreated: () {},
-                  ),
-            ),
-          );
-        },
-      },
-      {
-        'icon': Icons.receipt,
-        'label': 'Enrollments',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const EnrollmentScreen()),
-          );
-        },
-      },
-      {
-        'icon': Icons.group,
-        'label': 'Students',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => BulkStudentUpdateScreen()),
-          );
-        },
-      },
-      {
         'icon': Icons.date_range,
-        'label': 'Semesters',
+        'label': 'Add Semester',
         'onTap': () {
           Navigator.pop(context);
           Navigator.push(
@@ -595,8 +503,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
         },
       },
       {
+        'icon': Icons.book,
+        'label': 'Add Course',
+        'onTap': () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CourseScreen()),
+          );
+        },
+      },
+      {
         'icon': Icons.access_time,
-        'label': 'Time Slots',
+        'label': 'Add Time Slot',
         'onTap': () {
           Navigator.pop(context);
           Navigator.push(
@@ -606,8 +525,41 @@ class _AdminDashboardState extends State<AdminDashboard> {
         },
       },
       {
+        'icon': Icons.person_add,
+        'label': 'Add Instructor',
+        'onTap': () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddInstructorPage()),
+          );
+        },
+      },
+      {
+        'icon': Icons.assignment_ind,
+        'label': 'Assign Instructors',
+        'onTap': () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const TeachesScreen()),
+          );
+        },
+      },
+      {
+        'icon': Icons.receipt,
+        'label': 'Course Enrollement',
+        'onTap': () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const EnrollmentScreen()),
+          );
+        },
+      },
+      {
         'icon': Icons.link,
-        'label': 'Program Courses',
+        'label': 'Program Course',
         'onTap': () {
           Navigator.pop(context);
           Navigator.push(
@@ -619,24 +571,24 @@ class _AdminDashboardState extends State<AdminDashboard> {
         },
       },
       {
+        'icon': Icons.event,
+        'label': 'Create Event',
+        'onTap': () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddEventPage()),
+          );
+        },
+      },
+      {
         'icon': Icons.file_download,
-        'label': 'Export Data',
+        'label': 'Export Student Data',
         'onTap': () {
           Navigator.pop(context);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const StudentScreen()),
-          );
-        },
-      },
-      {
-        'icon': Icons.assignment_turned_in,
-        'label': 'Exams',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AdminExamsPage()),
           );
         },
       },
@@ -651,6 +603,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
               MaterialPageRoute(builder: (context) => const LoginPage()),
               (route) => false,
             );
+            // Show success message after navigation
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Logout successful'),
+                backgroundColor: Colors.green,
+              ),
+            );
           }
         },
       },
@@ -658,31 +617,25 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
     return Drawer(
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-          ),
-        ),
+        color: AppTheme.yachtClubBlue,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.transparent),
+              decoration: const BoxDecoration(color: AppTheme.yachtClubBlue),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: AssetImage('assets/admin.png'),
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: AppTheme.yachtClubLight,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     loginController.studentName ?? 'Admin',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppTheme.yachtClubLight,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -690,7 +643,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   Text(
                     loginController.role,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: AppTheme.yachtClubLight.withOpacity(0.7),
                       fontSize: 14,
                     ),
                   ),
@@ -713,11 +666,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         child: ListTile(
                           leading: Icon(
                             item['icon'] as IconData,
-                            color: Colors.white,
+                            color: AppTheme.yachtClubLight,
                           ),
                           title: Text(
                             item['label'] as String,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(
+                              color: AppTheme.yachtClubLight,
+                            ),
                           ),
                           onTap: item['onTap'] as VoidCallback,
                         ),

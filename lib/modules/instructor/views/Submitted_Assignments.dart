@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:campusquest/widgets/common_app_bar.dart';
 
+import '../../../utils/open_file_plus.dart';
+
 class InstructorAssignmentsPage extends StatefulWidget {
   final String title;
   final String subject;
@@ -435,11 +437,21 @@ class _InstructorAssignmentsPageState extends State<InstructorAssignmentsPage> {
                                 'Submission File',
                                 style: TextStyle(color: Colors.indigo[700]),
                               ),
-                              trailing: Icon(
-                                Icons.download,
-                                color: Colors.indigo[700],
+                              trailing: InkWell(
+                                onTap: () {
+                                  FileOpener.downloadAndOpenFile(
+                                    context,
+                                    filePath,
+                                  );
+                                },
+                                child: Text(
+                                  filePath.split('/').last,
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
                               ),
-                              onTap: () => _downloadFile(filePath),
                             ),
                           const SizedBox(height: 8),
                           Row(
