@@ -38,20 +38,21 @@ void main() async {
   runApp(
     DevicePreview(
       enabled: true,
-      builder: (context) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) {
-              final controller = LoginController();
-              controller
-                  .restoreSession(); // Ensure session is restored on app start
-              return controller;
-            },
+      builder:
+          (context) => MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (_) {
+                  final controller = LoginController();
+                  controller
+                      .restoreSession(); // Ensure session is restored on app start
+                  return controller;
+                },
+              ),
+              ChangeNotifierProvider(create: (_) => ThemeController()),
+            ],
+            child: MyApp(),
           ),
-          ChangeNotifierProvider(create: (_) => ThemeController()),
-        ],
-        child: MyApp(),
-      ),
     ),
   );
 }
@@ -60,7 +61,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Provider.of<ThemeController>(
-        context); // Access themeController from Provider
+      context,
+    ); // Access themeController from Provider
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -70,19 +72,19 @@ class MyApp extends StatelessWidget {
       themeMode: themeController.themeMode,
       theme: ThemeData(
         brightness: Brightness.light,
-        primarySwatch: Colors.deepPurple,
+        primarySwatch: AppTheme.yachtClubBlueSwatch,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
-          selectedItemColor: Colors.deepPurple,
+          selectedItemColor: AppTheme.yachtClubBlue,
           unselectedItemColor: Colors.grey,
         ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        primarySwatch: Colors.deepPurple,
+        primarySwatch: AppTheme.yachtClubBlueSwatch,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: Colors.grey[900],
-          selectedItemColor: Colors.deepPurpleAccent,
+          selectedItemColor: AppTheme.yachtClubBlueAccent,
           unselectedItemColor: Colors.white70,
         ),
       ),

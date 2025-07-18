@@ -28,6 +28,15 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      shape:ShapeBorder.lerp(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        1.0,
+      ),
       elevation: 0,
       backgroundColor: AppTheme.yachtClubBlue,
       title:

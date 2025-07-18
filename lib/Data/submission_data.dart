@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/theme.dart';
+
 final List<Map<String, dynamic>> submissionTasks = [
   {
     'title': 'Problem Solving',
@@ -9,13 +11,14 @@ final List<Map<String, dynamic>> submissionTasks = [
   {
     'title': 'Excel OS Installation',
     'subject': 'Cloud Computing',
-    'color': Colors.purple.shade50,
+    'color': AppTheme.yachtClubBlue,
   },
   {
     'title': 'Case Study',
     'subject': 'Software Project Management',
     'color': Colors.green.shade50,
-  },{
+  },
+  {
     'title': 'Problem Solving',
     'subject': 'Cryptography & Network Security',
     'color': Colors.blue.shade50,
@@ -23,7 +26,7 @@ final List<Map<String, dynamic>> submissionTasks = [
   {
     'title': 'Excel OS Installation',
     'subject': 'Cloud Computing',
-    'color': Colors.purple.shade50,
+    'color': AppTheme.yachtClubBlue,
   },
   {
     'title': 'Case Study',

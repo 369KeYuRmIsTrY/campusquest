@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart'; // Assuming Supabase fo
 import 'package:campusquest/widgets/common_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../controllers/login_controller.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class EnrollmentScreen extends StatefulWidget {
   const EnrollmentScreen({super.key});
@@ -34,10 +35,14 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _fabAnimation =
-        CurvedAnimation(parent: _animationController, curve: Curves.elasticOut);
-    Future.delayed(const Duration(milliseconds: 500),
-        () => _animationController.forward());
+    _fabAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.elasticOut,
+    );
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => _animationController.forward(),
+    );
 
     _searchController.addListener(_filterEnrollments);
     _fetchData();
@@ -63,8 +68,10 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
 
   Future<void> _fetchEnrollments() async {
     try {
-      final response =
-          await _supabase.from('enrollment').select().order('enrollment_id');
+      final response = await _supabase
+          .from('enrollment')
+          .select()
+          .order('enrollment_id');
       setState(() {
         _enrollments = List<Map<String, dynamic>>.from(response);
         _filteredEnrollments = List.from(_enrollments);
@@ -114,39 +121,43 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
     final query = _searchController.text.toLowerCase();
     setState(() {
       _isSearching = query.isNotEmpty;
-      _filteredEnrollments = _enrollments.where((enrollment) {
-        final studentName =
-            _getStudentName(enrollment['student_id']).toLowerCase();
-        final courseName =
-            _getCourseName(enrollment['course_id']).toLowerCase();
-        final semesterNum =
-            _getSemesterNumber(enrollment['semester_id']).toString();
-        return studentName.contains(query) ||
-            courseName.contains(query) ||
-            semesterNum.contains(query);
-      }).toList();
+      _filteredEnrollments =
+          _enrollments.where((enrollment) {
+            final studentName =
+                _getStudentName(enrollment['student_id']).toLowerCase();
+            final courseName =
+                _getCourseName(enrollment['course_id']).toLowerCase();
+            final semesterNum =
+                _getSemesterNumber(enrollment['semester_id']).toString();
+            return studentName.contains(query) ||
+                courseName.contains(query) ||
+                semesterNum.contains(query);
+          }).toList();
     });
   }
 
   String _getStudentName(int studentId) {
     return _students.firstWhere(
-      (student) => student['student_id'] == studentId,
-      orElse: () => {'name': 'Unknown'},
-    )['name'] as String;
+          (student) => student['student_id'] == studentId,
+          orElse: () => {'name': 'Unknown'},
+        )['name']
+        as String;
   }
 
   String _getCourseName(int courseId) {
     return _courses.firstWhere(
-      (course) => course['course_id'] == courseId,
-      orElse: () => {'course_name': 'Unknown'},
-    )['course_name'] as String;
+          (course) => course['course_id'] == courseId,
+          orElse: () => {'course_name': 'Unknown'},
+        )['course_name']
+        as String;
   }
 
   int _getSemesterNumber(int semesterId) {
     return _semesters.firstWhere(
-      (semester) => semester['semester_id'] == semesterId,
-      orElse: () => {'semester_number': 0},
-    )['semester_number'] as int;
+          (semester) => semester['semester_id'] == semesterId,
+          orElse: () => {'semester_number': 0},
+        )['semester_number']
+        as int;
   }
 
   // Get the student's most recent semester based on existing enrollments
@@ -155,8 +166,10 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
         _enrollments.where((e) => e['student_id'] == studentId).toList();
     if (studentEnrollments.isEmpty) return null;
     // Sort by enrollment_id (assuming higher ID is more recent) and get the last semester
-    studentEnrollments.sort((a, b) =>
-        (b['enrollment_id'] as int).compareTo(a['enrollment_id'] as int));
+    studentEnrollments.sort(
+      (a, b) =>
+          (b['enrollment_id'] as int).compareTo(a['enrollment_id'] as int),
+    );
     return studentEnrollments.first['semester_id'] as int;
   }
 
@@ -164,10 +177,9 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
     final deletedEnrollment = _filteredEnrollments[index];
     setState(() => _filteredEnrollments.removeAt(index));
     try {
-      await _supabase
-          .from('enrollment')
-          .delete()
-          .match({'enrollment_id': enrollmentId});
+      await _supabase.from('enrollment').delete().match({
+        'enrollment_id': enrollmentId,
+      });
       _enrollments.removeWhere((e) => e['enrollment_id'] == enrollmentId);
       _showSuccessMessage(
         'Enrollment deleted successfully',
@@ -202,23 +214,29 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
         isEditing ? enrollment!['semester_id'] as int? : null;
 
     // Determine if the student is from semester 1 based on existing enrollments (for Add) or current enrollment (for Edit)
-    bool isSemesterOneStudent = isEditing
-        ? enrollment!['semester_id'] == 1
-        : (selectedStudentId != null
-            ? _getStudentSemester(selectedStudentId) == 1
-            : false);
+    bool isSemesterOneStudent =
+        isEditing
+            ? enrollment!['semester_id'] == 1
+            : (selectedStudentId != null
+                ? _getStudentSemester(selectedStudentId) == 1
+                : false);
 
     // Filter courses for semester 1 if the student is from semester 1
     List<Map<String, dynamic>> filteredCourses = _courses;
     if (isSemesterOneStudent) {
       // Using enrollment data as a proxy to infer semester 1 courses
-      final semesterOneCourses = _enrollments
-          .where((e) => e['semester_id'] == 1)
-          .map((e) => e['course_id'])
-          .toSet()
-          .map((id) => _courses.firstWhere((c) => c['course_id'] == id,
-              orElse: () => {'course_id': id, 'course_name': 'Unknown'}))
-          .toList();
+      final semesterOneCourses =
+          _enrollments
+              .where((e) => e['semester_id'] == 1)
+              .map((e) => e['course_id'])
+              .toSet()
+              .map(
+                (id) => _courses.firstWhere(
+                  (c) => c['course_id'] == id,
+                  orElse: () => {'course_id': id, 'course_name': 'Unknown'},
+                ),
+              )
+              .toList();
       filteredCourses = semesterOneCourses;
       if (!isEditing)
         selectedSemesterId = 1; // Auto-select semester 1 only for Add
@@ -231,25 +249,34 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Container(),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation =
-            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(
-            opacity:
-                Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
             child: AlertDialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: Row(
                 children: [
-                  Icon(isEditing ? Icons.edit_note : Icons.add_box,
-                      color: Colors.deepPurple),
+                  Icon(
+                    isEditing ? Icons.edit_note : Icons.add_box,
+                    color: AppTheme.yachtClubBlue,
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Enrollment' : 'Enroll Student',
                     style: const TextStyle(
-                        color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                      color: AppTheme.yachtClubBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -262,12 +289,15 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                         DropdownButtonFormField<int>(
                           value: selectedStudentId,
                           decoration: _inputDecoration('Student', Icons.person),
-                          items: _students
-                              .map((student) => DropdownMenuItem<int>(
-                                    value: student['student_id'] as int,
-                                    child: Text(student['name'] as String),
-                                  ))
-                              .toList(),
+                          items:
+                              _students
+                                  .map(
+                                    (student) => DropdownMenuItem<int>(
+                                      value: student['student_id'] as int,
+                                      child: Text(student['name'] as String),
+                                    ),
+                                  )
+                                  .toList(),
                           onChanged: (value) {
                             setDialogState(() {
                               selectedStudentId = value;
@@ -276,17 +306,22 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                                 isSemesterOneStudent =
                                     _getStudentSemester(value!) == 1;
                                 if (isSemesterOneStudent) {
-                                  final semesterOneCourses = _enrollments
-                                      .where((e) => e['semester_id'] == 1)
-                                      .map((e) => e['course_id'])
-                                      .toSet()
-                                      .map((id) => _courses.firstWhere(
-                                          (c) => c['course_id'] == id,
-                                          orElse: () => {
-                                                'course_id': id,
-                                                'course_name': 'Unknown'
-                                              }))
-                                      .toList();
+                                  final semesterOneCourses =
+                                      _enrollments
+                                          .where((e) => e['semester_id'] == 1)
+                                          .map((e) => e['course_id'])
+                                          .toSet()
+                                          .map(
+                                            (id) => _courses.firstWhere(
+                                              (c) => c['course_id'] == id,
+                                              orElse:
+                                                  () => {
+                                                    'course_id': id,
+                                                    'course_name': 'Unknown',
+                                                  },
+                                            ),
+                                          )
+                                          .toList();
                                   filteredCourses = semesterOneCourses;
                                   selectedSemesterId = 1;
                                 } else {
@@ -298,49 +333,66 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                               }
                             });
                           },
-                          validator: (value) =>
-                              value == null ? 'Student is required' : null,
+                          validator:
+                              (value) =>
+                                  value == null ? 'Student is required' : null,
                         ),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<int>(
                           value: selectedCourseId,
                           decoration: _inputDecoration('Course', Icons.book),
-                          items: filteredCourses
-                              .map((course) => DropdownMenuItem<int>(
-                                    value: course['course_id'] as int,
-                                    child:
-                                        Text(course['course_name'] as String),
-                                  ))
-                              .toList(),
-                          onChanged: (value) =>
-                              setDialogState(() => selectedCourseId = value),
-                          validator: (value) =>
-                              value == null ? 'Course is required' : null,
+                          items:
+                              filteredCourses
+                                  .map(
+                                    (course) => DropdownMenuItem<int>(
+                                      value: course['course_id'] as int,
+                                      child: Text(
+                                        course['course_name'] as String,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged:
+                              (value) => setDialogState(
+                                () => selectedCourseId = value,
+                              ),
+                          validator:
+                              (value) =>
+                                  value == null ? 'Course is required' : null,
                         ),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<int>(
                           value: selectedSemesterId,
-                          decoration:
-                              _inputDecoration('Semester', Icons.calendar_today)
-                                  .copyWith(
+                          decoration: _inputDecoration(
+                            'Semester',
+                            Icons.calendar_today,
+                          ).copyWith(
                             filled: true,
-                            fillColor: isSemesterOneStudent
-                                ? Colors.grey.shade200
-                                : null, // Visual cue for disabled state
+                            fillColor:
+                                isSemesterOneStudent
+                                    ? Colors.grey.shade200
+                                    : null, // Visual cue for disabled state
                           ),
-                          items: _semesters
-                              .map((semester) => DropdownMenuItem<int>(
-                                    value: semester['semester_id'] as int,
-                                    child: Text(
-                                        'Semester ${semester['semester_number']}'),
-                                  ))
-                              .toList(),
-                          onChanged: isSemesterOneStudent
-                              ? null
-                              : (value) => setDialogState(
-                                  () => selectedSemesterId = value),
-                          validator: (value) =>
-                              value == null ? 'Semester is required' : null,
+                          items:
+                              _semesters
+                                  .map(
+                                    (semester) => DropdownMenuItem<int>(
+                                      value: semester['semester_id'] as int,
+                                      child: Text(
+                                        'Semester ${semester['semester_number']}',
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged:
+                              isSemesterOneStudent
+                                  ? null
+                                  : (value) => setDialogState(
+                                    () => selectedSemesterId = value,
+                                  ),
+                          validator:
+                              (value) =>
+                                  value == null ? 'Semester is required' : null,
                           // No 'enabled' parameter; using onChanged = null to disable
                         ),
                       ],
@@ -352,17 +404,22 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                 TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.cancel, color: Colors.grey),
-                  label: const Text('Cancel',
-                      style: TextStyle(color: Colors.grey)),
+                  label: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   onPressed: () async {
                     if (selectedStudentId == null ||
@@ -374,12 +431,16 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                     Navigator.pop(context);
                     try {
                       if (isEditing) {
-                        await _supabase.from('enrollment').update({
-                          'student_id': selectedStudentId,
-                          'course_id': selectedCourseId,
-                          'semester_id': selectedSemesterId,
-                        }).match(
-                            {'enrollment_id': enrollment!['enrollment_id']});
+                        await _supabase
+                            .from('enrollment')
+                            .update({
+                              'student_id': selectedStudentId,
+                              'course_id': selectedCourseId,
+                              'semester_id': selectedSemesterId,
+                            })
+                            .match({
+                              'enrollment_id': enrollment!['enrollment_id'],
+                            });
                         _showSuccessMessage('Enrollment updated successfully');
                       } else {
                         await _supabase.from('enrollment').insert({
@@ -410,161 +471,190 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24), topRight: Radius.circular(24)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.shade50,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24)),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade400,
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            _getStudentName(enrollment['student_id']),
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
-                          ),
-                          Text(
-                            _getCourseName(enrollment['course_id']),
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.deepPurple.shade700),
-                          ),
-                        ],
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1))
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppTheme.yachtClubBlueSwatch.shade50,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade400,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    _getStudentName(enrollment['student_id']),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.yachtClubBlue,
+                                    ),
+                                  ),
+                                  Text(
+                                    _getCourseName(enrollment['course_id']),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color:
+
+                                              AppTheme
+                                              .yachtClubBlue
+
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              right: 16,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: AppTheme.yachtClubBlue,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailItem(
+                                icon: Icons.person,
+                                title: 'Student',
+                                value: _getStudentName(
+                                  enrollment['student_id'],
+                                ),
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.book,
+                                title: 'Course',
+                                value: _getCourseName(enrollment['course_id']),
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.calendar_today,
+                                title: 'Semester',
+                                value:
+                                    'Semester ${_getSemesterNumber(enrollment['semester_id'])}',
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.tag,
+                                title: 'Enrollment ID',
+                                value: enrollment['enrollment_id'].toString(),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildActionButton(
+                                    label: 'Edit',
+                                    icon: Icons.edit,
+                                    color: Colors.blue,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _showAddEditDialog(
+                                        enrollment: enrollment,
+                                      );
+                                    },
+                                  ),
+                                  _buildActionButton(
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      final index = _filteredEnrollments
+                                          .indexWhere(
+                                            (e) =>
+                                                e['enrollment_id'] ==
+                                                enrollment['enrollment_id'],
+                                          );
+                                      if (index != -1)
+                                        _deleteEnrollment(
+                                          enrollment['enrollment_id'],
+                                          index,
+                                        );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          child: const Icon(Icons.close,
-                              color: Colors.deepPurple, size: 22),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailItem(
-                          icon: Icons.person,
-                          title: 'Student',
-                          value: _getStudentName(enrollment['student_id'])),
-                      _buildDetailItem(
-                          icon: Icons.book,
-                          title: 'Course',
-                          value: _getCourseName(enrollment['course_id'])),
-                      _buildDetailItem(
-                          icon: Icons.calendar_today,
-                          title: 'Semester',
-                          value:
-                              'Semester ${_getSemesterNumber(enrollment['semester_id'])}'),
-                      _buildDetailItem(
-                          icon: Icons.tag,
-                          title: 'Enrollment ID',
-                          value: enrollment['enrollment_id'].toString()),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            label: 'Edit',
-                            icon: Icons.edit,
-                            color: Colors.blue,
-                            onTap: () {
-                              Navigator.pop(context);
-                              _showAddEditDialog(enrollment: enrollment);
-                            },
-                          ),
-                          _buildActionButton(
-                            label: 'Delete',
-                            icon: Icons.delete,
-                            color: Colors.red,
-                            onTap: () {
-                              Navigator.pop(context);
-                              final index = _filteredEnrollments.indexWhere(
-                                  (e) =>
-                                      e['enrollment_id'] ==
-                                      enrollment['enrollment_id']);
-                              if (index != -1)
-                                _deleteEnrollment(
-                                    enrollment['enrollment_id'], index);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
   InputDecoration _inputDecoration(String labelText, IconData prefixIcon) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-      prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+      labelStyle: TextStyle(color: AppTheme.yachtClubBlueSwatch.shade300),
+      prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.deepPurple.shade200),
+        borderSide: BorderSide(color: AppTheme.yachtClubBlueSwatch.shade200),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.deepPurple, width: 2),
+        borderSide: const BorderSide(color: AppTheme.yachtClubBlue, width: 2),
       ),
       filled: true,
-      fillColor: Colors.deepPurple.shade50,
+      fillColor: AppTheme.yachtClubBlueSwatch.shade50,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
@@ -580,9 +670,10 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
           ],
         ),
         backgroundColor: Colors.green.shade700,
-        duration: action != null
-            ? const Duration(seconds: 5)
-            : const Duration(seconds: 2),
+        duration:
+            action != null
+                ? const Duration(seconds: 5)
+                : const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(8),
@@ -613,18 +704,17 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.people_outline,
-          size: 80,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.people_outline, size: 80, color: Colors.grey),
         const SizedBox(height: 16),
         Text(
           _isSearching
               ? 'No enrollments match your search'
               : 'No enrollments found',
           style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -637,11 +727,12 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
         if (!_isSearching)
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: AppTheme.yachtClubBlue,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
             onPressed: () => _showAddEditDialog(),
             icon: const Icon(Icons.add),
@@ -657,13 +748,13 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlue.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => _showEnrollmentDetails(enrollment),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlue.withOpacity(0.1),
+          highlightColor: AppTheme.yachtClubBlue.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -678,11 +769,15 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlueSwatch.withOpacity(
+                                0.1,
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.people,
-                                color: Colors.deepPurple),
+                            child: const Icon(
+                              Icons.people,
+                              color: AppTheme.yachtClubBlue,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -692,16 +787,18 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                                 Text(
                                   _getStudentName(enrollment['student_id']),
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   _getCourseName(enrollment['course_id']),
                                   style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 14),
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -716,8 +813,11 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today,
-                        size: 16, color: Colors.grey),
+                    const Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Semester ${_getSemesterNumber(enrollment['semester_id'])}',
@@ -731,15 +831,18 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () =>
-                          _showAddEditDialog(enrollment: enrollment),
+                      onPressed:
+                          () => _showAddEditDialog(enrollment: enrollment),
                       tooltip: 'Edit',
                       splashRadius: 24,
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () =>
-                          _deleteEnrollment(enrollment['enrollment_id'], index),
+                      onPressed:
+                          () => _deleteEnrollment(
+                            enrollment['enrollment_id'],
+                            index,
+                          ),
                       tooltip: 'Delete',
                       splashRadius: 24,
                     ),
@@ -753,8 +856,11 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
     );
   }
 
-  Widget _buildDetailItem(
-      {required IconData icon, required String title, required String value}) {
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -762,19 +868,26 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8)),
-            child: Icon(icon, color: Colors.deepPurple),
+              color: AppTheme.yachtClubBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppTheme.yachtClubBlue),
           ),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500)),
+              Text(
+                title,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ],
@@ -782,11 +895,12 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
     );
   }
 
-  Widget _buildActionButton(
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -801,8 +915,10 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 8),
-            Text(label,
-                style: TextStyle(color: color, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
@@ -815,7 +931,8 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Enroll Student',
-        userEmail: loginController.studentName ??
+        userEmail:
+            loginController.studentName ??
             loginController.email.split('@').first,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -823,42 +940,49 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
         ),
         showSearch: true,
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: Colors.deepPurple),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Loading enrollments...',
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
-            )
-          : RefreshIndicator(
-              key: _refreshKey,
-              color: Colors.deepPurple,
-              onRefresh: _fetchData,
-              child: _filteredEnrollments.isEmpty
-                  ? Center(child: _buildEmptyState())
-                  : Scrollbar(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _filteredEnrollments.length,
-                        itemBuilder: (context, index) => _buildEnrollmentCard(
-                            _filteredEnrollments[index], index),
-                      ),
+      body:
+          _isLoading
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: AppTheme.yachtClubBlue,
                     ),
-            ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading enrollments...',
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
+              )
+              : RefreshIndicator(
+                key: _refreshKey,
+                color: AppTheme.yachtClubBlue,
+                onRefresh: _fetchData,
+                child:
+                    _filteredEnrollments.isEmpty
+                        ? Center(child: _buildEmptyState())
+                        : Scrollbar(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: _filteredEnrollments.length,
+                            itemBuilder:
+                                (context, index) => _buildEnrollmentCard(
+                                  _filteredEnrollments[index],
+                                  index,
+                                ),
+                          ),
+                        ),
+              ),
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
         child: FloatingActionButton.extended(
           onPressed: () => _showAddEditDialog(),
           icon: const Icon(Icons.add),
           label: const Text('Enroll'),
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: AppTheme.yachtClubBlue,
           foregroundColor: Colors.white,
           elevation: 4,
         ),

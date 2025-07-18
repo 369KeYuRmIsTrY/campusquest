@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../../../controllers/login_controller.dart';
 import '../../../widgets/bottomnavigationbar.dart';
 import '../../widgets/bottomnavigationbar.dart';
-import '../../../theme/theme.dart';
+import 'package:campusquest/theme/theme.dart';
 import 'package:open_file/open_file.dart';
 import 'package:campusquest/utils/open_file_plus.dart';
 
@@ -412,13 +412,13 @@ class _AddEventPageState extends State<AddEventPage>
                 children: [
                   Icon(
                     isEditing ? Icons.edit_note : Icons.add_box,
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                   ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Event' : 'Add New Event',
                     style: const TextStyle(
-                      color: Colors.deepPurple,
+                      color: AppTheme.yachtClubBlue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -485,10 +485,10 @@ class _AddEventPageState extends State<AddEventPage>
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.shade50,
+                              color: AppTheme.yachtClubBlue,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: Colors.deepPurple.shade200,
+                                color: AppTheme.yachtClubBlue,
                               ),
                             ),
                             child: Column(
@@ -498,7 +498,7 @@ class _AddEventPageState extends State<AddEventPage>
                                   'Associated Programs',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
+                                    color: AppTheme.yachtClubBlue,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -520,8 +520,14 @@ class _AddEventPageState extends State<AddEventPage>
                                             selected: dialogSelectedPrograms
                                                 .contains(programId),
                                             selectedColor:
-                                                Colors.deepPurple.shade100,
-                                            checkmarkColor: Colors.deepPurple,
+
+                                                    AppTheme
+                                                    .yachtClubBlue,
+
+                                            checkmarkColor:
+
+                                                    AppTheme
+                                                    .yachtClubBlue,
                                             onSelected: (selected) {
                                               setDialogState(() {
                                                 if (selected) {
@@ -587,8 +593,9 @@ class _AddEventPageState extends State<AddEventPage>
                               icon: const Icon(Icons.upload_file),
                               label: const Text('Upload File'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple.shade100,
-                                foregroundColor: Colors.deepPurple,
+                                backgroundColor:
+                                    AppTheme.yachtClubBlue,
+                                foregroundColor: AppTheme.yachtClubBlue,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -620,7 +627,7 @@ class _AddEventPageState extends State<AddEventPage>
                     ),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: AppTheme.yachtClubBlue,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -672,19 +679,19 @@ class _AddEventPageState extends State<AddEventPage>
   InputDecoration _inputDecoration(String labelText, IconData prefixIcon) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-      prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+      labelStyle: TextStyle(color: AppTheme.yachtClubBlue),
+      prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.deepPurple.shade200),
+        borderSide: BorderSide(color: AppTheme.yachtClubBlue),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.deepPurple, width: 2),
+        borderSide: const BorderSide(color: AppTheme.yachtClubBlue, width: 2),
       ),
       filled: true,
-      fillColor: Colors.deepPurple.shade50,
+      fillColor: AppTheme.yachtClubBlue,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
@@ -741,7 +748,9 @@ class _AddEventPageState extends State<AddEventPage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(color: Colors.deepPurple),
+                    const CircularProgressIndicator(
+                      color: AppTheme.yachtClubBlue,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Loading events...',
@@ -752,7 +761,7 @@ class _AddEventPageState extends State<AddEventPage>
               )
               : RefreshIndicator(
                 key: _refreshKey,
-                color: Colors.deepPurple,
+                color: AppTheme.yachtClubBlue,
                 onRefresh: _fetchEvents,
                 child:
                     events.isEmpty
@@ -815,13 +824,13 @@ class _AddEventPageState extends State<AddEventPage>
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlue.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => _showEventDetails(event),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlue.withOpacity(0.1),
+          highlightColor: AppTheme.yachtClubBlue.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -836,12 +845,12 @@ class _AddEventPageState extends State<AddEventPage>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlue.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               isUpcoming ? Icons.event : Icons.event_available,
-                              color: Colors.deepPurple,
+                              color: AppTheme.yachtClubBlue,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -977,7 +986,7 @@ class _AddEventPageState extends State<AddEventPage>
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple.shade50,
+                                color: AppTheme.yachtClubBlue,
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(24),
                                   topRight: Radius.circular(24),
@@ -999,7 +1008,7 @@ class _AddEventPageState extends State<AddEventPage>
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.deepPurple,
+                                      color: AppTheme.yachtClubBlue,
                                     ),
                                   ),
                                   Text(
@@ -1034,7 +1043,7 @@ class _AddEventPageState extends State<AddEventPage>
                                   ),
                                   child: const Icon(
                                     Icons.close,
-                                    color: Colors.deepPurple,
+                                    color: AppTheme.yachtClubBlue,
                                     size: 22,
                                   ),
                                 ),
@@ -1174,10 +1183,10 @@ class _AddEventPageState extends State<AddEventPage>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
+                color: AppTheme.yachtClubBlue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: Colors.deepPurple),
+              child: Icon(icon, color: AppTheme.yachtClubBlue),
             ),
             const SizedBox(width: 16),
             Expanded(

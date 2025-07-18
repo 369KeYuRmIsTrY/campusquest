@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../theme/theme.dart';
+
 class DepartmentController {
   final BuildContext context;
   final void Function(void Function()) setStateCallback;
@@ -81,11 +83,12 @@ class DepartmentController {
 
     final query = searchController.text.toLowerCase();
     setStateCallback(() {
-      filteredDepartments = _departments.where((dept) {
-        final deptName = dept['dept_name'].toString().toLowerCase();
-        final building = dept['building'].toString().toLowerCase();
-        return deptName.contains(query) || building.contains(query);
-      }).toList();
+      filteredDepartments =
+          _departments.where((dept) {
+            final deptName = dept['dept_name'].toString().toLowerCase();
+            final building = dept['building'].toString().toLowerCase();
+            return deptName.contains(query) || building.contains(query);
+          }).toList();
       isSearching = true;
     });
   }
@@ -98,7 +101,9 @@ class DepartmentController {
     });
 
     try {
-      await _supabase.from('department').delete().match({'dept_name': deptName});
+      await _supabase.from('department').delete().match({
+        'dept_name': deptName,
+      });
 
       showSuccessMessage(
         'Department deleted',
@@ -125,10 +130,17 @@ class DepartmentController {
     }
   }
 
-  void showAddEditDialog(BuildContext context, {Map<String, dynamic>? department}) {
+  void showAddEditDialog(
+    BuildContext context, {
+    Map<String, dynamic>? department,
+  }) {
     final bool isEditing = department != null;
-    final deptNameController = TextEditingController(text: isEditing ? department!['dept_name'] : '');
-    final buildingController = TextEditingController(text: isEditing ? department!['building'] : '');
+    final deptNameController = TextEditingController(
+      text: isEditing ? department!['dept_name'] : '',
+    );
+    final buildingController = TextEditingController(
+      text: isEditing ? department!['building'] : '',
+    );
 
     showGeneralDialog(
       context: context,
@@ -137,23 +149,34 @@ class DepartmentController {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Container(),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(
-            opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
             child: AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: Row(
                 children: [
                   Icon(
                     isEditing ? Icons.edit_note : Icons.add_box,
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                   ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Department' : 'Add Department',
-                    style: const TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppTheme.yachtClubBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -180,14 +203,22 @@ class DepartmentController {
                 TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.cancel, color: Colors.grey),
-                  label: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                  label: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   onPressed: () async {
                     final deptName = deptNameController.text.trim();
@@ -200,9 +231,10 @@ class DepartmentController {
 
                     try {
                       if (isEditing) {
-                        await _supabase.from('department').update({
-                          'building': building,
-                        }).match({'dept_name': department!['dept_name']});
+                        await _supabase
+                            .from('department')
+                            .update({'building': building})
+                            .match({'dept_name': department!['dept_name']});
                         showSuccessMessage('Department updated successfully');
                       } else {
                         await _supabase.from('department').insert({
@@ -242,12 +274,16 @@ class DepartmentController {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-        prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+        labelStyle: TextStyle(
+          color: AppTheme.yachtClubBlue,
+        ),
+        prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple.shade200),
+          borderSide: BorderSide(
+            color: AppTheme.yachtClubBlue,
+          ),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -255,11 +291,20 @@ class DepartmentController {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+          borderSide: BorderSide(
+            color: AppTheme.yachtClubBlue,
+            width: 2,
+          ),
         ),
         filled: true,
-        fillColor: enabled ? Colors.deepPurple.shade50 : Colors.grey.shade100,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        fillColor:
+            enabled
+                ? AppTheme.yachtClubBlue
+                : Colors.grey.shade100,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 12,
+        ),
       ),
     );
   }
@@ -275,7 +320,10 @@ class DepartmentController {
           ],
         ),
         backgroundColor: Colors.green.shade700,
-        duration: action != null ? const Duration(seconds: 5) : const Duration(seconds: 2),
+        duration:
+            action != null
+                ? const Duration(seconds: 5)
+                : const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(8),
@@ -306,14 +354,12 @@ class DepartmentController {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.business_outlined,
-          size: 80,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.business_outlined, size: 80, color: Colors.grey),
         const SizedBox(height: 16),
         Text(
-          isSearching ? 'No departments match your search' : 'No departments found',
+          isSearching
+              ? 'No departments match your search'
+              : 'No departments found',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -322,17 +368,21 @@ class DepartmentController {
         ),
         const SizedBox(height: 8),
         Text(
-          isSearching ? 'Try a different search term' : 'Add a department to get started',
+          isSearching
+              ? 'Try a different search term'
+              : 'Add a department to get started',
           style: const TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 24),
         if (!isSearching)
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: AppTheme.yachtClubBlue,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
             onPressed: () => showAddEditDialog(context),
             icon: const Icon(Icons.add),
@@ -342,136 +392,153 @@ class DepartmentController {
     );
   }
 
-  void showDepartmentDetails(BuildContext context, Map<String, dynamic> department) {
+  void showDepartmentDetails(
+    BuildContext context,
+    Map<String, dynamic> department,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.shade50,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade400,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            department['dept_name'],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple,
-                            ),
-                          ),
-                        ],
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 1),
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color:
+                                    AppTheme.yachtClubBlue,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade400,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    department['dept_name'],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.yachtClubBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              right: 16,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: AppTheme.yachtClubBlue,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailItem(
+                                icon: Icons.location_city,
+                                title: 'Building',
+                                value: department['building'],
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildActionButton(
+                                    label: 'Edit',
+                                    icon: Icons.edit,
+                                    color: Colors.blue,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      showAddEditDialog(
+                                        context,
+                                        department: department,
+                                      );
+                                    },
+                                  ),
+                                  _buildActionButton(
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      final index = filteredDepartments
+                                          .indexWhere(
+                                            (dept) =>
+                                                dept['dept_name'] ==
+                                                department['dept_name'],
+                                          );
+                                      if (index != -1) {
+                                        _deleteDepartment(
+                                          department['dept_name'],
+                                          index,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.deepPurple,
-                            size: 22,
-                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailItem(
-                        icon: Icons.location_city,
-                        title: 'Building',
-                        value: department['building'],
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            label: 'Edit',
-                            icon: Icons.edit,
-                            color: Colors.blue,
-                            onTap: () {
-                              Navigator.pop(context);
-                              showAddEditDialog(context, department: department);
-                            },
-                          ),
-                          _buildActionButton(
-                            label: 'Delete',
-                            icon: Icons.delete,
-                            color: Colors.red,
-                            onTap: () {
-                              Navigator.pop(context);
-                              final index = filteredDepartments.indexWhere(
-                                      (dept) => dept['dept_name'] == department['dept_name']);
-                              if (index != -1) {
-                                _deleteDepartment(department['dept_name'], index);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -487,10 +554,10 @@ class DepartmentController {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: AppTheme.yachtClubBlue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: Colors.deepPurple),
+            child: Icon(icon, color: AppTheme.yachtClubBlue),
           ),
           const SizedBox(width: 16),
           Column(
@@ -502,7 +569,10 @@ class DepartmentController {
               ),
               Text(
                 value,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
@@ -541,19 +611,23 @@ class DepartmentController {
     );
   }
 
-  Widget buildDepartmentCard(BuildContext context, Map<String, dynamic> department, int index) {
+  Widget buildDepartmentCard(
+    BuildContext context,
+    Map<String, dynamic> department,
+    int index,
+  ) {
     return Hero(
       tag: 'department_${department['dept_name']}',
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlue.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => showDepartmentDetails(context, department),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlue,
+          highlightColor: AppTheme.yachtClubBlue.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -568,10 +642,14 @@ class DepartmentController {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlue
+                                  .withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.business, color: Colors.deepPurple),
+                            child: const Icon(
+                              Icons.business,
+                              color: AppTheme.yachtClubBlue,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -580,13 +658,19 @@ class DepartmentController {
                               children: [
                                 Text(
                                   department['dept_name'],
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   department['building'],
-                                  style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
+                                  style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -604,13 +688,19 @@ class DepartmentController {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () => showAddEditDialog(context, department: department),
+                      onPressed:
+                          () => showAddEditDialog(
+                            context,
+                            department: department,
+                          ),
                       tooltip: 'Edit',
                       splashRadius: 24,
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _deleteDepartment(department['dept_name'], index),
+                      onPressed:
+                          () =>
+                              _deleteDepartment(department['dept_name'], index),
                       tooltip: 'Delete',
                       splashRadius: 24,
                     ),

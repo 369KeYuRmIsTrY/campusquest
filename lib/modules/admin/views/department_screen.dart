@@ -59,7 +59,9 @@ class DepartmentScreenState extends State<DepartmentScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(color: Colors.deepPurple),
+                    const CircularProgressIndicator(
+                      color: AppTheme.yachtClubBlue,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Loading data...',
@@ -71,7 +73,7 @@ class DepartmentScreenState extends State<DepartmentScreen>
               : RefreshIndicator(
                 key: _controller.refreshKey,
                 onRefresh: _controller.fetchData,
-                color: Colors.deepPurple,
+                color: AppTheme.yachtClubBlue,
                 child:
                     _controller.filteredDepartments.isEmpty
                         ? Center(child: _controller.buildEmptyState(context))

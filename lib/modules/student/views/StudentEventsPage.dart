@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import '../../../controllers/login_controller.dart';
+import '../../../theme/theme.dart';
 import '../../../utils/open_file_plus.dart';
 
 class StudentEventsPage extends StatefulWidget {
@@ -67,7 +68,9 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
         builder:
             (context) => const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.yachtClubBlue,
+                ),
               ),
             ),
       );
@@ -92,8 +95,7 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                   (_, scrollController) => Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [
-                          Colors.deepPurple.shade50,
+                        colors: [AppTheme.yachtClubBlue,
                           Colors.grey.shade50,
                         ],
                         begin: Alignment.topCenter,
@@ -130,14 +132,16 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                     style: const TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.deepPurple,
+                                      color:AppTheme
+                                              .yachtClubBlue,
                                     ),
                                   ),
                                 ),
                                 IconButton(
                                   icon: const Icon(
                                     Icons.close,
-                                    color: Colors.deepPurple,
+                                    color:AppTheme
+                                            .yachtClubBlue,
                                   ),
                                   onPressed: () => Navigator.pop(context),
                                 ),
@@ -148,7 +152,9 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                               children: [
                                 Icon(
                                   Icons.event,
-                                  color: Colors.deepPurple.shade400,
+                                  color:AppTheme
+                                          .yachtClubBlue
+
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
@@ -169,7 +175,8 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
+                                  color:AppTheme
+                                          .yachtClubBlue,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -179,7 +186,9 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: Colors.deepPurple.shade200,
+                                    color:AppTheme
+                                            .yachtClubBlue
+
                                   ),
                                 ),
                                 child: Text(
@@ -198,7 +207,8 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
+                                  color:AppTheme
+                                          .yachtClubBlue,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -212,10 +222,13 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                             label: Text(
                                               program['program']['program_name'],
                                             ),
-                                            backgroundColor:
-                                                Colors.deepPurple.shade100,
+                                            backgroundColor:AppTheme
+                                                    .yachtClubBlue,
+
                                             labelStyle: const TextStyle(
-                                              color: Colors.deepPurple,
+                                              color:
+                                                AppTheme
+                                                      .yachtClubBlue,
                                             ),
                                           ),
                                         )
@@ -229,7 +242,9 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
+                                  color:
+                                      AppTheme
+                                          .yachtClubBlue,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -246,14 +261,16 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                     horizontal: 16,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.deepPurple.shade50,
+                                    color:AppTheme
+                                            .yachtClubBlue,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         Icons.file_present,
-                                        color: Colors.deepPurple.shade700,
+                                        color:AppTheme
+                                                .yachtClubBlue
                                       ),
                                       const SizedBox(width: 8),
                                       Expanded(
@@ -262,7 +279,8 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                               .split('/')
                                               .last,
                                           style: TextStyle(
-                                            color: Colors.deepPurple.shade700,
+                                            color:AppTheme
+                                                    .yachtClubBlue,
                                             decoration:
                                                 TextDecoration.underline,
                                           ),
@@ -271,7 +289,9 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                                       ),
                                       Icon(
                                         Icons.download,
-                                        color: Colors.deepPurple.shade700,
+                                        color:AppTheme
+                                                .yachtClubBlue
+
                                       ),
                                     ],
                                   ),
@@ -343,12 +363,14 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       elevation: 3,
-      shadowColor: Colors.deepPurple.shade200.withOpacity(0.3),
+      shadowColor: AppTheme.yachtClubBlue
+          .withOpacity(0.3),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () => _showEventDetails(event),
         borderRadius: BorderRadius.circular(16),
-        splashColor: Colors.deepPurple.shade200.withOpacity(0.3),
+        splashColor: AppTheme.yachtClubBlue
+            .withOpacity(0.3),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -357,12 +379,12 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade50,
+                  color: AppTheme.yachtClubBlue,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isUpcoming ? Icons.event : Icons.event_available,
-                  color: Colors.deepPurple.shade700,
+                  color: AppTheme.yachtClubBlue,
                   size: 28,
                 ),
               ),
@@ -376,7 +398,8 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple.shade700,
+                        color:AppTheme
+                                .yachtClubBlue
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -422,7 +445,7 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
                     style: TextStyle(color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple.shade700,
+                    backgroundColor:AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -475,7 +498,7 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upcoming Events'),
-        backgroundColor: Colors.deepPurple.shade700,
+        backgroundColor: AppTheme.yachtClubBlue,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -484,12 +507,12 @@ class _StudentEventsPageState extends State<StudentEventsPage> {
           _isLoadingEvents
               ? Center(
                 child: CircularProgressIndicator(
-                  color: Colors.deepPurple.shade700,
+                  color: AppTheme.yachtClubBlue,
                 ),
               )
               : RefreshIndicator(
                 key: _refreshKey,
-                color: Colors.deepPurple.shade700,
+                color: AppTheme.yachtClubBlue,
                 backgroundColor: Colors.white,
                 onRefresh: _fetchUpcomingEvents,
                 child:

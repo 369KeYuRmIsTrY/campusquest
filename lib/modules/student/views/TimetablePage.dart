@@ -38,16 +38,19 @@ class _TimetablePageState extends State<TimetablePage>
     // Set default selectedDay to current day
     selectedDay = DateFormat('EEEE').format(DateTime.now()); // e.g., "Monday"
     // Set default selectedAttendanceView to current month
-    selectedAttendanceView =
-        DateFormat('MMMM').format(DateTime.now()); // e.g., "April"
+    selectedAttendanceView = DateFormat(
+      'MMMM',
+    ).format(DateTime.now()); // e.g., "April"
 
     // Initialize dropdown animation controller
     _dropdownController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _dropdownAnimation =
-        CurvedAnimation(parent: _dropdownController, curve: Curves.easeInOut);
+    _dropdownAnimation = CurvedAnimation(
+      parent: _dropdownController,
+      curve: Curves.easeInOut,
+    );
 
     // Fetch data on initialization
     _fetchData();
@@ -64,8 +67,10 @@ class _TimetablePageState extends State<TimetablePage>
     setState(() => _isLoading = true);
 
     try {
-      final loginController =
-          Provider.of<LoginController>(context, listen: false);
+      final loginController = Provider.of<LoginController>(
+        context,
+        listen: false,
+      );
       final studentId = loginController.studentId;
 
       if (studentId == null) {
@@ -73,11 +78,12 @@ class _TimetablePageState extends State<TimetablePage>
       }
 
       // Step 1: Fetch student's current_semester and program_id
-      final studentResponse = await _supabase
-          .from('student')
-          .select('current_semester, program_id')
-          .eq('student_id', studentId)
-          .single();
+      final studentResponse =
+          await _supabase
+              .from('student')
+              .select('current_semester, program_id')
+              .eq('student_id', studentId)
+              .single();
 
       final currentSemester = studentResponse['current_semester'] as int?;
       final programId = studentResponse['program_id'] as int?;
@@ -87,12 +93,13 @@ class _TimetablePageState extends State<TimetablePage>
       }
 
       // Step 2: Fetch semester_id from semester table
-      final semesterResponse = await _supabase
-          .from('semester')
-          .select('semester_id')
-          .eq('semester_number', currentSemester)
-          .eq('program_id', programId)
-          .single();
+      final semesterResponse =
+          await _supabase
+              .from('semester')
+              .select('semester_id')
+              .eq('semester_number', currentSemester)
+              .eq('program_id', programId)
+              .single();
 
       final semesterId = semesterResponse['semester_id'] as int?;
 
@@ -101,12 +108,15 @@ class _TimetablePageState extends State<TimetablePage>
       }
 
       // Step 3: Fetch timetable data
-      final timetableResponse = await _supabase.from('timetable').select('''
+      final timetableResponse = await _supabase
+          .from('timetable')
+          .select('''
       *, 
       course:course_id(course_name), 
       time_slot:time_slot_id(day, start_time, end_time), 
       classroom:classroom_id(classroom_id)
-    ''').eq('semester_id', semesterId);
+    ''')
+          .eq('semester_id', semesterId);
 
       // Step 4: Fetch attendance data
       final attendanceResponse = await _supabase
@@ -157,67 +167,75 @@ class _TimetablePageState extends State<TimetablePage>
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Time Table',
-        userEmail: Provider.of<LoginController>(context).studentName ??
+        userEmail:
+            Provider.of<LoginController>(context).studentName ??
             Provider.of<LoginController>(context).email.split('@').first,
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.deepPurple))
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(screenWidth > 600 ? 24 : 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Today's Class Section
-                  Text(
-                    "Today's Class",
-                    style: TextStyle(
-                      fontSize: screenWidth > 600 ? 20 : 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.veryDarkBlue,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildDaySelection(),
-                  const SizedBox(height: 12),
-                  if (selectedDay != null)
-                    filteredTimetableData.isNotEmpty
-                        ? Column(
-                            children: filteredTimetableData.map((classItem) {
-                              return _buildClassCard(
-                                classItem['course']['course_name'],
-                                '${classItem['time_slot']['start_time']} - ${classItem['time_slot']['end_time']}',
-                                classItem['classroom']['classroom_id'],
-                                Colors.blue.shade50,
-                              );
-                            }).toList(),
-                          )
-                        : const Center(
-                            child: Text(
-                              'No classes scheduled for today.',
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                          ),
-                  const SizedBox(height: 24),
-
-                  // Attendance Section
-                  _buildHeader(screenWidth),
-                  const SizedBox(height: 12),
-                  _buildAttendanceViewSelection(),
-                  const SizedBox(height: 12),
-                  if (selectedAttendanceView != null)
-                    _buildAttendanceSection(screenWidth)
-                  else
-                    const Center(
-                      child: Text(
-                        'Please select an attendance view.',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
+      body:
+          _isLoading
+              ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppTheme.yachtClubBlue,
+                ),
+              )
+              : SingleChildScrollView(
+                padding: EdgeInsets.all(screenWidth > 600 ? 24 : 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Today's Class Section
+                    Text(
+                      "Today's Class",
+                      style: TextStyle(
+                        fontSize: screenWidth > 600 ? 20 : 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.veryDarkBlue,
                       ),
                     ),
-                ],
+                    const SizedBox(height: 12),
+                    _buildDaySelection(),
+                    const SizedBox(height: 12),
+                    if (selectedDay != null)
+                      filteredTimetableData.isNotEmpty
+                          ? Column(
+                            children:
+                                filteredTimetableData.map((classItem) {
+                                  return _buildClassCard(
+                                    classItem['course']['course_name'],
+                                    '${classItem['time_slot']['start_time']} - ${classItem['time_slot']['end_time']}',
+                                    classItem['classroom']['classroom_id'],
+                                    Colors.blue.shade50,
+                                  );
+                                }).toList(),
+                          )
+                          : const Center(
+                            child: Text(
+                              'No classes scheduled for today.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                    const SizedBox(height: 24),
+
+                    // Attendance Section
+                    _buildHeader(screenWidth),
+                    const SizedBox(height: 12),
+                    _buildAttendanceViewSelection(),
+                    const SizedBox(height: 12),
+                    if (selectedAttendanceView != null)
+                      _buildAttendanceSection(screenWidth)
+                    else
+                      const Center(
+                        child: Text(
+                          'Please select an attendance view.',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
     );
   }
 
@@ -301,8 +319,9 @@ class _TimetablePageState extends State<TimetablePage>
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color:
-                        Colors.grey.withOpacity(0.1 * _dropdownAnimation.value),
+                    color: Colors.grey.withOpacity(
+                      0.1 * _dropdownAnimation.value,
+                    ),
                     spreadRadius: 1,
                     blurRadius: 4,
                   ),
@@ -319,24 +338,29 @@ class _TimetablePageState extends State<TimetablePage>
                       color: Colors.grey,
                     ),
                   ),
-                  items: items.map((String item) {
-                    return DropdownMenuItem<String>(
-                      value: item,
-                      child: Text(
-                        item,
-                        style: TextStyle(
-                          fontSize:
-                              MediaQuery.of(context).size.width > 600 ? 16 : 14,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                  items:
+                      items.map((String item) {
+                        return DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.width > 600
+                                      ? 16
+                                      : 14,
+                            ),
+                          ),
+                        );
+                      }).toList(),
                   onChanged: (String? newValue) {
                     onChanged(newValue);
                     _dropdownController.reverse();
                   },
-                  icon:
-                      Icon(Icons.keyboard_arrow_down, color: Colors.deepPurple),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppTheme.yachtClubBlue,
+                  ),
                   style: TextStyle(
                     fontSize: MediaQuery.of(context).size.width > 600 ? 16 : 14,
                     color: Colors.black,
@@ -386,85 +410,94 @@ class _TimetablePageState extends State<TimetablePage>
               ),
             ],
           ),
-          child: isWideScreen
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Subjects',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: AppTheme.veryDarkBlue,
-                              fontSize: screenWidth > 600 ? 16 : 14,
+          child:
+              isWideScreen
+                  ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Subjects',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: AppTheme.veryDarkBlue,
+                                fontSize: screenWidth > 600 ? 16 : 14,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          filteredAttendanceData.isEmpty
-                              ? const Text(
+                            const SizedBox(height: 8),
+                            filteredAttendanceData.isEmpty
+                                ? const Text(
                                   'No attendance data available.',
                                   style: TextStyle(
-                                      fontSize: 14, color: Colors.grey),
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
                                 )
-                              : Column(
-                                  children: _buildAttendanceBySubject()
-                                      .map((item) => _buildAttendanceItem(
-                                            item['subject'],
-                                            item['attended'],
-                                            item['total'],
-                                            screenWidth,
-                                          ))
-                                      .toList(),
+                                : Column(
+                                  children:
+                                      _buildAttendanceBySubject()
+                                          .map(
+                                            (item) => _buildAttendanceItem(
+                                              item['subject'],
+                                              item['attended'],
+                                              item['total'],
+                                              screenWidth,
+                                            ),
+                                          )
+                                          .toList(),
                                 ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 1,
-                      child: AttendancePieChart(
-                        attendancePercentage: overallAttendancePercentage,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: AttendancePieChart(
+                          attendancePercentage: overallAttendancePercentage,
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Subjects',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.veryDarkBlue,
-                        fontSize: screenWidth > 600 ? 16 : 14,
+                    ],
+                  )
+                  : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Subjects',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.veryDarkBlue,
+                          fontSize: screenWidth > 600 ? 16 : 14,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    filteredAttendanceData.isEmpty
-                        ? const Text(
+                      const SizedBox(height: 8),
+                      filteredAttendanceData.isEmpty
+                          ? const Text(
                             'No attendance data available.',
                             style: TextStyle(fontSize: 14, color: Colors.grey),
                           )
-                        : Column(
-                            children: _buildAttendanceBySubject()
-                                .map((item) => _buildAttendanceItem(
-                                      item['subject'],
-                                      item['attended'],
-                                      item['total'],
-                                      screenWidth,
-                                    ))
-                                .toList(),
+                          : Column(
+                            children:
+                                _buildAttendanceBySubject()
+                                    .map(
+                                      (item) => _buildAttendanceItem(
+                                        item['subject'],
+                                        item['attended'],
+                                        item['total'],
+                                        screenWidth,
+                                      ),
+                                    )
+                                    .toList(),
                           ),
-                    const SizedBox(height: 16),
-                    AttendancePieChart(
-                      attendancePercentage: overallAttendancePercentage,
-                    ),
-                  ],
-                ),
+                      const SizedBox(height: 16),
+                      AttendancePieChart(
+                        attendancePercentage: overallAttendancePercentage,
+                      ),
+                    ],
+                  ),
         );
       },
     );
@@ -497,7 +530,11 @@ class _TimetablePageState extends State<TimetablePage>
 
   // Individual Attendance Item
   Widget _buildAttendanceItem(
-      String subject, int attended, int total, double screenWidth) {
+    String subject,
+    int attended,
+    int total,
+    double screenWidth,
+  ) {
     double percentage = _calculatePercentage(attended, total);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -526,14 +563,19 @@ class _TimetablePageState extends State<TimetablePage>
 
   // Class Card with Hover Effect and Animation
   Widget _buildClassCard(
-      String courseName, String time, String classroom, Color color) {
+    String courseName,
+    String time,
+    String classroom,
+    Color color,
+  ) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.only(bottom: 8),
-        padding:
-            EdgeInsets.all(MediaQuery.of(context).size.width > 600 ? 24 : 16),
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width > 600 ? 24 : 16,
+        ),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(12),
@@ -556,7 +598,7 @@ class _TimetablePageState extends State<TimetablePage>
                     courseName,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      color: Colors.deepPurple,
+                      color: AppTheme.yachtClubBlue,
                       fontSize:
                           MediaQuery.of(context).size.width > 600 ? 16 : 14,
                     ),
@@ -624,7 +666,7 @@ const List<String> days = [
   'Thursday',
   'Friday',
   'Saturday',
-  'Sunday'
+  'Sunday',
 ];
 const List<String> months = [
   'January',
@@ -638,5 +680,5 @@ const List<String> months = [
   'September',
   'October',
   'November',
-  'December'
+  'December',
 ];

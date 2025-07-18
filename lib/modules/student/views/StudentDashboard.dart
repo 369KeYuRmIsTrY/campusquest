@@ -147,14 +147,17 @@ class _StudentDashboardState extends State<StudentDashboard>
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.deepPurple.shade700, Colors.deepPurple.shade400],
+          colors: [
+            AppTheme.yachtClubBlueSwatch.shade700,
+            AppTheme.yachtClubBlueSwatch.shade400,
+          ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.deepPurple.shade900.withOpacity(0.5),
+            color: AppTheme.yachtClubBlueSwatch.shade900.withOpacity(0.5),
             blurRadius: 20,
             spreadRadius: 5,
           ),
@@ -273,8 +276,8 @@ class _StudentDashboardState extends State<StudentDashboard>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.deepPurple.shade900,
-                  Colors.deepPurple.shade600,
+                  AppTheme.yachtClubBlueSwatch.shade900,
+                  AppTheme.yachtClubBlueSwatch.shade600,
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -381,7 +384,7 @@ class _StudentDashboardState extends State<StudentDashboard>
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple.shade700,
+                backgroundColor: AppTheme.yachtClubBlueSwatch.shade700,
                 foregroundColor: Colors.white,
               ),
             ),
@@ -395,7 +398,7 @@ class _StudentDashboardState extends State<StudentDashboard>
         opacity: _animation,
         child: Card(
           elevation: 4,
-          shadowColor: Colors.deepPurple.shade200.withOpacity(0.4),
+          shadowColor: AppTheme.yachtClubBlueSwatch.shade200.withOpacity(0.4),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -407,13 +410,16 @@ class _StudentDashboardState extends State<StudentDashboard>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.deepPurple.shade100, Colors.grey.shade50],
+                  colors: [
+                    AppTheme.yachtClubBlueSwatch.shade100,
+                    Colors.grey.shade50,
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.deepPurple.shade300,
+                  color: AppTheme.yachtClubBlueSwatch.shade300,
                   width: 1.5,
                 ),
               ),
@@ -436,7 +442,7 @@ class _StudentDashboardState extends State<StudentDashboard>
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.shade50,
+                              color: AppTheme.yachtClubBlueSwatch.shade50,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
@@ -449,7 +455,7 @@ class _StudentDashboardState extends State<StudentDashboard>
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.shade50,
+                              color: AppTheme.yachtClubBlueSwatch.shade50,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
@@ -476,14 +482,13 @@ class _StudentDashboardState extends State<StudentDashboard>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors.deepPurple.shade700,
+                            color: AppTheme.yachtClubBlueSwatch.shade700,
                             width: 2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.deepPurple.shade200.withOpacity(
-                                0.3,
-                              ),
+                              color: AppTheme.yachtClubBlueSwatch.shade200
+                                  .withOpacity(0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -503,7 +508,8 @@ class _StudentDashboardState extends State<StudentDashboard>
                                 ? Icon(
                                   Icons.person,
                                   size: 50,
-                                  color: Colors.deepPurple.shade700,
+                                  color:AppTheme
+                                          .yachtClubBlue
                                 )
                                 : null,
                       ),
@@ -617,7 +623,7 @@ class _StudentDashboardState extends State<StudentDashboard>
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.9),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.deepPurple.shade200),
+          border: Border.all(color: AppTheme.yachtClubBlueSwatch.shade200),
         ),
         child: Row(
           children: [

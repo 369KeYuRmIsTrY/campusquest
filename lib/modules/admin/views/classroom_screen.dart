@@ -2,6 +2,8 @@ import 'package:campusquest/modules/admin/controllers/classroom_controller.dart'
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:campusquest/theme/theme.dart';
+import 'package:campusquest/widgets/common_app_bar.dart';
+import '../../../theme/theme.dart';
 
 class ClassroomScreen extends StatefulWidget {
   const ClassroomScreen({Key? key}) : super(key: key);
@@ -82,13 +84,13 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                 children: [
                   Icon(
                     isEditing ? Icons.edit_note : Icons.add_box,
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                   ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Classroom' : 'Add New Classroom',
                     style: const TextStyle(
-                      color: Colors.deepPurple,
+                      color: AppTheme.yachtClubBlue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -132,7 +134,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -196,12 +198,12 @@ class _ClassroomScreenState extends State<ClassroomScreen>
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-        prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+        labelStyle: TextStyle(color: AppTheme.yachtClubBlueSwatch.shade300),
+        prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple.shade200),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlueSwatch.shade200),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -209,10 +211,13 @@ class _ClassroomScreenState extends State<ClassroomScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
         ),
         filled: true,
-        fillColor: enabled ? Colors.deepPurple.shade50 : Colors.grey.shade100,
+        fillColor:
+            enabled
+                ? AppTheme.yachtClubBlueSwatch.shade50
+                : Colors.grey.shade100,
         contentPadding: const EdgeInsets.symmetric(
           vertical: 16,
           horizontal: 12,
@@ -289,7 +294,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
         // if (!_controller.isSearching)
         //   ElevatedButton.icon(
         //     style: ElevatedButton.styleFrom(
-        //       backgroundColor: Colors.deepPurple,
+        //       backgroundColor: AppTheme.yachtClubBlueAppTheme.yachtClubBlue,
         //       foregroundColor: Colors.white,
         //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -309,6 +314,11 @@ class _ClassroomScreenState extends State<ClassroomScreen>
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
+            shape: ShapeBorder.lerp(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              1.0,
+            ),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context),
@@ -377,7 +387,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const CircularProgressIndicator(
-                          color: Colors.deepPurple,
+                          color: AppTheme.yachtClubBlue,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -389,7 +399,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                   )
                   : RefreshIndicator(
                     key: _refreshKey,
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                     onRefresh: _controller.refreshClassrooms,
                     child:
                         _controller.classrooms.isEmpty
@@ -412,7 +422,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
               onPressed: () => _showAddEditDialog(),
               icon: const Icon(Icons.add),
               label: const Text('Add Classroom'),
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: AppTheme.yachtClubBlue,
               foregroundColor: Colors.white,
               elevation: 4,
             ),
@@ -433,13 +443,13 @@ class _ClassroomScreenState extends State<ClassroomScreen>
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlue.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => _showClassroomDetails(classroom),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlue.withOpacity(0.1),
+          highlightColor: AppTheme.yachtClubBlue.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -454,12 +464,12 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlue.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
                               Icons.meeting_room,
-                              color: Colors.deepPurple,
+                              color: AppTheme.yachtClubBlue,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -586,7 +596,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple.shade50,
+                                color: AppTheme.yachtClubBlue,
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(24),
                                   topRight: Radius.circular(24),
@@ -608,14 +618,15 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.deepPurple,
+                                      color: AppTheme.yachtClubBlue,
                                     ),
                                   ),
                                   Text(
                                     'Room ${classroom['room_number']}',
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Colors.deepPurple.shade700,
+                                      color:
+                                          AppTheme.yachtClubBlueSwatch.shade700,
                                     ),
                                   ),
                                 ],
@@ -641,7 +652,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
                                   ),
                                   child: const Icon(
                                     Icons.close,
-                                    color: Colors.deepPurple,
+                                    color: AppTheme.yachtClubBlue,
                                     size: 22,
                                   ),
                                 ),
@@ -724,10 +735,10 @@ class _ClassroomScreenState extends State<ClassroomScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: AppTheme.yachtClubBlue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: Colors.deepPurple),
+            child: Icon(icon, color: AppTheme.yachtClubBlue),
           ),
           const SizedBox(width: 16),
           Column(

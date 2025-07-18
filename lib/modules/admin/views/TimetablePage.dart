@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:campusquest/controllers/login_controller.dart';
 import 'package:campusquest/widgets/common_app_bar.dart';
 import 'package:campusquest/widgets/bottomnavigationbar.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class TimetablePageAdmin extends StatefulWidget {
   const TimetablePageAdmin({super.key});
@@ -578,7 +579,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
         bool dialogActive = true;
         return Theme(
           data: ThemeData(
-            primarySwatch: Colors.deepPurple,
+            primarySwatch: AppTheme.yachtClubBlueSwatch,
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
               fillColor: Colors.blue.shade50,
@@ -586,7 +587,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
-              labelStyle: TextStyle(color: Colors.deepPurple.shade700),
+              labelStyle: TextStyle(
+                color: AppTheme.yachtClubBlueSwatch.shade700,
+              ),
             ),
           ),
           child: StatefulBuilder(
@@ -599,7 +602,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                 title: Text(
                   'Generate Timetable',
                   style: TextStyle(
-                    color: Colors.deepPurple.shade700,
+                    color: AppTheme.yachtClubBlueSwatch.shade700,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -617,7 +620,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                             labelText: 'Program',
                             prefixIcon: Icon(
                               Icons.school,
-                              color: Colors.deepPurple.shade700,
+                              color: AppTheme.yachtClubBlueSwatch.shade700,
                             ),
                           ),
                           hint: const Text('Select a program'),
@@ -628,7 +631,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                   child: Text(
                                     '${program['program_name']} (${program['batch_year']})',
                                     style: TextStyle(
-                                      color: Colors.deepPurple.shade900,
+                                      color:
+                                          AppTheme.yachtClubBlue,
+
                                     ),
                                   ),
                                 );
@@ -653,7 +658,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                             labelText: 'Semester',
                             prefixIcon: Icon(
                               Icons.calendar_today,
-                              color: Colors.deepPurple.shade700,
+                              color: AppTheme.yachtClubBlueSwatch.shade700,
                             ),
                           ),
                           hint: const Text('Select a semester'),
@@ -664,7 +669,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                   child: Text(
                                     'Semester ${semester['semester_number']}',
                                     style: TextStyle(
-                                      color: Colors.deepPurple.shade900,
+                                      color:
+                                        AppTheme
+                                              .yachtClubBlue
+
                                     ),
                                   ),
                                 );
@@ -693,7 +701,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                             labelText: 'Classroom',
                             prefixIcon: Icon(
                               Icons.room,
-                              color: Colors.deepPurple.shade700,
+                              color: AppTheme.yachtClubBlueSwatch.shade700,
                             ),
                           ),
                           hint: const Text('Select a classroom'),
@@ -704,7 +712,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                   child: Text(
                                     '${classroom['building']} - ${classroom['room_number']}',
                                     style: TextStyle(
-                                      color: Colors.deepPurple.shade900,
+                                      color:
+                                          AppTheme
+                                              .yachtClubBlue
+
                                     ),
                                   ),
                                 );
@@ -722,7 +733,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple.shade700,
+                              color: AppTheme.yachtClubBlueSwatch.shade700,
                             ),
                           ),
                           const Divider(height: 16, color: Colors.grey),
@@ -898,7 +909,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                               }
                             },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: AppTheme.yachtClubBlueSwatch,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -955,7 +966,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
           bool dialogActive = true;
           return Theme(
             data: ThemeData(
-              primarySwatch: Colors.deepPurple,
+              primarySwatch: AppTheme.yachtClubBlueSwatch,
               inputDecorationTheme: InputDecorationTheme(
                 filled: true,
                 fillColor: Colors.blue.shade50,
@@ -963,7 +974,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
-                labelStyle: TextStyle(color: Colors.deepPurple.shade700),
+                labelStyle: TextStyle(
+                  color: AppTheme.yachtClubBlueSwatch.shade700,
+                ),
               ),
             ),
             child: StatefulBuilder(
@@ -991,7 +1004,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                               Text(
                                 'Add Course to Timetable',
                                 style: TextStyle(
-                                  color: Colors.deepPurple.shade700,
+                                  color:
+                                      AppTheme.yachtClubBlue,
+
                                   fontWeight: FontWeight.bold,
                                   fontSize: isLargeScreen ? 20 : 18,
                                 ),
@@ -1010,8 +1025,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                               labelText: 'Course',
                                               prefixIcon: Icon(
                                                 Icons.book,
-                                                color:
-                                                    Colors.deepPurple.shade700,
+                                                color:AppTheme
+                                                        .yachtClubBlue
+
                                               ),
                                               labelStyle: TextStyle(
                                                 fontSize: fontSize,
@@ -1031,10 +1047,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                                       '${course['course_name']} (${course['l']} lectures)',
                                                       style: TextStyle(
                                                         fontSize: fontSize,
-                                                        color:
-                                                            Colors
-                                                                .deepPurple
-                                                                .shade900,
+                                                        color:AppTheme
+                                                                .yachtClubBlue
+
                                                       ),
                                                     ),
                                                   );
@@ -1052,8 +1067,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                               labelText: 'Time Slot',
                                               prefixIcon: Icon(
                                                 Icons.schedule,
-                                                color:
-                                                    Colors.deepPurple.shade700,
+                                                color:AppTheme
+                                                        .yachtClubBlue
+
                                               ),
                                               labelStyle: TextStyle(
                                                 fontSize: fontSize,
@@ -1074,9 +1090,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                                       style: TextStyle(
                                                         fontSize: fontSize,
                                                         color:
-                                                            Colors
-                                                                .deepPurple
-                                                                .shade900,
+
+                                                               AppTheme
+                                                                .yachtClubBlue
+
                                                       ),
                                                     ),
                                                   );
@@ -1098,7 +1115,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                           labelText: 'Classroom',
                                           prefixIcon: Icon(
                                             Icons.room,
-                                            color: Colors.deepPurple.shade700,
+                                            color:AppTheme
+                                                    .yachtClubBlue
+
                                           ),
                                           labelStyle: TextStyle(
                                             fontSize: fontSize,
@@ -1118,9 +1137,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                                   style: TextStyle(
                                                     fontSize: fontSize,
                                                     color:
-                                                        Colors
-                                                            .deepPurple
-                                                            .shade900,
+                                                        AppTheme
+                                                            .yachtClubBlue
+
                                                   ),
                                                 ),
                                               );
@@ -1143,7 +1162,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                         labelText: 'Course',
                                         prefixIcon: Icon(
                                           Icons.book,
-                                          color: Colors.deepPurple.shade700,
+                                          color:
+                                              AppTheme
+                                                  .yachtClubBlue
+
                                         ),
                                         labelStyle: TextStyle(
                                           fontSize: fontSize,
@@ -1162,9 +1184,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                                 style: TextStyle(
                                                   fontSize: fontSize,
                                                   color:
-                                                      Colors
-                                                          .deepPurple
-                                                          .shade900,
+                                                     AppTheme
+                                                          .yachtClubBlue
+
                                                 ),
                                               ),
                                             );
@@ -1182,7 +1204,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                         labelText: 'Time Slot',
                                         prefixIcon: Icon(
                                           Icons.schedule,
-                                          color: Colors.deepPurple.shade700,
+                                          color:
+                                              AppTheme
+                                                  .yachtClubBlue
+
                                         ),
                                         labelStyle: TextStyle(
                                           fontSize: fontSize,
@@ -1201,9 +1226,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                                 style: TextStyle(
                                                   fontSize: fontSize,
                                                   color:
-                                                      Colors
-                                                          .deepPurple
-                                                          .shade900,
+                                                      AppTheme
+                                                          .yachtClubBlue
+
                                                 ),
                                               ),
                                             );
@@ -1221,7 +1246,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                         labelText: 'Classroom',
                                         prefixIcon: Icon(
                                           Icons.room,
-                                          color: Colors.deepPurple.shade700,
+                                          color:AppTheme
+                                                  .yachtClubBlue
+
                                         ),
                                         labelStyle: TextStyle(
                                           fontSize: fontSize,
@@ -1240,9 +1267,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                                 style: TextStyle(
                                                   fontSize: fontSize,
                                                   color:
-                                                      Colors
-                                                          .deepPurple
-                                                          .shade900,
+                                                      AppTheme
+                                                          .yachtClubBlue
+
                                                 ),
                                               ),
                                             );
@@ -1474,7 +1501,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                     }
                                   },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
+                            backgroundColor: AppTheme.yachtClubBlueSwatch,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -1608,7 +1635,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       context: context,
       builder: (context) {
         return Theme(
-          data: ThemeData(primarySwatch: Colors.deepPurple),
+          data: ThemeData(primarySwatch: AppTheme.yachtClubBlueSwatch),
           child: AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -1616,7 +1643,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
             title: Text(
               'Edit Timetable Entry: ${entry['course']}',
               style: TextStyle(
-                color: Colors.deepPurple.shade700,
+                color: AppTheme.yachtClubBlueSwatch.shade700,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -1640,7 +1667,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           value: slot['time_slot_id'],
                           child: Text(
                             '${slot['day']} ${slot['start_time']} - ${slot['end_time']}',
-                            style: TextStyle(color: Colors.deepPurple.shade900),
+                            style: TextStyle(
+                              color: AppTheme.yachtClubBlueSwatch.shade900,
+                            ),
                           ),
                         );
                       }).toList(),
@@ -1664,7 +1693,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                           value: classroom['classroom_id'],
                           child: Text(
                             '${classroom['building']} - ${classroom['room_number']}',
-                            style: TextStyle(color: Colors.deepPurple.shade900),
+                            style: TextStyle(
+                              color: AppTheme.yachtClubBlueSwatch.shade900,
+                            ),
                           ),
                         );
                       }).toList(),
@@ -1703,7 +1734,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: AppTheme.yachtClubBlueSwatch,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -1729,7 +1760,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
           title: Text(
             'Delete Timetable Entry',
             style: TextStyle(
-              color: Colors.deepPurple.shade700,
+              color: AppTheme.yachtClubBlueSwatch.shade700,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -1775,7 +1806,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
           title: Text(
             'Delete Entire Timetable',
             style: TextStyle(
-              color: Colors.deepPurple.shade700,
+              color: AppTheme.yachtClubBlueSwatch.shade700,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -1980,7 +2011,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       context: context,
       builder: (context) {
         return Theme(
-          data: ThemeData(primarySwatch: Colors.deepPurple),
+          data: ThemeData(primarySwatch: AppTheme.yachtClubBlueSwatch),
           child: StatefulBuilder(
             builder: (context, setDialogState) {
               return AlertDialog(
@@ -1990,7 +2021,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                 title: Text(
                   'Select Program and Semester',
                   style: TextStyle(
-                    color: Colors.deepPurple.shade700,
+                    color: AppTheme.yachtClubBlueSwatch.shade700,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -2016,7 +2047,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                               child: Text(
                                 '${program['program_name']} (${program['batch_year']})',
                                 style: TextStyle(
-                                  color: Colors.deepPurple.shade900,
+                                  color:
+                                     AppTheme
+                                          .yachtClubBlue
+
                                 ),
                               ),
                             );
@@ -2053,7 +2087,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                               child: Text(
                                 'Semester ${semester['semester_number']}',
                                 style: TextStyle(
-                                  color: Colors.deepPurple.shade900,
+                                  color:
+                                      AppTheme
+                                          .yachtClubBlue
+
                                 ),
                               ),
                             );
@@ -2096,7 +2133,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       await _fetchTimetable(selectedSemesterId!);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: AppTheme.yachtClubBlueSwatch,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -2146,7 +2183,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple.shade700,
+                        color: AppTheme.yachtClubBlueSwatch.shade700,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -2168,7 +2205,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.deepPurple,
+                                  color: AppTheme.yachtClubBlue,
                                 ),
                               ),
                               trailing: Row(
@@ -2218,7 +2255,8 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                     icon: const Icon(Icons.add, size: 20),
                                     label: const Text('Add'),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.deepPurple,
+                                      backgroundColor:
+                                          AppTheme.yachtClubBlueSwatch,
                                       foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
@@ -2247,7 +2285,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple.shade700,
+                        color: AppTheme.yachtClubBlueSwatch.shade700,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -2278,7 +2316,10 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                 child: Text(
                                   'Semester ${semester['semester_number']}',
                                   style: TextStyle(
-                                    color: Colors.deepPurple.shade900,
+                                    color:
+                                       AppTheme
+                                            .yachtClubBlue
+
                                   ),
                                 ),
                               );
@@ -2323,7 +2364,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple.shade700,
+                        color: AppTheme.yachtClubBlueSwatch.shade700,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -2477,7 +2518,9 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
                                     child: DataTable(
                                       columnSpacing: 20,
                                       headingRowColor: WidgetStateProperty.all(
-                                        Colors.deepPurple.shade50,
+                                    AppTheme
+                                            .yachtClubBlue
+
                                       ),
                                       dataRowColor:
                                           WidgetStateProperty.resolveWith(

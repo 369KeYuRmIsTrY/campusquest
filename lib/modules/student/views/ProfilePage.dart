@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
 import 'package:campusquest/modules/login/views/login.dart'; // Import LoginPage
 import '../../../widgets/common_app_bar.dart';
-import '../../../theme/theme.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -208,8 +208,10 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            primaryColor: Colors.deepPurple,
-            colorScheme: const ColorScheme.light(primary: Colors.deepPurple),
+            primaryColor: AppTheme.yachtClubBlue,
+            colorScheme: const ColorScheme.light(
+              primary: AppTheme.yachtClubBlue,
+            ),
           ),
           child: child!,
         );
@@ -395,12 +397,16 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         CircleAvatar(
           radius: 60,
-          backgroundColor: Colors.deepPurple.shade100,
+          backgroundColor: AppTheme.yachtClubBlueSwatch.shade100,
           backgroundImage:
               _profileImageUrl != null ? NetworkImage(_profileImageUrl!) : null,
           child:
               _profileImageUrl == null
-                  ? const Icon(Icons.person, size: 60, color: Colors.deepPurple)
+                  ? const Icon(
+                    Icons.person,
+                    size: 60,
+                    color: AppTheme.yachtClubBlue,
+                  )
                   : null,
         ),
         const SizedBox(height: 16),
@@ -606,7 +612,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     'Core'
                                 ? Icons.book
                                 : Icons.bookmark,
-                            color: Colors.deepPurple,
+                            color: AppTheme.yachtClubBlue,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -704,7 +710,7 @@ class _ProfilePageState extends State<ProfilePage> {
           (context) => AlertDialog(
             title: const Text(
               'Select Elective Course',
-              style: TextStyle(color: Colors.deepPurple),
+              style: TextStyle(color: AppTheme.yachtClubBlue),
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -746,7 +752,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         trailing: IconButton(
                                           icon: const Icon(
                                             Icons.add_circle,
-                                            color: Colors.deepPurple,
+                                            color: AppTheme.yachtClubBlue,
                                           ),
                                           onPressed:
                                               _isLoading
@@ -770,7 +776,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
                   'Cancel',
-                  style: TextStyle(color: Colors.deepPurple),
+                  style: TextStyle(color: AppTheme.yachtClubBlue),
                 ),
               ),
             ],
@@ -788,7 +794,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CircleAvatar(
                 radius: 60,
-                backgroundColor: Colors.deepPurple.shade100,
+                backgroundColor: AppTheme.yachtClubBlueSwatch.shade100,
                 backgroundImage:
                     _profileImage != null
                         ? kIsWeb
@@ -806,13 +812,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? const Icon(
                           Icons.person,
                           size: 60,
-                          color: Colors.deepPurple,
+                          color: AppTheme.yachtClubBlue,
                         )
                         : null,
               ),
               CircleAvatar(
                 radius: 20,
-                backgroundColor: Colors.deepPurple,
+                backgroundColor: AppTheme.yachtClubBlue,
                 child: IconButton(
                   icon: const Icon(
                     Icons.camera_alt,
@@ -848,7 +854,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     controller: _nameController,
                     decoration: const InputDecoration(
                       labelText: 'Full Name',
-                      prefixIcon: Icon(Icons.person, color: Colors.deepPurple),
+                      prefixIcon: Icon(
+                        Icons.person,
+                        color: AppTheme.yachtClubBlue,
+                      ),
                     ),
                     validator:
                         (value) =>
@@ -861,7 +870,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     value: _selectedGender,
                     decoration: const InputDecoration(
                       labelText: 'Gender',
-                      prefixIcon: Icon(Icons.people, color: Colors.deepPurple),
+                      prefixIcon: Icon(
+                        Icons.people,
+                        color: AppTheme.yachtClubBlue,
+                      ),
                     ),
                     items:
                         ['Male', 'Female', 'Other', 'Prefer not to say']
@@ -888,12 +900,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       labelText: 'Date of Birth',
                       prefixIcon: const Icon(
                         Icons.calendar_today,
-                        color: Colors.deepPurple,
+                        color: AppTheme.yachtClubBlue,
                       ),
                       suffixIcon: IconButton(
                         icon: const Icon(
                           Icons.calendar_month,
-                          color: Colors.deepPurple,
+                          color: AppTheme.yachtClubBlue,
                         ),
                         onPressed: () => _selectDate(context),
                       ),
@@ -928,7 +940,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     controller: _addressController,
                     decoration: const InputDecoration(
                       labelText: 'Address',
-                      prefixIcon: Icon(Icons.home, color: Colors.deepPurple),
+                      prefixIcon: Icon(
+                        Icons.home,
+                        color: AppTheme.yachtClubBlue,
+                      ),
                     ),
                     maxLines: 2,
                   ),
@@ -939,7 +954,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       labelText: 'City',
                       prefixIcon: Icon(
                         Icons.location_city,
-                        color: Colors.deepPurple,
+                        color: AppTheme.yachtClubBlue,
                       ),
                     ),
                   ),
@@ -948,7 +963,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     controller: _stateController,
                     decoration: const InputDecoration(
                       labelText: 'State/Province',
-                      prefixIcon: Icon(Icons.map, color: Colors.deepPurple),
+                      prefixIcon: Icon(
+                        Icons.map,
+                        color: AppTheme.yachtClubBlue,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -956,7 +974,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     controller: _countryController,
                     decoration: const InputDecoration(
                       labelText: 'Country',
-                      prefixIcon: Icon(Icons.flag, color: Colors.deepPurple),
+                      prefixIcon: Icon(
+                        Icons.flag,
+                        color: AppTheme.yachtClubBlue,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -966,7 +987,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       labelText: 'Postal Code',
                       prefixIcon: Icon(
                         Icons.markunread_mailbox,
-                        color: Colors.deepPurple,
+                        color: AppTheme.yachtClubBlue,
                       ),
                     ),
                     keyboardType: TextInputType.number,
@@ -1034,13 +1055,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         : const Icon(Icons.save),
                 label: Text(_isLoading ? 'Saving...' : 'Save Changes'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: AppTheme.yachtClubBlue,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 12,
                   ),
-                  disabledBackgroundColor: Colors.deepPurple.withOpacity(0.5),
+                  disabledBackgroundColor: AppTheme.yachtClubBlue.withOpacity(
+                    0.5,
+                  ),
                 ),
               ),
             ],
@@ -1079,7 +1102,7 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.deepPurple, size: 22),
+          Icon(icon, color: AppTheme.yachtClubBlue, size: 22),
           const SizedBox(width: 10),
           Expanded(
             child: Text('$label: $value', style: const TextStyle(fontSize: 16)),
@@ -1102,7 +1125,9 @@ class _ProfilePageState extends State<ProfilePage> {
         child:
             _isLoading
                 ? const Center(
-                  child: CircularProgressIndicator(color: Colors.deepPurple),
+                  child: CircularProgressIndicator(
+                    color: AppTheme.yachtClubBlue,
+                  ),
                 )
                 : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),

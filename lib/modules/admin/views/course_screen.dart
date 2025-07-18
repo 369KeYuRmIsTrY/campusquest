@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../../controllers/login_controller.dart';
 import '../../../widgets/common_app_bar.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class CourseScreen extends StatefulWidget {
   const CourseScreen({super.key});
@@ -56,7 +57,8 @@ class _CourseScreenState extends State<CourseScreen>
       final courseResponse = await _supabase
           .from('course')
           .select(
-              '*, semester(semester_number, program(program_name)), coursecategories(category_name)')
+            '*, semester(semester_number, program(program_name)), coursecategories(category_name)',
+          )
           .order('course_name');
       final semesterResponse = await _supabase
           .from('semester')
@@ -88,18 +90,20 @@ class _CourseScreenState extends State<CourseScreen>
     } else {
       final query = _searchController.text.toLowerCase();
       setState(() {
-        _filteredCourses = _courses.where((course) {
-          final courseName = course['course_name'].toString().toLowerCase();
-          final semester =
-              'semester ${course['semester']['semester_number']} - ${course['semester']['program']['program_name']}'
-                  .toLowerCase();
-          final category = course['coursecategories']['category_name']
-              .toString()
-              .toLowerCase();
-          return courseName.contains(query) ||
-              semester.contains(query) ||
-              category.contains(query);
-        }).toList();
+        _filteredCourses =
+            _courses.where((course) {
+              final courseName = course['course_name'].toString().toLowerCase();
+              final semester =
+                  'semester ${course['semester']['semester_number']} - ${course['semester']['program']['program_name']}'
+                      .toLowerCase();
+              final category =
+                  course['coursecategories']['category_name']
+                      .toString()
+                      .toLowerCase();
+              return courseName.contains(query) ||
+                  semester.contains(query) ||
+                  category.contains(query);
+            }).toList();
         _isSearching = true;
       });
     }
@@ -118,17 +122,23 @@ class _CourseScreenState extends State<CourseScreen>
   void _showAddEditDialog({Map<String, dynamic>? course}) {
     final bool isEditing = course != null;
     final courseIdController = TextEditingController(
-        text: isEditing ? course!['course_id'].toString() : '');
-    final courseNameController =
-        TextEditingController(text: isEditing ? course!['course_name'] : '');
-    final lController =
-        TextEditingController(text: isEditing ? course!['l'].toString() : '0');
-    final tController =
-        TextEditingController(text: isEditing ? course!['t'].toString() : '0');
-    final pController =
-        TextEditingController(text: isEditing ? course!['p'].toString() : '0');
-    final cController =
-        TextEditingController(text: isEditing ? course!['c'].toString() : '');
+      text: isEditing ? course!['course_id'].toString() : '',
+    );
+    final courseNameController = TextEditingController(
+      text: isEditing ? course!['course_name'] : '',
+    );
+    final lController = TextEditingController(
+      text: isEditing ? course!['l'].toString() : '0',
+    );
+    final tController = TextEditingController(
+      text: isEditing ? course!['t'].toString() : '0',
+    );
+    final pController = TextEditingController(
+      text: isEditing ? course!['p'].toString() : '0',
+    );
+    final cController = TextEditingController(
+      text: isEditing ? course!['c'].toString() : '',
+    );
     int? selectedSemesterId = isEditing ? course!['semester_id'] : null;
     int? selectedCategoryId = isEditing ? course!['category_id'] : null;
 
@@ -139,237 +149,294 @@ class _CourseScreenState extends State<CourseScreen>
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Container(),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation =
-            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(
-            opacity:
-                Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
             child: StatefulBuilder(
-              builder: (context, setDialogState) => AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                title: Row(
-                  children: [
-                    Icon(isEditing ? Icons.edit_note : Icons.add_box,
-                        color: Colors.deepPurple),
-                    const SizedBox(width: 10),
-                    Text(
-                      isEditing ? 'Edit Course' : 'Add New Course',
-                      style: const TextStyle(
-                          color: Colors.deepPurple,
-                          fontWeight: FontWeight.bold),
+              builder:
+                  (context, setDialogState) => AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ],
-                ),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isEditing)
-                        TextField(
-                          controller: courseIdController,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            labelText: 'Course ID',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 12),
+                    title: Row(
+                      children: [
+                        Icon(
+                          isEditing ? Icons.edit_note : Icons.add_box,
+                          color: const Color(0xFF5E7EB6),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          isEditing ? 'Edit Course' : 'Add New Course',
+                          style: const TextStyle(
+                            color: const Color(0xFF5E7EB6),
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      if (isEditing) const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: courseNameController,
-                        labelText: 'Course Name',
-                        prefixIcon: Icons.book,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: lController,
-                        labelText: 'Lectures (L)',
-                        prefixIcon: Icons.schedule,
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: tController,
-                        labelText: 'Tutorials (T)',
-                        prefixIcon: Icons.edit_note,
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: pController,
-                        labelText: 'Practicals (P)',
-                        prefixIcon: Icons.build,
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: cController,
-                        labelText: 'Credits (C)',
-                        prefixIcon: Icons.credit_score,
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<int>(
-                        value: selectedSemesterId,
-                        decoration: InputDecoration(
-                          labelText: 'Semester',
-                          labelStyle:
-                              TextStyle(color: Colors.deepPurple.shade300),
-                          prefixIcon: const Icon(Icons.school,
-                              color: Colors.deepPurple),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: Colors.deepPurple.shade200),
+                      ],
+                    ),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isEditing)
+                            TextField(
+                              controller: courseIdController,
+                              enabled: false,
+                              decoration: InputDecoration(
+                                labelText: 'Course ID',
+                                labelStyle: TextStyle(
+                                  color: Colors.grey.shade600,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey.shade100,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal: 12,
+                                ),
+                              ),
+                            ),
+                          if (isEditing) const SizedBox(height: 16),
+                          _buildTextField(
+                            controller: courseNameController,
+                            labelText: 'Course Name',
+                            prefixIcon: Icons.book,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: Colors.deepPurple, width: 2),
+                          const SizedBox(height: 16),
+                          _buildTextField(
+                            controller: lController,
+                            labelText: 'Lectures (L)',
+                            prefixIcon: Icons.schedule,
+                            keyboardType: TextInputType.number,
                           ),
-                          filled: true,
-                          fillColor: Colors.deepPurple.shade50,
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 12),
+                          const SizedBox(height: 16),
+                          _buildTextField(
+                            controller: tController,
+                            labelText: 'Tutorials (T)',
+                            prefixIcon: Icons.edit_note,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildTextField(
+                            controller: pController,
+                            labelText: 'Practicals (P)',
+                            prefixIcon: Icons.build,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildTextField(
+                            controller: cController,
+                            labelText: 'Credits (C)',
+                            prefixIcon: Icons.credit_score,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<int>(
+                            value: selectedSemesterId,
+                            decoration: InputDecoration(
+                              labelText: 'Semester',
+                              labelStyle: TextStyle(
+                                color: const Color(0xFF5E7EB6),
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.school,
+                                color: const Color(0xFF5E7EB6),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: const Color(0xFF8CA3CB),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: const Color(0xFF5E7EB6),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFFE3EAF3),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 12,
+                              ),
+                            ),
+                            items:
+                                _semesters.map((semester) {
+                                  return DropdownMenuItem<int>(
+                                    value: semester['semester_id'],
+                                    child: Text(
+                                      'Semester ${semester['semester_number']} - ${semester['program']['program_name']}',
+                                    ),
+                                  );
+                                }).toList(),
+                            onChanged:
+                                (value) => setDialogState(
+                                  () => selectedSemesterId = value,
+                                ),
+                            validator:
+                                (value) =>
+                                    value == null
+                                        ? 'Please select a semester'
+                                        : null,
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<int>(
+                            value: selectedCategoryId,
+                            decoration: InputDecoration(
+                              labelText: 'Course Category',
+                              labelStyle: TextStyle(
+                                color: const Color(0xFF5E7EB6),
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.category,
+                                color: const Color(0xFF5E7EB6),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: const Color(0xFF5E7EB6),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: const Color(0xFF5E7EB6),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFFE3EAF3),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 12,
+                              ),
+                            ),
+                            items:
+                                _courseCategories.map((category) {
+                                  return DropdownMenuItem<int>(
+                                    value: category['category_id'],
+                                    child: Text(category['category_name']),
+                                  );
+                                }).toList(),
+                            onChanged:
+                                (value) => setDialogState(
+                                  () => selectedCategoryId = value,
+                                ),
+                            validator:
+                                (value) =>
+                                    value == null
+                                        ? 'Please select a category'
+                                        : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton.icon(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.cancel, color: Colors.grey),
+                        label: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.grey),
                         ),
-                        items: _semesters.map((semester) {
-                          return DropdownMenuItem<int>(
-                            value: semester['semester_id'],
-                            child: Text(
-                                'Semester ${semester['semester_number']} - ${semester['program']['program_name']}'),
-                          );
-                        }).toList(),
-                        onChanged: (value) =>
-                            setDialogState(() => selectedSemesterId = value),
-                        validator: (value) =>
-                            value == null ? 'Please select a semester' : null,
                       ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<int>(
-                        value: selectedCategoryId,
-                        decoration: InputDecoration(
-                          labelText: 'Course Category',
-                          labelStyle:
-                              TextStyle(color: Colors.deepPurple.shade300),
-                          prefixIcon: const Icon(Icons.category,
-                              color: Colors.deepPurple),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: Colors.deepPurple.shade200),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5E7EB6),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: Colors.deepPurple, width: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
                           ),
-                          filled: true,
-                          fillColor: Colors.deepPurple.shade50,
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 12),
                         ),
-                        items: _courseCategories.map((category) {
-                          return DropdownMenuItem<int>(
-                            value: category['category_id'],
-                            child: Text(category['category_name']),
-                          );
-                        }).toList(),
-                        onChanged: (value) =>
-                            setDialogState(() => selectedCategoryId = value),
-                        validator: (value) =>
-                            value == null ? 'Please select a category' : null,
+                        onPressed: () async {
+                          final l = int.tryParse(lController.text) ?? 0;
+                          final t = int.tryParse(tController.text) ?? 0;
+                          final p = int.tryParse(pController.text) ?? 0;
+                          final c = int.tryParse(cController.text);
+
+                          if (courseNameController.text.isEmpty ||
+                              c == null ||
+                              selectedSemesterId == null ||
+                              selectedCategoryId == null) {
+                            _showErrorMessage('All fields are required');
+                            return;
+                          }
+                          if (l < 0 || t < 0 || p < 0) {
+                            _showErrorMessage('L, T, P must be non-negative');
+                            return;
+                          }
+                          if (c < 1) {
+                            _showErrorMessage('Credits must be at least 1');
+                            return;
+                          }
+
+                          Navigator.pop(context);
+
+                          try {
+                            if (isEditing) {
+                              await _supabase
+                                  .from('course')
+                                  .update({
+                                    'course_name': courseNameController.text,
+                                    'l': l,
+                                    't': t,
+                                    'p': p,
+                                    'c': c,
+                                    'semester_id': selectedSemesterId,
+                                    'category_id': selectedCategoryId,
+                                  })
+                                  .match({
+                                    'course_id': int.parse(
+                                      courseIdController.text,
+                                    ),
+                                  });
+                              _showSuccessMessage(
+                                'Course updated successfully',
+                              );
+                            } else {
+                              await _supabase.from('course').insert({
+                                'course_name': courseNameController.text,
+                                'l': l,
+                                't': t,
+                                'p': p,
+                                'c': c,
+                                'semester_id': selectedSemesterId,
+                                'category_id': selectedCategoryId,
+                              });
+                              _showSuccessMessage('Course added successfully');
+                            }
+                            _fetchData();
+                          } catch (e) {
+                            _showErrorMessage('Operation failed: $e');
+                          }
+                        },
+                        icon: Icon(isEditing ? Icons.save : Icons.add),
+                        label: Text(isEditing ? 'Update' : 'Add'),
                       ),
                     ],
                   ),
-                ),
-                actions: [
-                  TextButton.icon(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.cancel, color: Colors.grey),
-                    label: const Text('Cancel',
-                        style: TextStyle(color: Colors.grey)),
-                  ),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                    ),
-                    onPressed: () async {
-                      final l = int.tryParse(lController.text) ?? 0;
-                      final t = int.tryParse(tController.text) ?? 0;
-                      final p = int.tryParse(pController.text) ?? 0;
-                      final c = int.tryParse(cController.text);
-
-                      if (courseNameController.text.isEmpty ||
-                          c == null ||
-                          selectedSemesterId == null ||
-                          selectedCategoryId == null) {
-                        _showErrorMessage('All fields are required');
-                        return;
-                      }
-                      if (l < 0 || t < 0 || p < 0) {
-                        _showErrorMessage('L, T, P must be non-negative');
-                        return;
-                      }
-                      if (c < 1) {
-                        _showErrorMessage('Credits must be at least 1');
-                        return;
-                      }
-
-                      Navigator.pop(context);
-
-                      try {
-                        if (isEditing) {
-                          await _supabase.from('course').update({
-                            'course_name': courseNameController.text,
-                            'l': l,
-                            't': t,
-                            'p': p,
-                            'c': c,
-                            'semester_id': selectedSemesterId,
-                            'category_id': selectedCategoryId,
-                          }).match({
-                            'course_id': int.parse(courseIdController.text)
-                          });
-                          _showSuccessMessage('Course updated successfully');
-                        } else {
-                          await _supabase.from('course').insert({
-                            'course_name': courseNameController.text,
-                            'l': l,
-                            't': t,
-                            'p': p,
-                            'c': c,
-                            'semester_id': selectedSemesterId,
-                            'category_id': selectedCategoryId,
-                          });
-                          _showSuccessMessage('Course added successfully');
-                        }
-                        _fetchData();
-                      } catch (e) {
-                        _showErrorMessage('Operation failed: $e');
-                      }
-                    },
-                    icon: Icon(isEditing ? Icons.save : Icons.add),
-                    label: Text(isEditing ? 'Update' : 'Add'),
-                  ),
-                ],
-              ),
             ),
           ),
         );
@@ -388,21 +455,23 @@ class _CourseScreenState extends State<CourseScreen>
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-        prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+        labelStyle: TextStyle(color: const Color(0xFF5E7EB6)),
+        prefixIcon: Icon(prefixIcon, color: const Color(0xFF5E7EB6)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple.shade200),
+          borderSide: BorderSide(color: const Color(0xFF8CA3CB)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+          borderSide: BorderSide(color: const Color(0xFF5E7EB6), width: 2),
         ),
         filled: true,
-        fillColor: Colors.deepPurple.shade50,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        fillColor: const Color(0xFFE3EAF3),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 12,
+        ),
       ),
     );
   }
@@ -412,159 +481,184 @@ class _CourseScreenState extends State<CourseScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24), topRight: Radius.circular(24)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.shade50,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24)),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade400,
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            course['course_name'],
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
-                          ),
-                          Text(
-                            'Semester ${course['semester']['semester_number']} - ${course['semester']['program']['program_name']}',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.deepPurple.shade700),
-                          ),
-                        ],
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1))
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE3EAF3),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade400,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    course['course_name'],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF5E7EB6),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Semester ${course['semester']['semester_number']} - ${course['semester']['program']['program_name']}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: const Color(0xFF0D3441),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              right: 16,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: const Color(0xFF5E7EB6),
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailItem(
+                                icon: Icons.book,
+                                title: 'Course Name',
+                                value: course['course_name'],
+                              ),
+                              const Divider(),
+                              _buildDetailItem(
+                                icon: Icons.school,
+                                title: 'Semester',
+                                value:
+                                    'Semester ${course['semester']['semester_number']} - ${course['semester']['program']['program_name']}',
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.category,
+                                title: 'Category',
+                                value:
+                                    course['coursecategories']['category_name'],
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.schedule,
+                                title: 'Lectures (L)',
+                                value: course['l'].toString(),
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.edit_note,
+                                title: 'Tutorials (T)',
+                                value: course['t'].toString(),
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.build,
+                                title: 'Practicals (P)',
+                                value: course['p'].toString(),
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.credit_score,
+                                title: 'Credits (C)',
+                                value: course['c'].toString(),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildActionButton(
+                                    label: 'Edit',
+                                    icon: Icons.edit,
+                                    color: const Color(0xFF5E7EB6),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _showAddEditDialog(course: course);
+                                    },
+                                  ),
+                                  _buildActionButton(
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    onTap: () async {
+                                      Navigator.pop(context);
+                                      try {
+                                        await _deleteCourse(
+                                          course['course_id'],
+                                        );
+                                      } catch (e) {
+                                        _showErrorMessage(e.toString());
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          child: const Icon(Icons.close,
-                              color: Colors.deepPurple, size: 22),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailItem(
-                          icon: Icons.book,
-                          title: 'Course Name',
-                          value: course['course_name']),
-                      const Divider(),
-                      _buildDetailItem(
-                        icon: Icons.school,
-                        title: 'Semester',
-                        value:
-                            'Semester ${course['semester']['semester_number']} - ${course['semester']['program']['program_name']}',
-                      ),
-                      _buildDetailItem(
-                          icon: Icons.category,
-                          title: 'Category',
-                          value: course['coursecategories']['category_name']),
-                      _buildDetailItem(
-                          icon: Icons.schedule,
-                          title: 'Lectures (L)',
-                          value: course['l'].toString()),
-                      _buildDetailItem(
-                          icon: Icons.edit_note,
-                          title: 'Tutorials (T)',
-                          value: course['t'].toString()),
-                      _buildDetailItem(
-                          icon: Icons.build,
-                          title: 'Practicals (P)',
-                          value: course['p'].toString()),
-                      _buildDetailItem(
-                          icon: Icons.credit_score,
-                          title: 'Credits (C)',
-                          value: course['c'].toString()),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            label: 'Edit',
-                            icon: Icons.edit,
-                            color: Colors.blue,
-                            onTap: () {
-                              Navigator.pop(context);
-                              _showAddEditDialog(course: course);
-                            },
-                          ),
-                          _buildActionButton(
-                            label: 'Delete',
-                            icon: Icons.delete,
-                            color: Colors.red,
-                            onTap: () async {
-                              Navigator.pop(context);
-                              try {
-                                await _deleteCourse(course['course_id']);
-                              } catch (e) {
-                                _showErrorMessage(e.toString());
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
-  Widget _buildDetailItem(
-      {required IconData icon, required String title, required String value}) {
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -572,19 +666,26 @@ class _CourseScreenState extends State<CourseScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8)),
-            child: Icon(icon, color: Colors.deepPurple),
+              color: const Color(0xFFE3EAF3).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: const Color(0xFF5E7EB6)),
           ),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500)),
+              Text(
+                title,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ],
@@ -592,11 +693,12 @@ class _CourseScreenState extends State<CourseScreen>
     );
   }
 
-  Widget _buildActionButton(
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -611,8 +713,10 @@ class _CourseScreenState extends State<CourseScreen>
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 8),
-            Text(label,
-                style: TextStyle(color: color, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
@@ -661,18 +765,17 @@ class _CourseScreenState extends State<CourseScreen>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.book_outlined,
-          size: 80,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.book_outlined, size: 80, color: Colors.grey),
         const SizedBox(height: 16),
         Text(
           _isSearching
               ? 'No courses match your search'
               : 'No courses available',
           style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -685,11 +788,12 @@ class _CourseScreenState extends State<CourseScreen>
         if (!_isSearching)
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: const Color(0xFF5E7EB6),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
             onPressed: () => _showAddEditDialog(),
             icon: const Icon(Icons.add),
@@ -705,13 +809,13 @@ class _CourseScreenState extends State<CourseScreen>
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: const Color(0xFFE3EAF3).withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => _showCourseDetails(course),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: const Color(0xFFE3EAF3).withOpacity(0.1),
+          highlightColor: const Color(0xFFE3EAF3).withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -726,11 +830,13 @@ class _CourseScreenState extends State<CourseScreen>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: const Color(0xFFE3EAF3).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.book,
-                                color: Colors.deepPurple),
+                            child: const Icon(
+                              Icons.book,
+                              color: const Color(0xFF5E7EB6),
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -740,16 +846,18 @@ class _CourseScreenState extends State<CourseScreen>
                                 Text(
                                   course['course_name'],
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   'Semester ${course['semester']['semester_number']}',
                                   style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 14),
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -764,11 +872,16 @@ class _CourseScreenState extends State<CourseScreen>
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.credit_score,
-                        size: 16, color: Colors.grey),
+                    const Icon(
+                      Icons.credit_score,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(width: 4),
-                    Text('Credits: ${course['c']}',
-                        style: const TextStyle(color: Colors.grey)),
+                    Text(
+                      'Credits: ${course['c']}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -776,7 +889,10 @@ class _CourseScreenState extends State<CourseScreen>
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      icon: const Icon(
+                        Icons.edit,
+                        color: const Color(0xFF5E7EB6),
+                      ),
                       onPressed: () => _showAddEditDialog(course: course),
                       tooltip: 'Edit',
                       splashRadius: 24,
@@ -809,7 +925,8 @@ class _CourseScreenState extends State<CourseScreen>
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Course Management',
-        userEmail: loginController.studentName ??
+        userEmail:
+            loginController.studentName ??
             loginController.email.split('@').first,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -829,42 +946,49 @@ class _CourseScreenState extends State<CourseScreen>
           });
         },
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: Colors.deepPurple),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Loading courses...',
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
-            )
-          : RefreshIndicator(
-              key: _refreshKey,
-              color: Colors.deepPurple,
-              onRefresh: _fetchData,
-              child: _filteredCourses.isEmpty
-                  ? Center(child: _buildEmptyState())
-                  : Scrollbar(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _filteredCourses.length,
-                        itemBuilder: (context, index) =>
-                            _buildCourseCard(_filteredCourses[index], index),
-                      ),
+      body:
+          _isLoading
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: const Color(0xFF5E7EB6),
                     ),
-            ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading courses...',
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
+              )
+              : RefreshIndicator(
+                key: _refreshKey,
+                color: const Color(0xFF5E7EB6),
+                onRefresh: _fetchData,
+                child:
+                    _filteredCourses.isEmpty
+                        ? Center(child: _buildEmptyState())
+                        : Scrollbar(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: _filteredCourses.length,
+                            itemBuilder:
+                                (context, index) => _buildCourseCard(
+                                  _filteredCourses[index],
+                                  index,
+                                ),
+                          ),
+                        ),
+              ),
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
         child: FloatingActionButton.extended(
           onPressed: () => _showAddEditDialog(),
           icon: const Icon(Icons.add),
           label: const Text('Add Course'),
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: const Color(0xFF5E7EB6),
           foregroundColor: Colors.white,
           elevation: 4,
         ),

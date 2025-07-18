@@ -221,13 +221,13 @@ class _TeachesScreenState extends State<TeachesScreen>
                 children: [
                   Icon(
                     isEditing ? Icons.edit_note : Icons.add_box,
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                   ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Teaching Assignment' : 'Assign Course',
                     style: const TextStyle(
-                      color: Colors.deepPurple,
+                      color: AppTheme.yachtClubBlue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -489,7 +489,7 @@ class _TeachesScreenState extends State<TeachesScreen>
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple.shade50,
+                                color: AppTheme.yachtClubBlueSwatch.shade50,
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(24),
                                   topRight: Radius.circular(24),
@@ -511,14 +511,15 @@ class _TeachesScreenState extends State<TeachesScreen>
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.deepPurple,
+                                      color: AppTheme.yachtClubBlue,
                                     ),
                                   ),
                                   Text(
                                     _getCourseName(teach['course_id']),
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Colors.deepPurple.shade700,
+                                      color:
+                                          AppTheme.yachtClubBlueSwatch.shade700,
                                     ),
                                   ),
                                 ],
@@ -544,7 +545,7 @@ class _TeachesScreenState extends State<TeachesScreen>
                                   ),
                                   child: const Icon(
                                     Icons.close,
-                                    color: Colors.deepPurple,
+                                    color: AppTheme.yachtClubBlue,
                                     size: 22,
                                   ),
                                 ),
@@ -628,19 +629,19 @@ class _TeachesScreenState extends State<TeachesScreen>
   InputDecoration _inputDecoration(String labelText, IconData prefixIcon) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-      prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+      labelStyle: TextStyle(color: AppTheme.yachtClubBlue),
+      prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.deepPurple.shade200),
+        borderSide: BorderSide(color: AppTheme.yachtClubBlue),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.deepPurple, width: 2),
+        borderSide: const BorderSide(color: AppTheme.yachtClubBlue, width: 2),
       ),
       filled: true,
-      fillColor: Colors.deepPurple.shade50,
+      fillColor: AppTheme.yachtClubBlue,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
@@ -756,13 +757,13 @@ class _TeachesScreenState extends State<TeachesScreen>
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlue.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => _showTeachingDetails(teach),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlue.withOpacity(0.1),
+          highlightColor: AppTheme.yachtClubBlue.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -777,12 +778,12 @@ class _TeachesScreenState extends State<TeachesScreen>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlueSwatch.shade100,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
                               Icons.school,
-                              color: Colors.deepPurple,
+                              color: AppTheme.yachtClubBlue,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -869,10 +870,10 @@ class _TeachesScreenState extends State<TeachesScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: AppTheme.yachtClubBlue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: Colors.deepPurple),
+            child: Icon(icon, color: AppTheme.yachtClubBlue),
           ),
           const SizedBox(width: 16),
           Column(
@@ -954,7 +955,9 @@ class _TeachesScreenState extends State<TeachesScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(color: Colors.deepPurple),
+                    const CircularProgressIndicator(
+                      color: AppTheme.yachtClubBlue,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Loading Instructors...',
@@ -965,7 +968,7 @@ class _TeachesScreenState extends State<TeachesScreen>
               )
               : RefreshIndicator(
                 key: _refreshKey,
-                color: Colors.deepPurple,
+                color: AppTheme.yachtClubBlue,
                 onRefresh: _fetchData,
                 child:
                     _filteredTeaches.isEmpty

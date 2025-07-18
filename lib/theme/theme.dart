@@ -20,6 +20,9 @@ class AppTheme {
   static const Color yachtClubGrey = Color(0xFFBBBD8C); // #BBBD8C
   static const Color yachtClubBlue = Color(0xFF245F73); // #245F73
   static const Color yachtClubBrown = Color(0xFF733E24); // #733E24
+  static const Color yachtClubBlueAccent = Color(
+    0xFF56789A,
+  ); // Replace with your accent color
 
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
@@ -103,5 +106,23 @@ class AppTheme {
       foregroundColor: Colors.white,
     ),
     cardColor: greyishBlue.withOpacity(0.2), // Example dark card color
+  );
+
+  /// Use this swatch for MaterialColor (e.g., primarySwatch)
+  /// Use AppTheme.yachtClubBlue for Color
+  static const MaterialColor yachtClubBlueSwatch = MaterialColor(
+    0xFF245F73, // main blue color value (matches yachtClubBlue)
+    <int, Color>{
+      50: Color(0xFFE3EAF3),
+      100: Color(0xFFB9C8E0),
+      200: Color(0xFF8CA3CB),
+      300: Color(0xFF5E7EB6),
+      400: Color(0xFF3C63A6),
+      500: Color(0xFF245F73), // main color
+      600: Color(0xFF103E4C),
+      700: Color(0xFF0D3441),
+      800: Color(0xFF0A2A37),
+      900: Color(0xFF061B26),
+    },
   );
 }

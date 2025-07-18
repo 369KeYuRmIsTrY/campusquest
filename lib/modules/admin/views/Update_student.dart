@@ -59,7 +59,8 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
       final studentResponse = await _supabase
           .from('student')
           .select(
-              '*, program(program_name, dept_name), users(email, phone_number), semester(semester_id, semester_number, program(program_name))')
+            '*, program(program_name, dept_name), users(email, phone_number), semester(semester_id, semester_number, program(program_name))',
+          )
           .order('name');
 
       final programResponse = await _supabase
@@ -70,19 +71,22 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
       final semesterResponse = await _supabase
           .from('semester')
           .select(
-              'semester_id, semester_number, program_id, program(program_name)')
+            'semester_id, semester_number, program_id, program(program_name)',
+          )
           .order('semester_number');
 
-      final deptResponse =
-          await _supabase.from('department').select('dept_name');
+      final deptResponse = await _supabase
+          .from('department')
+          .select('dept_name');
 
       if (mounted) {
         setState(() {
           _students = List<Map<String, dynamic>>.from(studentResponse as List);
           _filteredStudents = List.from(_students);
           _programs = List<Map<String, dynamic>>.from(programResponse as List);
-          _semesters =
-              List<Map<String, dynamic>>.from(semesterResponse as List);
+          _semesters = List<Map<String, dynamic>>.from(
+            semesterResponse as List,
+          );
           _departments = List<Map<String, dynamic>>.from(deptResponse as List);
           _isLoading = false;
         });
@@ -95,32 +99,35 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
 
   void _applyFilters() {
     setState(() {
-      _filteredStudents = _students.where((student) {
-        final matchesSearch = _searchQuery.isEmpty ||
-            student['name']
-                .toString()
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()) ||
-            (student['roll_number'] != null &&
-                student['roll_number']
-                    .toString()
-                    .toLowerCase()
-                    .contains(_searchQuery.toLowerCase()));
+      _filteredStudents =
+          _students.where((student) {
+            final matchesSearch =
+                _searchQuery.isEmpty ||
+                student['name'].toString().toLowerCase().contains(
+                  _searchQuery.toLowerCase(),
+                ) ||
+                (student['roll_number'] != null &&
+                    student['roll_number'].toString().toLowerCase().contains(
+                      _searchQuery.toLowerCase(),
+                    ));
 
-        final matchesDepartment = _selectedDepartment == null ||
-            student['dept_name'] == _selectedDepartment;
+            final matchesDepartment =
+                _selectedDepartment == null ||
+                student['dept_name'] == _selectedDepartment;
 
-        final matchesProgram = _selectedProgramId == null ||
-            student['program_id'] == _selectedProgramId;
+            final matchesProgram =
+                _selectedProgramId == null ||
+                student['program_id'] == _selectedProgramId;
 
-        final matchesSemester = _selectedSemesterId == null ||
-            student['current_semester'] == _selectedSemesterId;
+            final matchesSemester =
+                _selectedSemesterId == null ||
+                student['current_semester'] == _selectedSemesterId;
 
-        return matchesSearch &&
-            matchesDepartment &&
-            matchesProgram &&
-            matchesSemester;
-      }).toList();
+            return matchesSearch &&
+                matchesDepartment &&
+                matchesProgram &&
+                matchesSemester;
+          }).toList();
 
       _selectedStudents.clear();
       _selectAll = false;
@@ -141,28 +148,31 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
     setState(() => _updatingStudents = true);
 
     try {
-      final semesterResponse = await _supabase
-          .from('semester')
-          .select('semester_id, semester_number, program_id')
-          .eq('semester_id', _targetSemesterId!)
-          .single();
+      final semesterResponse =
+          await _supabase
+              .from('semester')
+              .select('semester_id, semester_number, program_id')
+              .eq('semester_id', _targetSemesterId!)
+              .single();
 
       List<int> successfulUpdates = [];
       List<int> failedUpdates = [];
 
       for (var studentId in _selectedStudents) {
         try {
-          final student =
-              _filteredStudents.firstWhere((s) => s['student_id'] == studentId);
+          final student = _filteredStudents.firstWhere(
+            (s) => s['student_id'] == studentId,
+          );
 
           if (student['program_id'] != semesterResponse['program_id']) {
             failedUpdates.add(studentId);
             continue;
           }
 
-          await _supabase.from('student').update({
-            'current_semester': _targetSemesterId,
-          }).match({'student_id': studentId});
+          await _supabase
+              .from('student')
+              .update({'current_semester': _targetSemesterId})
+              .match({'student_id': studentId});
 
           successfulUpdates.add(studentId);
         } catch (e) {
@@ -172,12 +182,14 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
 
       if (successfulUpdates.isNotEmpty) {
         _showSuccessMessage(
-            'Updated ${successfulUpdates.length} student(s) to the new semester');
+          'Updated ${successfulUpdates.length} student(s) to the new semester',
+        );
       }
 
       if (failedUpdates.isNotEmpty) {
         _showErrorMessage(
-            'Failed to update ${failedUpdates.length} student(s). Ensure the students are in the same program as the target semester.');
+          'Failed to update ${failedUpdates.length} student(s). Ensure the students are in the same program as the target semester.',
+        );
       }
 
       await _fetchData();
@@ -216,9 +228,10 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
       List<int> failedUpdates = [];
       int currentNumber = startNumber;
 
-      List<Map<String, dynamic>> selectedStudents = _filteredStudents
-          .where((s) => _selectedStudents.contains(s['student_id']))
-          .toList();
+      List<Map<String, dynamic>> selectedStudents =
+          _filteredStudents
+              .where((s) => _selectedStudents.contains(s['student_id']))
+              .toList();
 
       selectedStudents.sort((a, b) => a['name'].compareTo(b['name']));
 
@@ -233,9 +246,10 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
             rollNumber += currentNumber.toString();
           }
 
-          await _supabase.from('student').update({
-            'roll_number': rollNumber,
-          }).match({'student_id': student['student_id']});
+          await _supabase
+              .from('student')
+              .update({'roll_number': rollNumber})
+              .match({'student_id': student['student_id']});
 
           successfulUpdates.add(student['student_id']);
           currentNumber++;
@@ -246,12 +260,14 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
 
       if (successfulUpdates.isNotEmpty) {
         _showSuccessMessage(
-            'Assigned roll numbers to ${successfulUpdates.length} student(s)');
+          'Assigned roll numbers to ${successfulUpdates.length} student(s)',
+        );
       }
 
       if (failedUpdates.isNotEmpty) {
         _showErrorMessage(
-            'Failed to assign roll numbers to ${failedUpdates.length} student(s)');
+          'Failed to assign roll numbers to ${failedUpdates.length} student(s)',
+        );
       }
 
       await _fetchData();
@@ -268,9 +284,10 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
       if (_selectAll) {
         _selectedStudents.clear();
       } else {
-        _selectedStudents = _filteredStudents
-            .map((student) => student['student_id'] as int)
-            .toSet();
+        _selectedStudents =
+            _filteredStudents
+                .map((student) => student['student_id'] as int)
+                .toSet();
       }
       _selectAll = !_selectAll;
     });
@@ -345,37 +362,48 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
         return Card(
           margin: EdgeInsets.all(padding),
           elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Container(
             constraints: BoxConstraints(
-                maxWidth: 800), // Limit card width on large screens
+              maxWidth: 800,
+            ), // Limit card width on large screens
             padding: EdgeInsets.all(padding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.filter_list,
-                        color: Colors.deepPurple,
-                        size: isLargeScreen ? 24 : 20),
+                    Icon(
+                      Icons.filter_list,
+                      color: AppTheme.yachtClubBlue,
+                      size: isLargeScreen ? 24 : 20,
+                    ),
                     SizedBox(width: padding / 2),
                     Text(
                       'Filters',
                       style: TextStyle(
                         fontSize: isLargeScreen ? 20 : 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple.shade700,
+                        color:
+                            AppTheme
+                                .yachtClubBlue
+
                       ),
                     ),
                     const Spacer(),
                     TextButton.icon(
                       onPressed: _resetFilters,
                       icon: Icon(Icons.refresh, size: isLargeScreen ? 20 : 18),
-                      label:
-                          Text('Reset', style: TextStyle(fontSize: fontSize)),
+                      label: Text(
+                        'Reset',
+                        style: TextStyle(fontSize: fontSize),
+                      ),
                       style: TextButton.styleFrom(
-                          foregroundColor: Colors.deepPurple),
+                        foregroundColor:
+                            AppTheme.yachtClubBlue,
+                      ),
                     ),
                   ],
                 ),
@@ -384,23 +412,35 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                 TextField(
                   decoration: InputDecoration(
                     hintText: 'Search by name or roll number',
-                    prefixIcon: Icon(Icons.search,
-                        color: Colors.deepPurple,
-                        size: isLargeScreen ? 24 : 20),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: AppTheme.yachtClubBlue,
+                      size: isLargeScreen ? 24 : 20,
+                    ),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.deepPurple.shade200),
+                      borderSide: BorderSide(
+                        color:
+                           AppTheme
+                                .yachtClubBlue
+
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Colors.deepPurple, width: 2),
+                      borderSide: BorderSide(
+                        color: AppTheme.yachtClubBlue,
+                        width: 2,
+                      ),
                     ),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: isLargeScreen ? 12 : 8),
-                    fillColor: Colors.deepPurple.shade50,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: isLargeScreen ? 12 : 8,
+                    ),
+                    fillColor:
+                        AppTheme.yachtClubBlue,
                     filled: true,
                     hintStyle: TextStyle(fontSize: fontSize),
                   ),
@@ -413,90 +453,33 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                 SizedBox(height: padding),
                 isLargeScreen
                     ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedDepartment,
-                              decoration: _inputDecoration(
-                                  'Department', Icons.business, fontSize),
-                              items: [
-                                DropdownMenuItem<String>(
-                                  value: null,
-                                  child: Text('All Departments',
-                                      style: TextStyle(fontSize: fontSize)),
-                                ),
-                                ..._departments.map((dept) =>
-                                    DropdownMenuItem<String>(
-                                      value: dept['dept_name'],
-                                      child: Text(dept['dept_name'],
-                                          style: TextStyle(fontSize: fontSize)),
-                                    )),
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedDepartment = value;
-                                  _selectedProgramId = null;
-                                  _selectedSemesterId = null;
-                                });
-                                _applyFilters();
-                              },
-                            ),
-                          ),
-                          SizedBox(width: padding),
-                          Expanded(
-                            child: DropdownButtonFormField<int>(
-                              value: _selectedProgramId,
-                              decoration: _inputDecoration(
-                                  'Program', Icons.school, fontSize),
-                              items: [
-                                DropdownMenuItem<int>(
-                                  value: null,
-                                  child: Text('All Programs',
-                                      style: TextStyle(fontSize: fontSize)),
-                                ),
-                                ..._programs
-                                    .where((program) =>
-                                        _selectedDepartment == null ||
-                                        program['dept_name'] ==
-                                            _selectedDepartment)
-                                    .map((program) => DropdownMenuItem<int>(
-                                          value: program['program_id'],
-                                          child: Text(program['program_name'],
-                                              style: TextStyle(
-                                                  fontSize: fontSize)),
-                                        )),
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedProgramId = value;
-                                  _selectedSemesterId = null;
-                                });
-                                _applyFilters();
-                              },
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          DropdownButtonFormField<String>(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
                             value: _selectedDepartment,
                             decoration: _inputDecoration(
-                                'Department', Icons.business, fontSize),
+                              'Department',
+                              Icons.business,
+                              fontSize,
+                            ),
                             items: [
                               DropdownMenuItem<String>(
                                 value: null,
-                                child: Text('All Departments',
-                                    style: TextStyle(fontSize: fontSize)),
+                                child: Text(
+                                  'All Departments',
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
                               ),
-                              ..._departments
-                                  .map((dept) => DropdownMenuItem<String>(
-                                        value: dept['dept_name'],
-                                        child: Text(dept['dept_name'],
-                                            style:
-                                                TextStyle(fontSize: fontSize)),
-                                      )),
+                              ..._departments.map(
+                                (dept) => DropdownMenuItem<String>(
+                                  value: dept['dept_name'],
+                                  child: Text(
+                                    dept['dept_name'],
+                                    style: TextStyle(fontSize: fontSize),
+                                  ),
+                                ),
+                              ),
                             ],
                             onChanged: (value) {
                               setState(() {
@@ -507,28 +490,40 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                               _applyFilters();
                             },
                           ),
-                          SizedBox(height: padding),
-                          DropdownButtonFormField<int>(
+                        ),
+                        SizedBox(width: padding),
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
                             value: _selectedProgramId,
                             decoration: _inputDecoration(
-                                'Program', Icons.school, fontSize),
+                              'Program',
+                              Icons.school,
+                              fontSize,
+                            ),
                             items: [
                               DropdownMenuItem<int>(
                                 value: null,
-                                child: Text('All Programs',
-                                    style: TextStyle(fontSize: fontSize)),
+                                child: Text(
+                                  'All Programs',
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
                               ),
                               ..._programs
-                                  .where((program) =>
-                                      _selectedDepartment == null ||
-                                      program['dept_name'] ==
-                                          _selectedDepartment)
-                                  .map((program) => DropdownMenuItem<int>(
-                                        value: program['program_id'],
-                                        child: Text(program['program_name'],
-                                            style:
-                                                TextStyle(fontSize: fontSize)),
-                                      )),
+                                  .where(
+                                    (program) =>
+                                        _selectedDepartment == null ||
+                                        program['dept_name'] ==
+                                            _selectedDepartment,
+                                  )
+                                  .map(
+                                    (program) => DropdownMenuItem<int>(
+                                      value: program['program_id'],
+                                      child: Text(
+                                        program['program_name'],
+                                        style: TextStyle(fontSize: fontSize),
+                                      ),
+                                    ),
+                                  ),
                             ],
                             onChanged: (value) {
                               setState(() {
@@ -538,30 +533,119 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                               _applyFilters();
                             },
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    )
+                    : Column(
+                      children: [
+                        DropdownButtonFormField<String>(
+                          value: _selectedDepartment,
+                          decoration: _inputDecoration(
+                            'Department',
+                            Icons.business,
+                            fontSize,
+                          ),
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text(
+                                'All Departments',
+                                style: TextStyle(fontSize: fontSize),
+                              ),
+                            ),
+                            ..._departments.map(
+                              (dept) => DropdownMenuItem<String>(
+                                value: dept['dept_name'],
+                                child: Text(
+                                  dept['dept_name'],
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedDepartment = value;
+                              _selectedProgramId = null;
+                              _selectedSemesterId = null;
+                            });
+                            _applyFilters();
+                          },
+                        ),
+                        SizedBox(height: padding),
+                        DropdownButtonFormField<int>(
+                          value: _selectedProgramId,
+                          decoration: _inputDecoration(
+                            'Program',
+                            Icons.school,
+                            fontSize,
+                          ),
+                          items: [
+                            DropdownMenuItem<int>(
+                              value: null,
+                              child: Text(
+                                'All Programs',
+                                style: TextStyle(fontSize: fontSize),
+                              ),
+                            ),
+                            ..._programs
+                                .where(
+                                  (program) =>
+                                      _selectedDepartment == null ||
+                                      program['dept_name'] ==
+                                          _selectedDepartment,
+                                )
+                                .map(
+                                  (program) => DropdownMenuItem<int>(
+                                    value: program['program_id'],
+                                    child: Text(
+                                      program['program_name'],
+                                      style: TextStyle(fontSize: fontSize),
+                                    ),
+                                  ),
+                                ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedProgramId = value;
+                              _selectedSemesterId = null;
+                            });
+                            _applyFilters();
+                          },
+                        ),
+                      ],
+                    ),
                 SizedBox(height: padding),
                 DropdownButtonFormField<int>(
                   value: _selectedSemesterId,
                   decoration: _inputDecoration(
-                      'Current Semester', Icons.calendar_today, fontSize),
+                    'Current Semester',
+                    Icons.calendar_today,
+                    fontSize,
+                  ),
                   items: [
                     DropdownMenuItem<int>(
                       value: null,
-                      child: Text('All Semesters',
-                          style: TextStyle(fontSize: fontSize)),
+                      child: Text(
+                        'All Semesters',
+                        style: TextStyle(fontSize: fontSize),
+                      ),
                     ),
                     ..._semesters
-                        .where((semester) =>
-                            _selectedProgramId == null ||
-                            semester['program_id'] == _selectedProgramId)
-                        .map((semester) => DropdownMenuItem<int>(
-                              value: semester['semester_id'],
-                              child: Text(
-                                'Semester ${semester['semester_number']} - ${semester['program']['program_name']}',
-                                style: TextStyle(fontSize: fontSize),
-                              ),
-                            )),
+                        .where(
+                          (semester) =>
+                              _selectedProgramId == null ||
+                              semester['program_id'] == _selectedProgramId,
+                        )
+                        .map(
+                          (semester) => DropdownMenuItem<int>(
+                            value: semester['semester_id'],
+                            child: Text(
+                              'Semester ${semester['semester_number']} - ${semester['program']['program_name']}',
+                              style: TextStyle(fontSize: fontSize),
+                            ),
+                          ),
+                        ),
                   ],
                   onChanged: (value) {
                     setState(() => _selectedSemesterId = value);
@@ -571,15 +655,21 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                 SizedBox(height: padding),
                 ElevatedButton.icon(
                   icon: Icon(Icons.filter_alt, size: isLargeScreen ? 20 : 18),
-                  label: Text('Apply Filters',
-                      style: TextStyle(fontSize: fontSize)),
+                  label: Text(
+                    'Apply Filters',
+                    style: TextStyle(fontSize: fontSize),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor:
+                        AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
-                        vertical: isLargeScreen ? 14 : 12, horizontal: padding),
+                      vertical: isLargeScreen ? 14 : 12,
+                      horizontal: padding,
+                    ),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     minimumSize: Size(double.infinity, isLargeScreen ? 48 : 44),
                   ),
                   onPressed: _applyFilters,
@@ -600,11 +690,14 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
         final fontSize = isLargeScreen ? 16.0 : 14.0;
 
         return Card(
-          margin:
-              EdgeInsets.symmetric(horizontal: padding, vertical: padding / 2),
+          margin: EdgeInsets.symmetric(
+            horizontal: padding,
+            vertical: padding / 2,
+          ),
           elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Container(
             constraints: BoxConstraints(maxWidth: 800),
             padding: EdgeInsets.all(padding),
@@ -613,16 +706,21 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.update,
-                        color: Colors.deepPurple,
-                        size: isLargeScreen ? 24 : 20),
+                    Icon(
+                      Icons.update,
+                      color: AppTheme.yachtClubBlue,
+                      size: isLargeScreen ? 24 : 20,
+                    ),
                     SizedBox(width: padding / 2),
                     Text(
                       'Bulk Updates',
                       style: TextStyle(
                         fontSize: isLargeScreen ? 20 : 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple.shade700,
+                        color:
+                           AppTheme
+                                .yachtClubBlue
+
                       ),
                     ),
                   ],
@@ -632,14 +730,18 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                 ExpansionTile(
                   title: Row(
                     children: [
-                      Icon(Icons.school,
-                          color: Colors.deepPurple,
-                          size: isLargeScreen ? 20 : 18),
+                      Icon(
+                        Icons.school,
+                        color: AppTheme.yachtClubBlue,
+                        size: isLargeScreen ? 20 : 18,
+                      ),
                       SizedBox(width: padding / 2),
                       Text(
                         'Semester Update',
                         style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: fontSize),
+                          fontWeight: FontWeight.w500,
+                          fontSize: fontSize,
+                        ),
                       ),
                     ],
                   ),
@@ -648,18 +750,24 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                     DropdownButtonFormField<int>(
                       value: _targetSemesterId,
                       decoration: _inputDecoration(
-                          'Target Semester', Icons.change_circle, fontSize),
-                      items: _semesters
-                          .map((semester) => DropdownMenuItem<int>(
-                                value: semester['semester_id'],
-                                child: Text(
-                                  'Semester ${semester['semester_number']} - ${semester['program']['program_name']}',
-                                  style: TextStyle(fontSize: fontSize),
+                        'Target Semester',
+                        Icons.change_circle,
+                        fontSize,
+                      ),
+                      items:
+                          _semesters
+                              .map(
+                                (semester) => DropdownMenuItem<int>(
+                                  value: semester['semester_id'],
+                                  child: Text(
+                                    'Semester ${semester['semester_number']} - ${semester['program']['program_name']}',
+                                    style: TextStyle(fontSize: fontSize),
+                                  ),
                                 ),
-                              ))
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => _targetSemesterId = value),
+                              )
+                              .toList(),
+                      onChanged:
+                          (value) => setState(() => _targetSemesterId = value),
                     ),
                     SizedBox(height: padding),
                     ElevatedButton.icon(
@@ -672,30 +780,39 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
-                            vertical: isLargeScreen ? 14 : 12,
-                            horizontal: padding),
+                          vertical: isLargeScreen ? 14 : 12,
+                          horizontal: padding,
+                        ),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        minimumSize:
-                            Size(double.infinity, isLargeScreen ? 48 : 44),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        minimumSize: Size(
+                          double.infinity,
+                          isLargeScreen ? 48 : 44,
+                        ),
                       ),
-                      onPressed: _selectedStudents.isEmpty
-                          ? null
-                          : _performBulkSemesterUpdate,
+                      onPressed:
+                          _selectedStudents.isEmpty
+                              ? null
+                              : _performBulkSemesterUpdate,
                     ),
                   ],
                 ),
                 ExpansionTile(
                   title: Row(
                     children: [
-                      Icon(Icons.format_list_numbered,
-                          color: Colors.deepPurple,
-                          size: isLargeScreen ? 20 : 18),
+                      Icon(
+                        Icons.format_list_numbered,
+                        color: AppTheme.yachtClubBlue,
+                        size: isLargeScreen ? 20 : 18,
+                      ),
                       SizedBox(width: padding / 2),
                       Text(
                         'Roll Number Assignment',
                         style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: fontSize),
+                          fontWeight: FontWeight.w500,
+                          fontSize: fontSize,
+                        ),
                       ),
                     ],
                   ),
@@ -707,16 +824,20 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                     TextField(
                       controller: _rollNumberPrefixController,
                       decoration: _inputDecoration(
-                          'Roll Number Prefix (e.g. CS)',
-                          Icons.label,
-                          fontSize),
+                        'Roll Number Prefix (e.g. CS)',
+                        Icons.label,
+                        fontSize,
+                      ),
                       style: TextStyle(fontSize: fontSize),
                     ),
                     SizedBox(height: padding),
                     TextField(
                       controller: _rollNumberStartController,
                       decoration: _inputDecoration(
-                          'Starting Number', Icons.filter_1, fontSize),
+                        'Starting Number',
+                        Icons.filter_1,
+                        fontSize,
+                      ),
                       keyboardType: TextInputType.number,
                       style: TextStyle(fontSize: fontSize),
                     ),
@@ -740,16 +861,21 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
-                            vertical: isLargeScreen ? 14 : 12,
-                            horizontal: padding),
+                          vertical: isLargeScreen ? 14 : 12,
+                          horizontal: padding,
+                        ),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        minimumSize:
-                            Size(double.infinity, isLargeScreen ? 48 : 44),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        minimumSize: Size(
+                          double.infinity,
+                          isLargeScreen ? 48 : 44,
+                        ),
                       ),
-                      onPressed: _selectedStudents.isEmpty
-                          ? null
-                          : _generateRollNumbers,
+                      onPressed:
+                          _selectedStudents.isEmpty
+                              ? null
+                              : _generateRollNumbers,
                     ),
                   ],
                 ),
@@ -771,8 +897,9 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
         return Card(
           margin: EdgeInsets.all(padding),
           elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Container(
             constraints: BoxConstraints(maxWidth: 800),
             child: Column(
@@ -785,16 +912,21 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.people,
-                              color: Colors.deepPurple,
-                              size: isLargeScreen ? 24 : 20),
+                          Icon(
+                            Icons.people,
+                            color: AppTheme.yachtClubBlue,
+                            size: isLargeScreen ? 24 : 20,
+                          ),
                           SizedBox(width: padding / 2),
                           Text(
                             'Students (${_filteredStudents.length})',
                             style: TextStyle(
                               fontSize: isLargeScreen ? 20 : 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple.shade700,
+                              color:
+                                 AppTheme
+                                      .yachtClubBlue
+
                             ),
                           ),
                           const Spacer(),
@@ -803,7 +935,9 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                               Checkbox(
                                 value: _selectAll,
                                 onChanged: (_) => _toggleSelectAll(),
-                                activeColor: Colors.deepPurple,
+                                activeColor:
+                                    AppTheme
+                                        .yachtClubBlue,
                               ),
                               Text(
                                 'Select All',
@@ -819,7 +953,8 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                           child: Text(
                             '${_selectedStudents.length} students selected',
                             style: TextStyle(
-                              color: Colors.deepPurple,
+                              color:
+                                  AppTheme.yachtClubBlue,
                               fontWeight: FontWeight.bold,
                               fontSize: fontSize,
                             ),
@@ -831,75 +966,87 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                 const Divider(height: 1),
                 _filteredStudents.isEmpty
                     ? Padding(
-                        padding: EdgeInsets.all(padding * 1.5),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Icon(Icons.person_search,
-                                  size: isLargeScreen ? 56 : 48,
-                                  color: Colors.grey),
-                              SizedBox(height: padding),
-                              Text(
-                                'No students match your criteria',
-                                style: TextStyle(
-                                  fontSize: fontSize,
-                                  color: Colors.grey.shade700,
+                      padding: EdgeInsets.all(padding * 1.5),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.person_search,
+                              size: isLargeScreen ? 56 : 48,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: padding),
+                            Text(
+                              'No students match your criteria',
+                              style: TextStyle(
+                                fontSize: fontSize,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    : ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: _filteredStudents.length,
+                      separatorBuilder:
+                          (context, index) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final student = _filteredStudents[index];
+                        final isSelected = _selectedStudents.contains(
+                          student['student_id'],
+                        );
+
+                        return ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: padding,
+                            vertical: padding / 4,
+                          ),
+                          leading: Checkbox(
+                            value: isSelected,
+                            onChanged:
+                                (_) => _toggleStudentSelection(
+                                  student['student_id'],
                                 ),
+                            activeColor:
+                                AppTheme.yachtClubBlue,
+                          ),
+                          title: Text(
+                            student['name'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: fontSize,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Roll Number: ${student['roll_number'] ?? 'Not Assigned'}',
+                                style: TextStyle(fontSize: fontSize - 2),
+                              ),
+                              Text(
+                                '${student['program']['program_name']} - Semester ${student['semester']['semester_number']}',
+                                style: TextStyle(fontSize: fontSize - 2),
                               ),
                             ],
                           ),
-                        ),
-                      )
-                    : ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: _filteredStudents.length,
-                        separatorBuilder: (context, index) =>
-                            const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          final student = _filteredStudents[index];
-                          final isSelected =
-                              _selectedStudents.contains(student['student_id']);
-
-                          return ListTile(
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: padding, vertical: padding / 4),
-                            leading: Checkbox(
-                              value: isSelected,
-                              onChanged: (_) => _toggleStudentSelection(
-                                  student['student_id']),
-                              activeColor: Colors.deepPurple,
+                          trailing: IconButton(
+                            icon: Icon(
+                              Icons.info_outline,
+                              size: isLargeScreen ? 24 : 20,
                             ),
-                            title: Text(
-                              student['name'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: fontSize,
+                            onPressed: () => _showStudentDetails(student),
+                          ),
+                          onTap:
+                              () => _toggleStudentSelection(
+                                student['student_id'],
                               ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Roll Number: ${student['roll_number'] ?? 'Not Assigned'}',
-                                  style: TextStyle(fontSize: fontSize - 2),
-                                ),
-                                Text(
-                                  '${student['program']['program_name']} - Semester ${student['semester']['semester_number']}',
-                                  style: TextStyle(fontSize: fontSize - 2),
-                                ),
-                              ],
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(Icons.info_outline,
-                                  size: isLargeScreen ? 24 : 20),
-                              onPressed: () => _showStudentDetails(student),
-                            ),
-                            onTap: () =>
-                                _toggleStudentSelection(student['student_id']),
-                          );
-                        },
-                      ),
+                        );
+                      },
+                    ),
               ],
             ),
           ),
@@ -916,13 +1063,15 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
         final fontSize = isLargeScreen ? 16.0 : 14.0;
 
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           title: Text(
             student['name'],
             style: TextStyle(
-                fontSize: isLargeScreen ? 20 : 18,
-                color: Colors.deepPurple.shade700),
+              fontSize: isLargeScreen ? 20 : 18,
+              color: AppTheme.yachtClubBlue,
+            ),
           ),
           content: Container(
             constraints: BoxConstraints(maxWidth: 400),
@@ -932,19 +1081,40 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildDetailItem(
-                      'Student ID', '${student['student_id']}', fontSize),
-                  _buildDetailItem('Roll Number',
-                      student['roll_number'] ?? 'Not Assigned', fontSize),
+                    'Student ID',
+                    '${student['student_id']}',
+                    fontSize,
+                  ),
                   _buildDetailItem(
-                      'Email', student['users']['email'] ?? 'N/A', fontSize),
+                    'Roll Number',
+                    student['roll_number'] ?? 'Not Assigned',
+                    fontSize,
+                  ),
                   _buildDetailItem(
-                      'Program', student['program']['program_name'], fontSize),
+                    'Email',
+                    student['users']['email'] ?? 'N/A',
+                    fontSize,
+                  ),
                   _buildDetailItem(
-                      'Department', student['dept_name'], fontSize),
-                  _buildDetailItem('Semester',
-                      '${student['semester']['semester_number']}', fontSize),
-                  _buildDetailItem('Phone',
-                      student['users']['phone_number'] ?? 'N/A', fontSize),
+                    'Program',
+                    student['program']['program_name'],
+                    fontSize,
+                  ),
+                  _buildDetailItem(
+                    'Department',
+                    student['dept_name'],
+                    fontSize,
+                  ),
+                  _buildDetailItem(
+                    'Semester',
+                    '${student['semester']['semester_number']}',
+                    fontSize,
+                  ),
+                  _buildDetailItem(
+                    'Phone',
+                    student['users']['phone_number'] ?? 'N/A',
+                    fontSize,
+                  ),
                 ],
               ),
             ),
@@ -954,7 +1124,10 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Close',
-                style: TextStyle(fontSize: fontSize, color: Colors.deepPurple),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  color: AppTheme.yachtClubBlue,
+                ),
               ),
             ),
           ],
@@ -976,35 +1149,43 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(fontSize: fontSize),
-            ),
-          ),
+          Expanded(child: Text(value, style: TextStyle(fontSize: fontSize))),
         ],
       ),
     );
   }
 
   InputDecoration _inputDecoration(
-      String labelText, IconData prefixIcon, double fontSize) {
+    String labelText,
+    IconData prefixIcon,
+    double fontSize,
+  ) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle:
-          TextStyle(color: Colors.deepPurple.shade300, fontSize: fontSize),
-      prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+      labelStyle: TextStyle(
+        color: AppTheme.yachtClubBlue,
+        fontSize: fontSize,
+      ),
+      prefixIcon: Icon(
+        prefixIcon,
+        color: AppTheme.yachtClubBlue,
+      ),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.deepPurple.shade200),
+        borderSide: BorderSide(
+          color: AppTheme.yachtClubBlue,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+        borderSide: BorderSide(
+          color: AppTheme.yachtClubBlue,
+          width: 2,
+        ),
       ),
       contentPadding: EdgeInsets.symmetric(vertical: fontSize - 2),
-      fillColor: Colors.deepPurple.shade50,
+      fillColor: AppTheme.yachtClubBlue,
       filled: true,
     );
   }
@@ -1015,7 +1196,8 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Student Management',
-        userEmail: loginController.studentName ??
+        userEmail:
+            loginController.studentName ??
             loginController.email.split('@').first,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -1023,86 +1205,99 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
         ),
         showSearch: true,
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: Colors.deepPurple),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Loading data...',
-                    style: TextStyle(
+      body:
+          _isLoading
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: AppTheme.yachtClubBlue,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading data...',
+                      style: TextStyle(
                         fontSize:
-                            MediaQuery.of(context).size.width > 600 ? 16 : 14),
-                  ),
-                ],
-              ),
-            )
-          : Stack(
-              children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildFilterSection(context),
-                          _buildBulkUpdateSection(context),
-                          _buildStudentList(context),
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.1),
-                        ],
+                            MediaQuery.of(context).size.width > 600 ? 16 : 14,
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
-                if (_updatingStudents)
-                  Container(
-                    color: Colors.black54,
-                    child: Center(
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const CircularProgressIndicator(
-                                  color: Colors.deepPurple),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Processing...',
-                                style: TextStyle(
+              )
+              : Stack(
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildFilterSection(context),
+                            _buildBulkUpdateSection(context),
+                            _buildStudentList(context),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.1,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  if (_updatingStudents)
+                    Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const CircularProgressIndicator(
+                                  color:
+                                      AppTheme
+                                          .yachtClubBlue,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Processing...',
+                                  style: TextStyle(
                                     fontSize:
                                         MediaQuery.of(context).size.width > 600
                                             ? 16
-                                            : 14),
-                              ),
-                            ],
+                                            : 14,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-      floatingActionButton: _selectedStudents.isNotEmpty
-          ? FloatingActionButton.extended(
-              onPressed: null,
-              icon: Icon(Icons.check_circle,
-                  size: MediaQuery.of(context).size.width > 600 ? 24 : 20),
-              label: Text(
-                '${_selectedStudents.length} selected',
-                style: TextStyle(
-                    fontSize:
-                        MediaQuery.of(context).size.width > 600 ? 16 : 14),
+                ],
               ),
-              backgroundColor: AppTheme.darkBlue,
-              foregroundColor: Colors.white,
-            )
-          : null,
+      floatingActionButton:
+          _selectedStudents.isNotEmpty
+              ? FloatingActionButton.extended(
+                onPressed: null,
+                icon: Icon(
+                  Icons.check_circle,
+                  size: MediaQuery.of(context).size.width > 600 ? 24 : 20,
+                ),
+                label: Text(
+                  '${_selectedStudents.length} selected',
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width > 600 ? 16 : 14,
+                  ),
+                ),
+                backgroundColor: AppTheme.darkBlue,
+                foregroundColor: Colors.white,
+              )
+              : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }

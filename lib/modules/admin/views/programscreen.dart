@@ -53,8 +53,10 @@ class _ProgramScreenState extends State<ProgramScreen>
   Future<void> _fetchProgramsAndDepartments() async {
     setState(() => _isLoading = true);
     try {
-      final programResponse =
-          await _supabase.from('program').select().order('program_name');
+      final programResponse = await _supabase
+          .from('program')
+          .select()
+          .order('program_name');
       final deptResponse = await _supabase.from('department').select();
       setState(() {
         _programs = List<Map<String, dynamic>>.from(programResponse);
@@ -77,11 +79,12 @@ class _ProgramScreenState extends State<ProgramScreen>
     } else {
       final query = _searchController.text.toLowerCase();
       setState(() {
-        _filteredPrograms = _programs.where((program) {
-          final name = program['program_name'].toString().toLowerCase();
-          final dept = program['dept_name'].toString().toLowerCase();
-          return name.contains(query) || dept.contains(query);
-        }).toList();
+        _filteredPrograms =
+            _programs.where((program) {
+              final name = program['program_name'].toString().toLowerCase();
+              final dept = program['dept_name'].toString().toLowerCase();
+              return name.contains(query) || dept.contains(query);
+            }).toList();
         _isSearching = true;
       });
     }
@@ -102,10 +105,9 @@ class _ProgramScreenState extends State<ProgramScreen>
         'dept_name': deptName,
       };
       if (programId != null) {
-        await _supabase
-            .from('program')
-            .update(data)
-            .match({'program_id': programId});
+        await _supabase.from('program').update(data).match({
+          'program_id': programId,
+        });
       } else {
         await _supabase.from('program').insert(data);
       }
@@ -116,8 +118,9 @@ class _ProgramScreenState extends State<ProgramScreen>
   }
 
   Future<void> _deleteProgram(int programId) async {
-    final index =
-        _filteredPrograms.indexWhere((p) => p['program_id'] == programId);
+    final index = _filteredPrograms.indexWhere(
+      (p) => p['program_id'] == programId,
+    );
     if (index == -1) return;
 
     final deletedProgram = _filteredPrograms[index];
@@ -126,7 +129,8 @@ class _ProgramScreenState extends State<ProgramScreen>
     try {
       await _supabase.from('program').delete().match({'program_id': programId});
       setState(
-          () => _programs.removeWhere((p) => p['program_id'] == programId));
+        () => _programs.removeWhere((p) => p['program_id'] == programId),
+      );
     } catch (e) {
       setState(() => _filteredPrograms.insert(index, deletedProgram));
       throw 'Failed to delete: $e';
@@ -135,12 +139,15 @@ class _ProgramScreenState extends State<ProgramScreen>
 
   void _showAddEditDialog({Map<String, dynamic>? program}) {
     final isEditing = program != null;
-    final programNameController =
-        TextEditingController(text: program?['program_name']);
-    final programBatchYearController =
-        TextEditingController(text: program?['batch_year']?.toString());
-    final programTotalSemestersController =
-        TextEditingController(text: program?['total_semesters']?.toString());
+    final programNameController = TextEditingController(
+      text: program?['program_name'],
+    );
+    final programBatchYearController = TextEditingController(
+      text: program?['batch_year']?.toString(),
+    );
+    final programTotalSemestersController = TextEditingController(
+      text: program?['total_semesters']?.toString(),
+    );
     String? selectedDept = program?['dept_name'];
     int? programId =
         isEditing ? int.tryParse(program!['program_id'].toString()) : null;
@@ -152,25 +159,34 @@ class _ProgramScreenState extends State<ProgramScreen>
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Container(),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation =
-            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(
-            opacity:
-                Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
             child: AlertDialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: Row(
                 children: [
-                  Icon(isEditing ? Icons.edit_note : Icons.add_box,
-                      color: Colors.deepPurple),
+                  Icon(
+                    isEditing ? Icons.edit_note : Icons.add_box,
+                    color: AppTheme.yachtClubBlue,
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Program' : 'Add New Program',
-                    style: const TextStyle(
-                        color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppTheme.yachtClubBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -202,33 +218,43 @@ class _ProgramScreenState extends State<ProgramScreen>
                       value: selectedDept,
                       decoration: InputDecoration(
                         labelText: 'Department',
-                        labelStyle:
-                            TextStyle(color: Colors.deepPurple.shade300),
-                        prefixIcon: const Icon(Icons.business,
-                            color: Colors.deepPurple),
+                        labelStyle: TextStyle(
+                          color: AppTheme.yachtClubBlueSwatch.shade300,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.business,
+                          color: AppTheme.yachtClubBlue,
+                        ),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.deepPurple.shade200),
+                          borderSide: BorderSide(
+                            color: AppTheme.yachtClubBlueSwatch.shade200,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.deepPurple, width: 2),
+                          borderSide: BorderSide(
+                            color: AppTheme.yachtClubBlue,
+                            width: 2,
+                          ),
                         ),
                         filled: true,
-                        fillColor: Colors.deepPurple.shade50,
+                        fillColor: AppTheme.yachtClubBlueSwatch.shade50,
                         contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 12),
+                          vertical: 16,
+                          horizontal: 12,
+                        ),
                       ),
-                      items: _departments.map((dept) {
-                        return DropdownMenuItem(
-                          value: dept['dept_name'].toString(),
-                          child: Text(dept['dept_name']),
-                        );
-                      }).toList(),
+                      items:
+                          _departments.map((dept) {
+                            return DropdownMenuItem(
+                              value: dept['dept_name'].toString(),
+                              child: Text(dept['dept_name']),
+                            );
+                          }).toList(),
                       onChanged: (value) => selectedDept = value,
                     ),
                   ],
@@ -238,23 +264,30 @@ class _ProgramScreenState extends State<ProgramScreen>
                 TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.cancel, color: Colors.grey),
-                  label: const Text('Cancel',
-                      style: TextStyle(color: Colors.grey)),
+                  label: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   onPressed: () async {
-                    final batchYear =
-                        int.tryParse(programBatchYearController.text);
-                    final totalSemesters =
-                        int.tryParse(programTotalSemestersController.text);
+                    final batchYear = int.tryParse(
+                      programBatchYearController.text,
+                    );
+                    final totalSemesters = int.tryParse(
+                      programTotalSemestersController.text,
+                    );
                     if (programNameController.text.isEmpty ||
                         selectedDept == null ||
                         batchYear == null ||
@@ -264,12 +297,14 @@ class _ProgramScreenState extends State<ProgramScreen>
                     }
                     if (batchYear < DateTime.now().year || batchYear > 2100) {
                       _showErrorMessage(
-                          'Batch year must be between ${DateTime.now().year} and 2100');
+                        'Batch year must be between ${DateTime.now().year} and 2100',
+                      );
                       return;
                     }
                     if (totalSemesters <= 0) {
                       _showErrorMessage(
-                          'Total semesters must be a positive number');
+                        'Total semesters must be a positive number',
+                      );
                       return;
                     }
                     try {
@@ -280,9 +315,11 @@ class _ProgramScreenState extends State<ProgramScreen>
                         totalSemesters: totalSemesters,
                         deptName: selectedDept!,
                       );
-                      _showSuccessMessage(isEditing
-                          ? 'Program updated successfully'
-                          : 'Program added successfully');
+                      _showSuccessMessage(
+                        isEditing
+                            ? 'Program updated successfully'
+                            : 'Program added successfully',
+                      );
                       Navigator.pop(context);
                     } catch (e) {
                       _showErrorMessage('Operation failed: $e');
@@ -312,21 +349,23 @@ class _ProgramScreenState extends State<ProgramScreen>
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-        prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+        labelStyle: TextStyle(color: AppTheme.yachtClubBlueSwatch.shade300),
+        prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple.shade200),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
         ),
         filled: true,
-        fillColor: Colors.deepPurple.shade50,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        fillColor: AppTheme.yachtClubBlueSwatch.shade50,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 12,
+        ),
       ),
     );
   }
@@ -342,9 +381,10 @@ class _ProgramScreenState extends State<ProgramScreen>
           ],
         ),
         backgroundColor: Colors.green.shade700,
-        duration: action != null
-            ? const Duration(seconds: 5)
-            : const Duration(seconds: 2),
+        duration:
+            action != null
+                ? const Duration(seconds: 5)
+                : const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(8),
@@ -375,18 +415,17 @@ class _ProgramScreenState extends State<ProgramScreen>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.school_outlined,
-          size: 80,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.school_outlined, size: 80, color: Colors.grey),
         const SizedBox(height: 16),
         Text(
           _isSearching
               ? 'No programs match your search'
               : 'No programs available',
           style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
@@ -401,11 +440,12 @@ class _ProgramScreenState extends State<ProgramScreen>
         if (!_isSearching)
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: AppTheme.yachtClubBlue,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
             onPressed: () => _showAddEditDialog(),
             icon: const Icon(Icons.add),
@@ -430,13 +470,13 @@ class _ProgramScreenState extends State<ProgramScreen>
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlue.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => _showProgramDetails(program),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlue.withOpacity(0.1),
+          highlightColor: AppTheme.yachtClubBlue.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -451,11 +491,13 @@ class _ProgramScreenState extends State<ProgramScreen>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlue.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.school,
-                                color: Colors.deepPurple),
+                            child: Icon(
+                              Icons.school,
+                              color: AppTheme.yachtClubBlue,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -465,16 +507,18 @@ class _ProgramScreenState extends State<ProgramScreen>
                                 Text(
                                   program['program_name'],
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   'Dept: ${program['dept_name']}',
                                   style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 14),
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -542,147 +586,173 @@ class _ProgramScreenState extends State<ProgramScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24), topRight: Radius.circular(24)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.shade50,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24)),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade400,
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            program['program_name'],
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
-                          ),
-                          Text(
-                            'Dept: ${program['dept_name']}',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.deepPurple.shade700),
-                          ),
-                        ],
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.yachtClubBlueSwatch.shade50,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1))
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppTheme.yachtClubBlueSwatch.shade50,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade400,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    program['program_name'],
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.yachtClubBlue,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Dept: ${program['dept_name']}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color:
+                                          AppTheme.yachtClubBlueSwatch.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              right: 16,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.close,
+                                    color: AppTheme.yachtClubBlue,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailItem(
+                                icon: Icons.business,
+                                title: 'Department',
+                                value: program['dept_name'],
+                              ),
+                              const Divider(),
+                              _buildDetailItem(
+                                icon: Icons.tag,
+                                title: 'Program ID',
+                                value: program['program_id'].toString(),
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.date_range,
+                                title: 'Batch Year',
+                                value: program['batch_year'].toString(),
+                              ),
+                              _buildDetailItem(
+                                icon: Icons.format_list_numbered,
+                                title: 'Total Semesters',
+                                value: program['total_semesters'].toString(),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildActionButton(
+                                    label: 'Edit',
+                                    icon: Icons.edit,
+                                    color: Colors.blue,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _showAddEditDialog(program: program);
+                                    },
+                                  ),
+                                  _buildActionButton(
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    onTap: () async {
+                                      Navigator.pop(context);
+                                      try {
+                                        await _deleteProgram(
+                                          program['program_id'],
+                                        );
+                                        _showSuccessMessage(
+                                          'Program deleted successfully',
+                                        );
+                                      } catch (e) {
+                                        _showErrorMessage(
+                                          'Failed to delete: $e',
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          child: const Icon(Icons.close,
-                              color: Colors.deepPurple, size: 22),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailItem(
-                          icon: Icons.business,
-                          title: 'Department',
-                          value: program['dept_name']),
-                      const Divider(),
-                      _buildDetailItem(
-                          icon: Icons.tag,
-                          title: 'Program ID',
-                          value: program['program_id'].toString()),
-                      _buildDetailItem(
-                          icon: Icons.date_range,
-                          title: 'Batch Year',
-                          value: program['batch_year'].toString()),
-                      _buildDetailItem(
-                          icon: Icons.format_list_numbered,
-                          title: 'Total Semesters',
-                          value: program['total_semesters'].toString()),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            label: 'Edit',
-                            icon: Icons.edit,
-                            color: Colors.blue,
-                            onTap: () {
-                              Navigator.pop(context);
-                              _showAddEditDialog(program: program);
-                            },
-                          ),
-                          _buildActionButton(
-                            label: 'Delete',
-                            icon: Icons.delete,
-                            color: Colors.red,
-                            onTap: () async {
-                              Navigator.pop(context);
-                              try {
-                                await _deleteProgram(program['program_id']);
-                                _showSuccessMessage(
-                                    'Program deleted successfully');
-                              } catch (e) {
-                                _showErrorMessage('Failed to delete: $e');
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
-  Widget _buildDetailItem(
-      {required IconData icon, required String title, required String value}) {
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -690,19 +760,26 @@ class _ProgramScreenState extends State<ProgramScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8)),
-            child: Icon(icon, color: Colors.deepPurple),
+              color: AppTheme.yachtClubBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppTheme.yachtClubBlue),
           ),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500)),
+              Text(
+                title,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ],
@@ -710,11 +787,12 @@ class _ProgramScreenState extends State<ProgramScreen>
     );
   }
 
-  Widget _buildActionButton(
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -729,8 +807,10 @@ class _ProgramScreenState extends State<ProgramScreen>
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 8),
-            Text(label,
-                style: TextStyle(color: color, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
@@ -744,7 +824,8 @@ class _ProgramScreenState extends State<ProgramScreen>
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Program Management',
-        userEmail: loginController.studentName ??
+        userEmail:
+            loginController.studentName ??
             loginController.email.split('@').first,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -764,53 +845,61 @@ class _ProgramScreenState extends State<ProgramScreen>
           });
         },
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: Colors.deepPurple),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Loading programs...',
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
-            )
-          : RefreshIndicator(
-              key: _refreshKey,
-              color: Colors.deepPurple,
-              onRefresh: _fetchProgramsAndDepartments,
-              child: _filteredPrograms.isEmpty
-                  ? Center(child: _buildEmptyState())
-                  : isLargeScreen
-                      ? GridView.builder(
+      body:
+          _isLoading
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: AppTheme.yachtClubBlue,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading programs...',
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
+              )
+              : RefreshIndicator(
+                key: _refreshKey,
+                color: AppTheme.yachtClubBlue,
+                onRefresh: _fetchProgramsAndDepartments,
+                child:
+                    _filteredPrograms.isEmpty
+                        ? Center(child: _buildEmptyState())
+                        : isLargeScreen
+                        ? GridView.builder(
                           padding: const EdgeInsets.all(16),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 1.5,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 12,
-                          ),
+                                crossAxisCount: 2,
+                                childAspectRatio: 1.5,
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 12,
+                              ),
                           itemCount: _filteredPrograms.length,
                           itemBuilder: (context, index) {
                             return _buildProgramCard(
-                                _filteredPrograms[index], index);
+                              _filteredPrograms[index],
+                              index,
+                            );
                           },
                         )
-                      : Scrollbar(
+                        : Scrollbar(
                           child: ListView.builder(
                             padding: const EdgeInsets.all(16),
                             itemCount: _filteredPrograms.length,
                             itemBuilder: (context, index) {
                               return _buildProgramCard(
-                                  _filteredPrograms[index], index);
+                                _filteredPrograms[index],
+                                index,
+                              );
                             },
                           ),
                         ),
-            ),
+              ),
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
         child: FloatingActionButton.extended(

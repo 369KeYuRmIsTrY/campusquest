@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../theme/theme.dart';
+
 class SubmissionPage extends StatefulWidget {
   final String title;
   final String subject;
@@ -243,7 +245,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: AppTheme.yachtClubBlue,
         title: const Text(
           'Assignment Details',
           style: TextStyle(color: Colors.white),
@@ -263,7 +265,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
                   children: [
                     _buildHeaderSection(),
                     const SizedBox(height: 12),
-/*
+                    /*
                     _buildDescriptionAndAttachment(),
 */
                     const SizedBox(height: 20),
@@ -314,8 +316,8 @@ class _SubmissionPageState extends State<SubmissionPage> {
     );
   }
 
- /* Widget _buildDescriptionAndAttachment() {
-   *//* return Card(
+  /* Widget _buildDescriptionAndAttachment() {
+   */ /* return Card(
       elevation: 1,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -323,7 +325,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(widget.description, style: const TextStyle(fontSize: 14)),
-            const SizedBox(height: 16),*//*
+            const SizedBox(height: 16),*/ /*
             // if (widget.filePath.isNotEmpty)
             //   InkWell(
             //     onTap:
@@ -403,7 +405,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
                 if (!isPastDue)
                   IconButton(
                     icon: const Icon(Icons.attach_file),
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                     onPressed: _isUploading ? null : _pickAndUploadFile,
                   ),
               ],
@@ -420,7 +422,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
               ElevatedButton(
                 onPressed: _isUploading ? null : _confirmAndSubmit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: AppTheme.yachtClubBlue,
                   foregroundColor: Colors.white,
                 ),
                 child: Text(_isSubmitted ? 'Update Submission' : 'Submit'),

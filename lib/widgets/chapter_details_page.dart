@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class NotesViewPage extends StatefulWidget {
   final String courseId;
@@ -113,13 +114,13 @@ class _NotesViewPageState extends State<NotesViewPage>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.shade100,
+                      color: AppTheme.yachtClubBlueSwatch.shade100,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
                       child: Icon(
                         _getFileIcon(fileName),
-                        color: Colors.deepPurple,
+                        color: AppTheme.yachtClubBlue,
                       ),
                     ),
                   ),
@@ -165,7 +166,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                       icon: const Icon(Icons.download, size: 18),
                       label: const Text('Download'),
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.deepPurple,
+                        foregroundColor: AppTheme.yachtClubBlue,
                         padding: EdgeInsets.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -232,7 +233,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
+                          color: AppTheme.yachtClubBlue,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -262,7 +263,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                         children: [
                           Icon(
                             Icons.calendar_today,
-                            color: Colors.deepPurple.shade300,
+                            color: AppTheme.yachtClubBlueSwatch.shade300,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -277,7 +278,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                         children: [
                           Icon(
                             Icons.person,
-                            color: Colors.deepPurple.shade300,
+                            color: AppTheme.yachtClubBlueSwatch.shade300,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -294,7 +295,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
+                            color: AppTheme.yachtClubBlue,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -310,10 +311,10 @@ class _NotesViewPageState extends State<NotesViewPage>
                               vertical: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.shade50,
+                              color: AppTheme.yachtClubBlueSwatch.shade50,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: Colors.deepPurple.shade200,
+                                color: AppTheme.yachtClubBlueSwatch.shade200,
                               ),
                             ),
                             child: Row(
@@ -321,7 +322,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                               children: [
                                 Icon(
                                   Icons.file_present,
-                                  color: Colors.deepPurple.shade700,
+                                  color: AppTheme.yachtClubBlueSwatch.shade700,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
@@ -331,7 +332,8 @@ class _NotesViewPageState extends State<NotesViewPage>
                                         .split('/')
                                         .last,
                                     style: TextStyle(
-                                      color: Colors.deepPurple.shade700,
+                                      color:
+                                          AppTheme.yachtClubBlueSwatch.shade700,
                                       fontWeight: FontWeight.w500,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -340,7 +342,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                                 const SizedBox(width: 8),
                                 Icon(
                                   Icons.download,
-                                  color: Colors.deepPurple.shade700,
+                                  color: AppTheme.yachtClubBlueSwatch.shade700,
                                 ),
                               ],
                             ),
@@ -352,7 +354,7 @@ class _NotesViewPageState extends State<NotesViewPage>
                         child: ElevatedButton(
                           onPressed: () => Navigator.pop(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
+                            backgroundColor: AppTheme.yachtClubBlue,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 40,
@@ -377,7 +379,7 @@ class _NotesViewPageState extends State<NotesViewPage>
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: AppTheme.yachtClubBlue,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -408,7 +410,7 @@ class _NotesViewPageState extends State<NotesViewPage>
       body:
           _isLoading
               ? const Center(
-                child: CircularProgressIndicator(color: Colors.deepPurple),
+                child: CircularProgressIndicator(color: AppTheme.yachtClubBlue),
               )
               : ListView.builder(
                 padding: const EdgeInsets.all(16),

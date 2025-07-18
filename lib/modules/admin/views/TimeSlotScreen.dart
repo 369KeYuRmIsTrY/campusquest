@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import '../../../controllers/login_controller.dart';
 import '../../../widgets/common_app_bar.dart';
-import '../../../theme/theme.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class TimeSlotScreen extends StatefulWidget {
   const TimeSlotScreen({super.key});
@@ -48,16 +48,19 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
 
   void _showAddEditDialog({Map<String, dynamic>? timeSlot}) {
     final isEditing = timeSlot != null;
-    final dayController =
-        TextEditingController(text: isEditing ? timeSlot!['day'] : '');
+    final dayController = TextEditingController(
+      text: isEditing ? timeSlot!['day'] : '',
+    );
     final startTimeController = TextEditingController(
-        text: isEditing
-            ? _controller.formatTimeFromDB(timeSlot!['start_time'])
-            : '');
+      text:
+          isEditing
+              ? _controller.formatTimeFromDB(timeSlot!['start_time'])
+              : '',
+    );
     final endTimeController = TextEditingController(
-        text: isEditing
-            ? _controller.formatTimeFromDB(timeSlot!['end_time'])
-            : '');
+      text:
+          isEditing ? _controller.formatTimeFromDB(timeSlot!['end_time']) : '',
+    );
 
     showGeneralDialog(
       context: context,
@@ -66,25 +69,34 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Container(),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation =
-            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(
-            opacity:
-                Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
             child: AlertDialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: Row(
                 children: [
-                  Icon(isEditing ? Icons.edit_note : Icons.add_box,
-                      color: Colors.deepPurple),
+                  Icon(
+                    isEditing ? Icons.edit_note : Icons.add_box,
+                    color: AppTheme.yachtClubBlue,
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Time Slot' : 'Add New Time Slot',
                     style: const TextStyle(
-                        color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                      color: AppTheme.yachtClubBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -93,59 +105,80 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<String>(
-                      value: dayController.text.isNotEmpty
-                          ? dayController.text
-                          : null,
+                      value:
+                          dayController.text.isNotEmpty
+                              ? dayController.text
+                              : null,
                       decoration: InputDecoration(
                         labelText: 'Day',
-                        labelStyle:
-                            TextStyle(color: Colors.deepPurple.shade300),
-                        prefixIcon: const Icon(Icons.calendar_today,
-                            color: Colors.deepPurple),
+                        labelStyle: TextStyle(
+                          color: AppTheme.yachtClubBlueSwatch[300],
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.calendar_today,
+                          color: AppTheme.yachtClubBlue,
+                        ),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.deepPurple.shade200),
+                          borderSide: BorderSide(
+                            color: AppTheme.yachtClubBlueSwatch[200]!,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.deepPurple, width: 2),
+                          borderSide: BorderSide(
+                            color: AppTheme.yachtClubBlue,
+                            width: 2,
+                          ),
                         ),
                         filled: true,
-                        fillColor: Colors.deepPurple.shade50,
+                        fillColor: AppTheme.yachtClubBlueSwatch[50],
                         contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 12),
+                          vertical: 16,
+                          horizontal: 12,
+                        ),
                       ),
-                      items: const [
-                        'Monday',
-                        'Tuesday',
-                        'Wednesday',
-                        'Thursday',
-                        'Friday',
-                        'Saturday',
-                        'Sunday'
-                      ]
-                          .map((day) =>
-                              DropdownMenuItem(value: day, child: Text(day)))
-                          .toList(),
+                      items:
+                          const [
+                                'Monday',
+                                'Tuesday',
+                                'Wednesday',
+                                'Thursday',
+                                'Friday',
+                                'Saturday',
+                                'Sunday',
+                              ]
+                              .map(
+                                (day) => DropdownMenuItem(
+                                  value: day,
+                                  child: Text(day),
+                                ),
+                              )
+                              .toList(),
                       onChanged: (value) => dayController.text = value ?? '',
                     ),
                     const SizedBox(height: 16),
                     _buildTimePickerField(
                       controller: startTimeController,
                       labelText: 'Start Time',
-                      onTimeSelected: (time) => startTimeController.text =
-                          _controller.formatTime(time),
+                      onTimeSelected:
+                          (time) =>
+                              startTimeController.text = _controller.formatTime(
+                                time,
+                              ),
                     ),
                     const SizedBox(height: 16),
                     _buildTimePickerField(
                       controller: endTimeController,
                       labelText: 'End Time',
-                      onTimeSelected: (time) =>
-                          endTimeController.text = _controller.formatTime(time),
+                      onTimeSelected:
+                          (time) =>
+                              endTimeController.text = _controller.formatTime(
+                                time,
+                              ),
                     ),
                   ],
                 ),
@@ -154,17 +187,22 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                 TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.cancel, color: Colors.grey),
-                  label: const Text('Cancel',
-                      style: TextStyle(color: Colors.grey)),
+                  label: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   onPressed: () async {
                     if (dayController.text.isEmpty ||
@@ -174,10 +212,12 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                       return;
                     }
 
-                    final startTime =
-                        _controller.parseTime(startTimeController.text);
-                    final endTime =
-                        _controller.parseTime(endTimeController.text);
+                    final startTime = _controller.parseTime(
+                      startTimeController.text,
+                    );
+                    final endTime = _controller.parseTime(
+                      endTimeController.text,
+                    );
 
                     if (startTime == null ||
                         endTime == null ||
@@ -196,9 +236,11 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                         endTime: endTime,
                       );
                       Navigator.pop(context);
-                      _showSuccessMessage(isEditing
-                          ? 'Time slot updated successfully'
-                          : 'Time slot added successfully');
+                      _showSuccessMessage(
+                        isEditing
+                            ? 'Time slot updated successfully'
+                            : 'Time slot added successfully',
+                      );
                     } catch (e) {
                       _showErrorMessage('Operation failed: $e');
                     }
@@ -236,21 +278,26 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
           controller: controller,
           decoration: InputDecoration(
             labelText: labelText,
-            labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-            prefixIcon: const Icon(Icons.access_time, color: Colors.deepPurple),
+            labelStyle: TextStyle(color: AppTheme.yachtClubBlueSwatch[300]),
+            prefixIcon: const Icon(
+              Icons.access_time,
+              color: AppTheme.yachtClubBlue,
+            ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.deepPurple.shade200),
+              borderSide: BorderSide(color: AppTheme.yachtClubBlueSwatch[200]!),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+              borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
             ),
             filled: true,
-            fillColor: Colors.deepPurple.shade50,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            fillColor: AppTheme.yachtClubBlueSwatch[50],
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: 12,
+            ),
           ),
         ),
       ),
@@ -262,138 +309,155 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24), topRight: Radius.circular(24)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.shade50,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24)),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade400,
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            timeSlot['day'],
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
-                          ),
-                          Text(
-                            '${_controller.formatTimeFromDB(timeSlot['start_time'])} - ${_controller.formatTimeFromDB(timeSlot['end_time'])}',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.deepPurple.shade700),
-                          ),
-                        ],
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1))
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppTheme.yachtClubBlueSwatch[50],
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade400,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    timeSlot['day'],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.yachtClubBlue,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${_controller.formatTimeFromDB(timeSlot['start_time'])} - ${_controller.formatTimeFromDB(timeSlot['end_time'])}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppTheme.yachtClubBlueSwatch[700],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              right: 16,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: AppTheme.yachtClubBlue,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailItem(
+                                icon: Icons.timer,
+                                title: 'Duration',
+                                value:
+                                    '${_controller.calculateDuration(timeSlot['start_time'], timeSlot['end_time'])} mins',
+                              ),
+                              const Divider(),
+                              _buildDetailItem(
+                                icon: Icons.tag,
+                                title: 'Time Slot ID',
+                                value: timeSlot['time_slot_id'].toString(),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildActionButton(
+                                    label: 'Edit',
+                                    icon: Icons.edit,
+                                    color: Colors.blue,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _showAddEditDialog(timeSlot: timeSlot);
+                                    },
+                                  ),
+                                  _buildActionButton(
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    onTap: () async {
+                                      Navigator.pop(context);
+                                      try {
+                                        await _controller.deleteTimeSlot(
+                                          timeSlot['time_slot_id'],
+                                        );
+                                        _showSuccessMessage(
+                                          'Time slot deleted successfully',
+                                        );
+                                      } catch (e) {
+                                        _showErrorMessage(
+                                          'Operation failed: $e',
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          child: const Icon(Icons.close,
-                              color: Colors.deepPurple, size: 22),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailItem(
-                        icon: Icons.timer,
-                        title: 'Duration',
-                        value:
-                            '${_controller.calculateDuration(timeSlot['start_time'], timeSlot['end_time'])} mins',
-                      ),
-                      const Divider(),
-                      _buildDetailItem(
-                        icon: Icons.tag,
-                        title: 'Time Slot ID',
-                        value: timeSlot['time_slot_id'].toString(),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            label: 'Edit',
-                            icon: Icons.edit,
-                            color: Colors.blue,
-                            onTap: () {
-                              Navigator.pop(context);
-                              _showAddEditDialog(timeSlot: timeSlot);
-                            },
-                          ),
-                          _buildActionButton(
-                            label: 'Delete',
-                            icon: Icons.delete,
-                            color: Colors.red,
-                            onTap: () async {
-                              Navigator.pop(context);
-                              try {
-                                await _controller
-                                    .deleteTimeSlot(timeSlot['time_slot_id']);
-                                _showSuccessMessage(
-                                    'Time slot deleted successfully');
-                              } catch (e) {
-                                _showErrorMessage('Operation failed: $e');
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -408,9 +472,10 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
           ],
         ),
         backgroundColor: Colors.green.shade700,
-        duration: action != null
-            ? const Duration(seconds: 5)
-            : const Duration(seconds: 2),
+        duration:
+            action != null
+                ? const Duration(seconds: 5)
+                : const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(8),
@@ -448,7 +513,10 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
               ? 'No time slots match your search'
               : 'No time slots available',
           style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -461,11 +529,12 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
         if (!_controller.isSearching)
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: AppTheme.yachtClubBlue,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
             onPressed: () => _showAddEditDialog(),
             icon: const Icon(Icons.add),
@@ -476,8 +545,10 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
   }
 
   Widget _buildTimeSlotCard(Map<String, dynamic> slot, int index) {
-    final duration =
-        _controller.calculateDuration(slot['start_time'], slot['end_time']);
+    final duration = _controller.calculateDuration(
+      slot['start_time'],
+      slot['end_time'],
+    );
     final durationColor = _getDurationColor(duration);
 
     return Hero(
@@ -485,13 +556,13 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlue.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => _showDetailsSheet(slot),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlue.withOpacity(0.1),
+          highlightColor: AppTheme.yachtClubBlue.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -506,11 +577,15 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlueSwatch.withOpacity(
+                                0.1,
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.schedule,
-                                color: Colors.deepPurple),
+                            child: const Icon(
+                              Icons.schedule,
+                              color: AppTheme.yachtClubBlue,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -520,16 +595,18 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                                 Text(
                                   slot['day'],
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   '${_controller.formatTimeFromDB(slot['start_time'])} - ${_controller.formatTimeFromDB(slot['end_time'])}',
                                   style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 14),
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -546,8 +623,10 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                   children: [
                     const Icon(Icons.timer, size: 16, color: Colors.grey),
                     const SizedBox(width: 4),
-                    Text('$duration mins',
-                        style: const TextStyle(color: Colors.grey)),
+                    Text(
+                      '$duration mins',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: ClipRRect(
@@ -576,8 +655,9 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
                         try {
-                          await _controller
-                              .deleteTimeSlot(slot['time_slot_id']);
+                          await _controller.deleteTimeSlot(
+                            slot['time_slot_id'],
+                          );
                           _showSuccessMessage('Time slot deleted successfully');
                         } catch (e) {
                           _showErrorMessage('Operation failed: $e');
@@ -602,8 +682,11 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
     return Colors.orange;
   }
 
-  Widget _buildDetailItem(
-      {required IconData icon, required String title, required String value}) {
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -611,19 +694,26 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8)),
-            child: Icon(icon, color: Colors.deepPurple),
+              color: AppTheme.yachtClubBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppTheme.yachtClubBlue),
           ),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500)),
+              Text(
+                title,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ],
@@ -631,11 +721,12 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
     );
   }
 
-  Widget _buildActionButton(
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -650,8 +741,10 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 8),
-            Text(label,
-                style: TextStyle(color: color, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
@@ -667,7 +760,8 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
         return Scaffold(
           appBar: CommonAppBar(
             title: 'Time Slot Management',
-            userEmail: loginController.studentName ??
+            userEmail:
+                loginController.studentName ??
                 loginController.email.split('@').first,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -688,35 +782,42 @@ class _TimeSlotScreenState extends State<TimeSlotScreen>
               });
             },
           ),
-          body: _controller.isLoading
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(color: Colors.deepPurple),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Loading time slots...',
-                        style: TextStyle(color: Colors.grey.shade700),
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  key: _refreshKey,
-                  color: Colors.deepPurple,
-                  onRefresh: _controller.refreshTimeSlots,
-                  child: _controller.timeSlots.isEmpty
-                      ? Center(child: _buildEmptyState())
-                      : Scrollbar(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: _controller.timeSlots.length,
-                            itemBuilder: (context, index) => _buildTimeSlotCard(
-                                _controller.timeSlots[index], index),
-                          ),
+          body:
+              _controller.isLoading
+                  ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(
+                          color: AppTheme.yachtClubBlue,
                         ),
-                ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loading time slots...',
+                          style: TextStyle(color: Colors.grey.shade700),
+                        ),
+                      ],
+                    ),
+                  )
+                  : RefreshIndicator(
+                    key: _refreshKey,
+                    color: AppTheme.yachtClubBlue,
+                    onRefresh: _controller.refreshTimeSlots,
+                    child:
+                        _controller.timeSlots.isEmpty
+                            ? Center(child: _buildEmptyState())
+                            : Scrollbar(
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _controller.timeSlots.length,
+                                itemBuilder:
+                                    (context, index) => _buildTimeSlotCard(
+                                      _controller.timeSlots[index],
+                                      index,
+                                    ),
+                              ),
+                            ),
+                  ),
           floatingActionButton: ScaleTransition(
             scale: _fabAnimation,
             child: FloatingActionButton.extended(

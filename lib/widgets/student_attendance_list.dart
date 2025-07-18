@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/theme.dart';
+
 class StudentAttendanceList extends StatefulWidget {
   final List<Map<String, dynamic>> students;
   final String formattedDate;
@@ -30,9 +32,8 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
         student['attendance'] ??= [];
 
         // Get the attendance status for the selected date
-        final attendanceRecord = student['attendance']
-            ?.firstWhere(
-              (record) => record['date'] == widget.formattedDate,
+        final attendanceRecord = student['attendance']?.firstWhere(
+          (record) => record['date'] == widget.formattedDate,
           orElse: () => {'date': widget.formattedDate, 'status': 'Absent'},
         );
 
@@ -80,7 +81,7 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                     // Notify the parent widget of the change
                     widget.onStatusChanged(index, newStatus);
                   },
-                  fillColor: Colors.deepPurple,
+                  fillColor: AppTheme.yachtClubBlue,
                   selectedColor: Colors.white,
                   disabledColor: Colors.grey.shade300,
                   borderColor: Colors.grey.shade300,
@@ -89,11 +90,17 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                   textStyle: const TextStyle(fontWeight: FontWeight.bold),
                   children: const [
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       child: Text('Present'),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       child: Text('Absent'),
                     ),
                   ],

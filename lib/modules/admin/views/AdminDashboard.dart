@@ -208,7 +208,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               {
                 'label': 'Programs',
                 'count': _programsCount,
-                'color': Colors.purple,
+                'color': AppTheme.yachtClubBlue,
               },
               {
                 'label': 'Students',
@@ -343,7 +343,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           {
             'label': 'Manage Programs',
             'icon': Icons.school,
-            'color': Colors.purple,
+            'color': AppTheme.yachtClubBlue,
             'route': const ProgramScreen(),
           },
           {

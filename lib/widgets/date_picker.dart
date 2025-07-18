@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/theme.dart';
+
 class DatePicker extends StatelessWidget {
   final DateTime selectedDate;
   final Function(DateTime) onDateSelected;
@@ -28,19 +30,18 @@ class DatePicker extends StatelessWidget {
       children: [
         Text(
           'Select Date:',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey.shade700,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
         ),
         const SizedBox(width: 8),
         ElevatedButton.icon(
           onPressed: () => _selectDate(context),
           icon: const Icon(Icons.calendar_today, size: 16),
-          label: Text('${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}'),
+          label: Text(
+            '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue.shade50,
-            foregroundColor: Colors.deepPurple,
+            foregroundColor: AppTheme.yachtClubBlue,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),

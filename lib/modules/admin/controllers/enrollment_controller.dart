@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../theme/theme.dart';
+
 class EnrollmentController {
   final BuildContext context;
   final void Function(void Function()) setStateCallback;
@@ -149,23 +151,28 @@ class EnrollmentController {
 
     final query = searchController.text.toLowerCase();
     setStateCallback(() {
-      filteredEnrollments = _enrollments.where((enrollment) {
-        final studentName = _getStudentName(enrollment['student_id']).toLowerCase();
-        final courseTitle = _getCourseTitle(enrollment['course_id']).toLowerCase();
-        final semesterId = _getSemesterDisplay(enrollment['semester_id']).toLowerCase();
-        final status = enrollment['enrollment_status'].toString().toLowerCase();
-        return studentName.contains(query) ||
-            courseTitle.contains(query) ||
-            semesterId.contains(query) ||
-            status.contains(query);
-      }).toList();
+      filteredEnrollments =
+          _enrollments.where((enrollment) {
+            final studentName =
+                _getStudentName(enrollment['student_id']).toLowerCase();
+            final courseTitle =
+                _getCourseTitle(enrollment['course_id']).toLowerCase();
+            final semesterId =
+                _getSemesterDisplay(enrollment['semester_id']).toLowerCase();
+            final status =
+                enrollment['enrollment_status'].toString().toLowerCase();
+            return studentName.contains(query) ||
+                courseTitle.contains(query) ||
+                semesterId.contains(query) ||
+                status.contains(query);
+          }).toList();
       isSearching = true;
     });
   }
 
   String _getStudentName(String studentId) {
     final student = _students.firstWhere(
-          (student) => student['student_id'] == studentId,
+      (student) => student['student_id'] == studentId,
       orElse: () => {'name': 'Unknown'},
     );
     return student['name'];
@@ -173,7 +180,7 @@ class EnrollmentController {
 
   String _getCourseTitle(String courseId) {
     final course = _courses.firstWhere(
-          (course) => course['course_id'] == courseId,
+      (course) => course['course_id'] == courseId,
       orElse: () => {'title': 'Unknown'},
     );
     return course['title'];
@@ -181,7 +188,7 @@ class EnrollmentController {
 
   String _getSemesterDisplay(String semesterId) {
     final semester = _semesters.firstWhere(
-          (semester) => semester['semester_id'] == semesterId,
+      (semester) => semester['semester_id'] == semesterId,
       orElse: () => {'term': 'Unknown', 'year': ''},
     );
     return '${semester['term']} ${semester['year']}';
@@ -195,7 +202,9 @@ class EnrollmentController {
     });
 
     try {
-      await _supabase.from('enrollment').delete().match({'enrollment_id': enrollmentId});
+      await _supabase.from('enrollment').delete().match({
+        'enrollment_id': enrollmentId,
+      });
 
       showSuccessMessage(
         'Enrollment deleted',
@@ -213,7 +222,9 @@ class EnrollmentController {
         ),
       );
 
-      _enrollments.removeWhere((enrollment) => enrollment['enrollment_id'] == enrollmentId);
+      _enrollments.removeWhere(
+        (enrollment) => enrollment['enrollment_id'] == enrollmentId,
+      );
     } catch (e) {
       setStateCallback(() {
         filteredEnrollments.insert(index, deletedEnrollment);
@@ -222,12 +233,16 @@ class EnrollmentController {
     }
   }
 
-  void showAddEditDialog(BuildContext context, {Map<String, dynamic>? enrollment}) {
+  void showAddEditDialog(
+    BuildContext context, {
+    Map<String, dynamic>? enrollment,
+  }) {
     final bool isEditing = enrollment != null;
     String? selectedStudentId = isEditing ? enrollment!['student_id'] : null;
     String? selectedCourseId = isEditing ? enrollment!['course_id'] : null;
     String? selectedSemesterId = isEditing ? enrollment!['semester_id'] : null;
-    String selectedStatus = isEditing ? enrollment!['enrollment_status'] : 'Active';
+    String selectedStatus =
+        isEditing ? enrollment!['enrollment_status'] : 'Active';
 
     showGeneralDialog(
       context: context,
@@ -236,23 +251,34 @@ class EnrollmentController {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Container(),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(
-            opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            opacity: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
             child: AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: Row(
                 children: [
                   Icon(
                     isEditing ? Icons.edit_note : Icons.add_box,
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                   ),
                   const SizedBox(width: 10),
                   Text(
                     isEditing ? 'Edit Enrollment' : 'Add Enrollment',
-                    style: const TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppTheme.yachtClubBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -265,39 +291,61 @@ class EnrollmentController {
                       builder: (context, setDropdownState) {
                         return DropdownButtonFormField<String>(
                           value: selectedStudentId,
-                          onChanged: isEditing
-                              ? null
-                              : (String? newValue) {
-                            setDropdownState(() {
-                              selectedStudentId = newValue;
-                            });
-                          },
-                          items: _students.map((student) {
-                            return DropdownMenuItem<String>(
-                              value: student['student_id'],
-                              child: Text(student['name']),
-                            );
-                          }).toList(),
+                          onChanged:
+                              isEditing
+                                  ? null
+                                  : (String? newValue) {
+                                    setDropdownState(() {
+                                      selectedStudentId = newValue;
+                                    });
+                                  },
+                          items:
+                              _students.map((student) {
+                                return DropdownMenuItem<String>(
+                                  value: student['student_id'],
+                                  child: Text(student['name']),
+                                );
+                              }).toList(),
                           decoration: InputDecoration(
                             labelText: 'Student',
-                            labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-                            prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            labelStyle: TextStyle(
+                              color: AppTheme.yachtClubBlueSwatch.shade300,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.person,
+                              color: AppTheme.yachtClubBlue,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple.shade200),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch.shade200,
+                              ),
                             ),
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch,
+                                width: 2,
+                              ),
                             ),
                             filled: true,
-                            fillColor: isEditing ? Colors.grey.shade100 : Colors.deepPurple.shade50,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                            fillColor:
+                                isEditing
+                                    ? Colors.grey.shade100
+                                    : AppTheme.yachtClubBlueSwatch.shade50,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 12,
+                            ),
                           ),
                         );
                       },
@@ -309,39 +357,61 @@ class EnrollmentController {
                       builder: (context, setDropdownState) {
                         return DropdownButtonFormField<String>(
                           value: selectedCourseId,
-                          onChanged: isEditing
-                              ? null
-                              : (String? newValue) {
-                            setDropdownState(() {
-                              selectedCourseId = newValue;
-                            });
-                          },
-                          items: _courses.map((course) {
-                            return DropdownMenuItem<String>(
-                              value: course['course_id'],
-                              child: Text(course['title']),
-                            );
-                          }).toList(),
+                          onChanged:
+                              isEditing
+                                  ? null
+                                  : (String? newValue) {
+                                    setDropdownState(() {
+                                      selectedCourseId = newValue;
+                                    });
+                                  },
+                          items:
+                              _courses.map((course) {
+                                return DropdownMenuItem<String>(
+                                  value: course['course_id'],
+                                  child: Text(course['title']),
+                                );
+                              }).toList(),
                           decoration: InputDecoration(
                             labelText: 'Course',
-                            labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-                            prefixIcon: const Icon(Icons.book, color: Colors.deepPurple),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            labelStyle: TextStyle(
+                              color: AppTheme.yachtClubBlueSwatch.shade300,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.book,
+                              color: AppTheme.yachtClubBlue,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple.shade200),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch.shade200,
+                              ),
                             ),
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch,
+                                width: 2,
+                              ),
                             ),
                             filled: true,
-                            fillColor: isEditing ? Colors.grey.shade100 : Colors.deepPurple.shade50,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                            fillColor:
+                                isEditing
+                                    ? Colors.grey.shade100
+                                    : AppTheme.yachtClubBlueSwatch.shade50,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 12,
+                            ),
                           ),
                         );
                       },
@@ -353,39 +423,63 @@ class EnrollmentController {
                       builder: (context, setDropdownState) {
                         return DropdownButtonFormField<String>(
                           value: selectedSemesterId,
-                          onChanged: isEditing
-                              ? null
-                              : (String? newValue) {
-                            setDropdownState(() {
-                              selectedSemesterId = newValue;
-                            });
-                          },
-                          items: _semesters.map((semester) {
-                            return DropdownMenuItem<String>(
-                              value: semester['semester_id'],
-                              child: Text('${semester['term']} ${semester['year']}'),
-                            );
-                          }).toList(),
+                          onChanged:
+                              isEditing
+                                  ? null
+                                  : (String? newValue) {
+                                    setDropdownState(() {
+                                      selectedSemesterId = newValue;
+                                    });
+                                  },
+                          items:
+                              _semesters.map((semester) {
+                                return DropdownMenuItem<String>(
+                                  value: semester['semester_id'],
+                                  child: Text(
+                                    '${semester['term']} ${semester['year']}',
+                                  ),
+                                );
+                              }).toList(),
                           decoration: InputDecoration(
                             labelText: 'Semester',
-                            labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-                            prefixIcon: const Icon(Icons.calendar_today, color: Colors.deepPurple),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            labelStyle: TextStyle(
+                              color: AppTheme.yachtClubBlueSwatch.shade300,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.calendar_today,
+                              color: AppTheme.yachtClubBlue,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple.shade200),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch.shade200,
+                              ),
                             ),
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch,
+                                width: 2,
+                              ),
                             ),
                             filled: true,
-                            fillColor: isEditing ? Colors.grey.shade100 : Colors.deepPurple.shade50,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                            fillColor:
+                                isEditing
+                                    ? Colors.grey.shade100
+                                    : AppTheme.yachtClubBlueSwatch.shade50,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 12,
+                            ),
                           ),
                         );
                       },
@@ -402,28 +496,49 @@ class EnrollmentController {
                               selectedStatus = newValue!;
                             });
                           },
-                          items: ['Active', 'Inactive', 'Completed', 'Dropped'].map((status) {
-                            return DropdownMenuItem<String>(
-                              value: status,
-                              child: Text(status),
-                            );
-                          }).toList(),
+                          items:
+                              [
+                                'Active',
+                                'Inactive',
+                                'Completed',
+                                'Dropped',
+                              ].map((status) {
+                                return DropdownMenuItem<String>(
+                                  value: status,
+                                  child: Text(status),
+                                );
+                              }).toList(),
                           decoration: InputDecoration(
                             labelText: 'Enrollment Status',
-                            labelStyle: TextStyle(color: Colors.deepPurple.shade300),
-                            prefixIcon: const Icon(Icons.assignment_turned_in, color: Colors.deepPurple),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            labelStyle: TextStyle(
+                              color: AppTheme.yachtClubBlueSwatch.shade300,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.assignment_turned_in,
+                              color: AppTheme.yachtClubBlue,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple.shade200),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch.shade200,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+                              borderSide: BorderSide(
+                                color: AppTheme.yachtClubBlueSwatch,
+                                width: 2,
+                              ),
                             ),
                             filled: true,
-                            fillColor: Colors.deepPurple.shade50,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                            fillColor: AppTheme.yachtClubBlueSwatch.shade50,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 12,
+                            ),
                           ),
                         );
                       },
@@ -435,26 +550,41 @@ class EnrollmentController {
                 TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.cancel, color: Colors.grey),
-                  label: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                  label: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppTheme.yachtClubBlueSwatch,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   onPressed: () async {
-                    if (selectedStudentId == null || selectedCourseId == null || selectedSemesterId == null) {
-                      showErrorMessage('Student, Course, and Semester are required');
+                    if (selectedStudentId == null ||
+                        selectedCourseId == null ||
+                        selectedSemesterId == null) {
+                      showErrorMessage(
+                        'Student, Course, and Semester are required',
+                      );
                       return;
                     }
 
                     try {
                       if (isEditing) {
-                        await _supabase.from('enrollment').update({
-                          'enrollment_status': selectedStatus,
-                        }).match({'enrollment_id': enrollment!['enrollment_id']});
+                        await _supabase
+                            .from('enrollment')
+                            .update({'enrollment_status': selectedStatus})
+                            .match({
+                              'enrollment_id': enrollment!['enrollment_id'],
+                            });
                         showSuccessMessage('Enrollment updated successfully');
                       } else {
                         await _supabase.from('enrollment').insert({
@@ -494,7 +624,10 @@ class EnrollmentController {
           ],
         ),
         backgroundColor: Colors.green.shade700,
-        duration: action != null ? const Duration(seconds: 5) : const Duration(seconds: 2),
+        duration:
+            action != null
+                ? const Duration(seconds: 5)
+                : const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(8),
@@ -525,14 +658,12 @@ class EnrollmentController {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.assignment_outlined,
-          size: 80,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.assignment_outlined, size: 80, color: Colors.grey),
         const SizedBox(height: 16),
         Text(
-          isSearching ? 'No enrollments match your search' : 'No enrollments found',
+          isSearching
+              ? 'No enrollments match your search'
+              : 'No enrollments found',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -541,17 +672,21 @@ class EnrollmentController {
         ),
         const SizedBox(height: 8),
         Text(
-          isSearching ? 'Try a different search term' : 'Add an enrollment to get started',
+          isSearching
+              ? 'Try a different search term'
+              : 'Add an enrollment to get started',
           style: const TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 24),
         if (!isSearching)
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: AppTheme.yachtClubBlueSwatch,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
             onPressed: () => showAddEditDialog(context),
             icon: const Icon(Icons.add),
@@ -561,7 +696,10 @@ class EnrollmentController {
     );
   }
 
-  void showEnrollmentDetails(BuildContext context, Map<String, dynamic> enrollment) {
+  void showEnrollmentDetails(
+    BuildContext context,
+    Map<String, dynamic> enrollment,
+  ) {
     final studentName = _getStudentName(enrollment['student_id']);
     final courseTitle = _getCourseTitle(enrollment['course_id']);
     final semesterDisplay = _getSemesterDisplay(enrollment['semester_id']);
@@ -570,156 +708,170 @@ class EnrollmentController {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.shade50,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade400,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            studentName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple,
-                            ),
-                          ),
-                          Text(
-                            courseTitle,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.deepPurple.shade700,
-                            ),
-                          ),
-                        ],
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 1),
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppTheme.yachtClubBlueSwatch.shade50,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade400,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    studentName,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.yachtClubBlueSwatch,
+                                    ),
+                                  ),
+                                  Text(
+                                    courseTitle,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color:
+                                          AppTheme.yachtClubBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 16,
+                              right: 16,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: AppTheme.yachtClubBlueSwatch,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailItem(
+                                icon: Icons.person,
+                                title: 'Student ID',
+                                value: enrollment['student_id'],
+                              ),
+                              const Divider(),
+                              _buildDetailItem(
+                                icon: Icons.book,
+                                title: 'Course ID',
+                                value: enrollment['course_id'],
+                              ),
+                              const Divider(),
+                              _buildDetailItem(
+                                icon: Icons.calendar_today,
+                                title: 'Semester',
+                                value: semesterDisplay,
+                              ),
+                              const Divider(),
+                              _buildDetailItem(
+                                icon: Icons.assignment_turned_in,
+                                title: 'Status',
+                                value: enrollment['enrollment_status'],
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildActionButton(
+                                    label: 'Edit',
+                                    icon: Icons.edit,
+                                    color: Colors.blue,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      showAddEditDialog(
+                                        context,
+                                        enrollment: enrollment,
+                                      );
+                                    },
+                                  ),
+                                  _buildActionButton(
+                                    label: 'Delete',
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      final index = filteredEnrollments
+                                          .indexWhere(
+                                            (e) =>
+                                                e['enrollment_id'] ==
+                                                enrollment['enrollment_id'],
+                                          );
+                                      if (index != -1) {
+                                        _deleteEnrollment(
+                                          enrollment['enrollment_id'],
+                                          index,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.deepPurple,
-                            size: 22,
-                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailItem(
-                        icon: Icons.person,
-                        title: 'Student ID',
-                        value: enrollment['student_id'],
-                      ),
-                      const Divider(),
-                      _buildDetailItem(
-                        icon: Icons.book,
-                        title: 'Course ID',
-                        value: enrollment['course_id'],
-                      ),
-                      const Divider(),
-                      _buildDetailItem(
-                        icon: Icons.calendar_today,
-                        title: 'Semester',
-                        value: semesterDisplay,
-                      ),
-                      const Divider(),
-                      _buildDetailItem(
-                        icon: Icons.assignment_turned_in,
-                        title: 'Status',
-                        value: enrollment['enrollment_status'],
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            label: 'Edit',
-                            icon: Icons.edit,
-                            color: Colors.blue,
-                            onTap: () {
-                              Navigator.pop(context);
-                              showAddEditDialog(context, enrollment: enrollment);
-                            },
-                          ),
-                          _buildActionButton(
-                            label: 'Delete',
-                            icon: Icons.delete,
-                            color: Colors.red,
-                            onTap: () {
-                              Navigator.pop(context);
-                              final index = filteredEnrollments.indexWhere(
-                                      (e) => e['enrollment_id'] == enrollment['enrollment_id']);
-                              if (index != -1) {
-                                _deleteEnrollment(enrollment['enrollment_id'], index);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -735,10 +887,10 @@ class EnrollmentController {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: AppTheme.yachtClubBlueSwatch.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: Colors.deepPurple),
+            child: Icon(icon, color: AppTheme.yachtClubBlueSwatch),
           ),
           const SizedBox(width: 16),
           Column(
@@ -750,7 +902,10 @@ class EnrollmentController {
               ),
               Text(
                 value,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
@@ -789,7 +944,11 @@ class EnrollmentController {
     );
   }
 
-  Widget buildEnrollmentCard(BuildContext context, Map<String, dynamic> enrollment, int index) {
+  Widget buildEnrollmentCard(
+    BuildContext context,
+    Map<String, dynamic> enrollment,
+    int index,
+  ) {
     final studentName = _getStudentName(enrollment['student_id']);
     final courseTitle = _getCourseTitle(enrollment['course_id']);
     final semesterDisplay = _getSemesterDisplay(enrollment['semester_id']);
@@ -799,13 +958,13 @@ class EnrollmentController {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 12),
         elevation: 3,
-        shadowColor: Colors.deepPurple.withOpacity(0.3),
+        shadowColor: AppTheme.yachtClubBlueSwatch.withOpacity(0.3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () => showEnrollmentDetails(context, enrollment),
           borderRadius: BorderRadius.circular(16),
-          splashColor: Colors.deepPurple.withOpacity(0.1),
-          highlightColor: Colors.deepPurple.withOpacity(0.05),
+          splashColor: AppTheme.yachtClubBlueSwatch.withOpacity(0.1),
+          highlightColor: AppTheme.yachtClubBlueSwatch.withOpacity(0.05),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -820,10 +979,15 @@ class EnrollmentController {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: AppTheme.yachtClubBlueSwatch.withOpacity(
+                                0.1,
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.person, color: Colors.deepPurple),
+                            child: const Icon(
+                              Icons.person,
+                              color: AppTheme.yachtClubBlueSwatch,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -832,13 +996,19 @@ class EnrollmentController {
                               children: [
                                 Text(
                                   studentName,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   courseTitle,
-                                  style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
+                                  style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -849,24 +1019,30 @@ class EnrollmentController {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: enrollment['enrollment_status'] == 'Active'
-                            ? Colors.green.shade100
-                            : Colors.orange.shade100,
+                        color:
+                            enrollment['enrollment_status'] == 'Active'
+                                ? Colors.green.shade100
+                                : Colors.orange.shade100,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: enrollment['enrollment_status'] == 'Active'
-                              ? Colors.green.shade300
-                              : Colors.orange.shade300,
+                          color:
+                              enrollment['enrollment_status'] == 'Active'
+                                  ? Colors.green.shade300
+                                  : Colors.orange.shade300,
                         ),
                       ),
                       child: Text(
                         enrollment['enrollment_status'],
                         style: TextStyle(
-                          color: enrollment['enrollment_status'] == 'Active'
-                              ? Colors.green.shade800
-                              : Colors.orange.shade800,
+                          color:
+                              enrollment['enrollment_status'] == 'Active'
+                                  ? Colors.green.shade800
+                                  : Colors.orange.shade800,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -889,13 +1065,21 @@ class EnrollmentController {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () => showAddEditDialog(context, enrollment: enrollment),
+                      onPressed:
+                          () => showAddEditDialog(
+                            context,
+                            enrollment: enrollment,
+                          ),
                       tooltip: 'Edit',
                       splashRadius: 24,
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _deleteEnrollment(enrollment['enrollment_id'], index),
+                      onPressed:
+                          () => _deleteEnrollment(
+                            enrollment['enrollment_id'],
+                            index,
+                          ),
                       tooltip: 'Delete',
                       splashRadius: 24,
                     ),
@@ -913,23 +1097,19 @@ class EnrollmentController {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.deepPurple.shade50,
+        color: AppTheme.yachtClubBlueSwatch.shade50,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: Colors.deepPurple,
-          ),
+          Icon(icon, size: 14, color: AppTheme.yachtClubBlueSwatch),
           const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.deepPurple.shade700,
+              color: AppTheme.yachtClubBlueSwatch.shade700,
             ),
           ),
         ],

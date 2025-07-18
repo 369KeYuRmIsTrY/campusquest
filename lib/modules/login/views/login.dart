@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               width: 180,
               height: 180,
               decoration: const BoxDecoration(
-                color: Color(0xFF2563A6),
+                color: Color(0xFF006491),
                 shape: BoxShape.circle,
               ),
             ),
@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               width: 80,
               height: 80,
               decoration: const BoxDecoration(
-                color: Color(0xFF2563A6),
+                color: Color(0xFF006491),
                 shape: BoxShape.circle,
               ),
             ),
@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               width: 80,
               height: 80,
               decoration: const BoxDecoration(
-                color: Color(0xFF2563A6),
+                color: Color(0xFF006491),
                 shape: BoxShape.circle,
               ),
             ),
@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               width: 180,
               height: 180,
               decoration: const BoxDecoration(
-                color: Color(0xFF2563A6),
+                color: Color(0xFF006491),
                 shape: BoxShape.circle,
               ),
             ),
@@ -156,7 +156,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         const Text(
                           'Login',
                           style: TextStyle(
-                            color: Color(0xFF2563A6),
+                            color: Color(0xFF006491),
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                           ),
@@ -249,7 +249,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF2563A6),
+                                backgroundColor: const Color(0xFF006491),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

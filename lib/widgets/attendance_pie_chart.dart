@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class AttendancePieChart extends StatelessWidget {
   final double attendancePercentage;
 
   const AttendancePieChart({Key? key, required this.attendancePercentage})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class AttendancePieChart extends StatelessWidget {
               sections: [
                 PieChartSectionData(
                   value: attendancePercentage,
-                  color: Colors.deepPurple,
+                  color: AppTheme.yachtClubBlue,
                   radius: 40,
                   showTitle: false,
                 ),
@@ -43,7 +44,7 @@ class AttendancePieChart extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple.shade700,
+                    color: AppTheme.yachtClubBlueSwatch.shade700,
                   ),
                 ),
                 const Text(

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:campusquest/widgets/common_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../controllers/login_controller.dart';
+import 'package:campusquest/theme/theme.dart';
 
 class CreateAssignmentFormPage extends StatefulWidget {
   final String courseId;
@@ -85,7 +86,8 @@ class _CreateAssignmentFormPageState extends State<CreateAssignmentFormPage> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Create Assignment',
-        userEmail: loginController.studentName ??
+        userEmail:
+            loginController.studentName ??
             loginController.email.split('@').first,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -138,8 +140,10 @@ class _CreateAssignmentFormPageState extends State<CreateAssignmentFormPage> {
                   padding: const EdgeInsets.all(12),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today,
-                          color: Colors.deepPurple),
+                      const Icon(
+                        Icons.calendar_today,
+                        color: AppTheme.yachtClubBlue,
+                      ),
                       const SizedBox(width: 12),
                       Text(
                         'Due Date: ${DateFormat('yyyy-MM-dd').format(widget.dueDate)}',
@@ -155,17 +159,20 @@ class _CreateAssignmentFormPageState extends State<CreateAssignmentFormPage> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _createAssignment,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Create Assignment',
-                          style: TextStyle(fontSize: 16)),
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                            'Create Assignment',
+                            style: TextStyle(fontSize: 16),
+                          ),
                 ),
               ),
             ],
