@@ -577,7 +577,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
           borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
         ),
         filled: true,
-        fillColor: enabled ? Colors.blue.shade50 : Colors.grey.shade100,
+        fillColor: Colors.white, // or Colors.blue.shade50 for a slight tint
         contentPadding: const EdgeInsets.symmetric(
           vertical: 16,
           horizontal: 12,
@@ -601,7 +601,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
         borderSide: const BorderSide(color: AppTheme.yachtClubBlue, width: 2),
       ),
       filled: true,
-      fillColor: Colors.blue.shade50,
+      fillColor: Colors.white, // or Colors.blue.shade50 for a slight tint
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
@@ -935,7 +935,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
             onPressed: () => _showAddEditDialog(),
             icon: const Icon(Icons.add),
             label: const Text('Add Instructor'),
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppTheme.yachtClubBlue,
             foregroundColor: Colors.white,
             elevation: 0,
           ),

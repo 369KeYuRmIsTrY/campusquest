@@ -377,139 +377,309 @@ class _TimetableScreenState extends State<TimetableScreen> {
           builder: (context, setDialogState) {
             updateFilters();
             return AlertDialog(
-              title: const Text('Add Timetable Entry'),
+              backgroundColor: AppTheme.yachtClubLight.withOpacity(0.98),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32),
+              ),
+              elevation: 16,
+              title: const Text(
+                'Add Timetable Entry',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: AppTheme.yachtClubBlue,
+                ),
+              ),
               content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropdownButtonFormField<int>(
-                      value: selectedProgramSemesterId,
-                      decoration: const InputDecoration(
-                        labelText: 'Program & Semester',
-                      ),
-                      items:
-                          programSemesters
-                              .map<DropdownMenuItem<int>>(
-                                (ps) => DropdownMenuItem<int>(
-                                  value: ps['semester_id'] as int,
-                                  child: Text(
-                                    '${ps['program_name']} (${ps['batch_year']}) - Semester ${ps['semester_number']}',
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (v) {
-                        setDialogState(() {
-                          selectedProgramSemesterId = v;
-                          selectedCourseId = null;
-                          selectedTeachesId = null;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<int>(
-                      value: selectedCourseId,
-                      decoration: const InputDecoration(labelText: 'Course'),
-                      items:
-                          filteredCourses
-                              .map<DropdownMenuItem<int>>(
-                                (c) => DropdownMenuItem<int>(
-                                  value: c['course_id'] as int,
-                                  child: Text(c['course_name'] ?? ''),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (v) {
-                        setDialogState(() {
-                          selectedCourseId = v;
-                          // Update filteredTeaches for the new course
-                          filteredTeaches =
-                              teaches
-                                  .where(
-                                    (t) =>
-                                        t['course_id'] == v &&
-                                        t['semester_id'] ==
-                                            selectedProgramSemesterId,
-                                  )
-                                  .toList();
-                          // Auto-select the first available instructor if any
-                          if (filteredTeaches.isNotEmpty) {
-                            selectedTeachesId =
-                                filteredTeaches.first['teaches_id'] as int;
-                          } else {
-                            selectedTeachesId = null;
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<int?>(
-                      value: selectedTeachesId,
-                      decoration: const InputDecoration(
-                        labelText: 'Instructor',
-                      ),
-                      items: [
-                        const DropdownMenuItem<int?>(
-                          value: null,
-                          child: Text('Not Assigned'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4.0,
+                    vertical: 2.0,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DropdownButtonFormField<int>(
+                        value: selectedProgramSemesterId,
+                        decoration: InputDecoration(
+                          labelText: 'Program & Semester',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 1.2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubGrey,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 2,
+                            ),
+                          ),
                         ),
-                        ...filteredTeaches.map<DropdownMenuItem<int?>>((t) {
-                          final instructor = instructors.firstWhere(
-                            (i) => i['instructor_id'] == t['instructor_id'],
-                            orElse: () => {'name': 'Unknown'},
-                          );
-                          return DropdownMenuItem<int?>(
-                            value: t['teaches_id'] as int,
-                            child: Text(instructor['name'] ?? 'Unknown'),
-                          );
-                        }).toList(),
-                      ],
-                      onChanged:
-                          (v) => setDialogState(() => selectedTeachesId = v),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      value: selectedClassroomId,
-                      decoration: const InputDecoration(labelText: 'Classroom'),
-                      items:
-                          classrooms
-                              .map<DropdownMenuItem<String>>(
-                                (c) => DropdownMenuItem<String>(
-                                  value: c['classroom_id'] as String,
-                                  child: Text(
-                                    '${c['building']} - ${c['room_number']}',
+                        dropdownColor: Colors.white,
+                        items:
+                            programSemesters
+                                .map<DropdownMenuItem<int>>(
+                                  (ps) => DropdownMenuItem<int>(
+                                    value: ps['semester_id'] as int,
+                                    child: Text(
+                                      '${ps['program_name']} (${ps['batch_year']}) - Semester ${ps['semester_number']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              )
-                              .toList(),
-                      onChanged:
-                          (v) => setDialogState(() => selectedClassroomId = v),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<int>(
-                      value: selectedTimeSlotId,
-                      decoration: const InputDecoration(labelText: 'Time Slot'),
-                      items:
-                          timeSlots
-                              .map<DropdownMenuItem<int>>(
-                                (t) => DropdownMenuItem<int>(
-                                  value: t['time_slot_id'] as int,
-                                  child: Text(
-                                    '${t['day']} ${t['start_time']} - ${t['end_time']}',
+                                )
+                                .toList(),
+                        onChanged: (v) {
+                          setDialogState(() {
+                            selectedProgramSemesterId = v;
+                            selectedCourseId = null;
+                            selectedTeachesId = null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      DropdownButtonFormField<int>(
+                        value: selectedCourseId,
+                        decoration: InputDecoration(
+                          labelText: 'Course',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 1.2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubGrey,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        dropdownColor: Colors.white,
+                        items:
+                            filteredCourses
+                                .map<DropdownMenuItem<int>>(
+                                  (c) => DropdownMenuItem<int>(
+                                    value: c['course_id'] as int,
+                                    child: Text(
+                                      c['course_name'] ?? '',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
+                                )
+                                .toList(),
+                        onChanged: (v) {
+                          setDialogState(() {
+                            selectedCourseId = v;
+                            // Update filteredTeaches for the new course
+                            filteredTeaches =
+                                teaches
+                                    .where(
+                                      (t) =>
+                                          t['course_id'] == v &&
+                                          t['semester_id'] ==
+                                              selectedProgramSemesterId,
+                                    )
+                                    .toList();
+                            // Auto-select the first available instructor if any
+                            if (filteredTeaches.isNotEmpty) {
+                              selectedTeachesId =
+                                  filteredTeaches.first['teaches_id'] as int;
+                            } else {
+                              selectedTeachesId = null;
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      DropdownButtonFormField<int?>(
+                        value: selectedTeachesId,
+                        decoration: InputDecoration(
+                          labelText: 'Instructor',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 1.2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubGrey,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        dropdownColor: Colors.white,
+                        items: [
+                          const DropdownMenuItem<int?>(
+                            value: null,
+                            child: Text(
+                              'Not Assigned',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          ...filteredTeaches.map<DropdownMenuItem<int?>>((t) {
+                            final instructor = instructors.firstWhere(
+                              (i) => i['instructor_id'] == t['instructor_id'],
+                              orElse: () => {'name': 'Unknown'},
+                            );
+                            return DropdownMenuItem<int?>(
+                              value: t['teaches_id'] as int,
+                              child: Text(
+                                instructor['name'] ?? 'Unknown',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              )
-                              .toList(),
-                      onChanged:
-                          (v) => setDialogState(() => selectedTimeSlotId = v),
-                    ),
-                  ],
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                        onChanged:
+                            (v) => setDialogState(() => selectedTeachesId = v),
+                      ),
+                      const SizedBox(height: 14),
+                      DropdownButtonFormField<String>(
+                        value: selectedClassroomId,
+                        decoration: InputDecoration(
+                          labelText: 'Classroom',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 1.2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubGrey,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        dropdownColor: Colors.white,
+                        items:
+                            classrooms
+                                .map<DropdownMenuItem<String>>(
+                                  (c) => DropdownMenuItem<String>(
+                                    value: c['classroom_id'] as String,
+                                    child: Text(
+                                      '${c['building']} - ${c['room_number']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged:
+                            (v) =>
+                                setDialogState(() => selectedClassroomId = v),
+                      ),
+                      const SizedBox(height: 14),
+                      DropdownButtonFormField<int>(
+                        value: selectedTimeSlotId,
+                        decoration: InputDecoration(
+                          labelText: 'Time Slot',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 1.2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubGrey,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppTheme.yachtClubBlue,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        dropdownColor: Colors.white,
+                        items:
+                            timeSlots
+                                .map<DropdownMenuItem<int>>(
+                                  (t) => DropdownMenuItem<int>(
+                                    value: t['time_slot_id'] as int,
+                                    child: Text(
+                                      '${t['day']} ${t['start_time']} - ${t['end_time']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged:
+                            (v) => setDialogState(() => selectedTimeSlotId = v),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: AppTheme.yachtClubBlue),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed:
@@ -554,12 +724,23 @@ class _TimetableScreenState extends State<TimetableScreen> {
                               );
                             }
                           },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.yachtClubBlue,
+                    foregroundColor: AppTheme.yachtClubLight,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 4,
+                  ),
                   child:
                       isSubmitting
                           ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppTheme.yachtClubLight,
+                            ),
                           )
                           : const Text('Add'),
                 ),

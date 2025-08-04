@@ -120,7 +120,7 @@ class DepartmentScreenState extends State<DepartmentScreen>
               'Add Department',
               style: TextStyle(color: Colors.white),
             ),
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppTheme.yachtClubBlue,
             elevation: 0,
           ),
         ),

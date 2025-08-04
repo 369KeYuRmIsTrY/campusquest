@@ -724,20 +724,8 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
           style: const TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 24),
-        if (!_isSearching)
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.yachtClubBlue,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ),
-            onPressed: () => _showAddEditDialog(),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Enrollment'),
-          ),
+
+
       ],
     );
   }

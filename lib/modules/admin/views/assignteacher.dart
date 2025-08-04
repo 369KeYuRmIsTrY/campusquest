@@ -421,7 +421,7 @@ class _TeachesScreenState extends State<TeachesScreen>
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
+                        colors: [AppTheme.yachtClubBlue, AppTheme.yachtClubBlue],
                       ),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
@@ -641,7 +641,7 @@ class _TeachesScreenState extends State<TeachesScreen>
         borderSide: const BorderSide(color: AppTheme.yachtClubBlue, width: 2),
       ),
       filled: true,
-      fillColor: AppTheme.yachtClubBlue,
+      fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
@@ -716,35 +716,8 @@ class _TeachesScreenState extends State<TeachesScreen>
             onTap: () => _showAddEditDialog(),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-                ),
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.darkBlue.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.add, color: Colors.white),
-                  SizedBox(width: 8),
-                  Text(
-                    'Assign Instructor',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+            
+
             ),
           ),
       ],
@@ -992,15 +965,11 @@ class _TeachesScreenState extends State<TeachesScreen>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-              ),
+              color: AppTheme.yachtClubBlue,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.darkBlue.withOpacity(0.3),
+                  color: AppTheme.yachtClubBlue.withOpacity(0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

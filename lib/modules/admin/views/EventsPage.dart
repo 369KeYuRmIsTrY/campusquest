@@ -485,11 +485,9 @@ class _AddEventPageState extends State<AddEventPage>
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppTheme.yachtClubBlue,
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: AppTheme.yachtClubBlue,
-                              ),
+                              border: Border.all(color: AppTheme.yachtClubBlue),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,14 +518,10 @@ class _AddEventPageState extends State<AddEventPage>
                                             selected: dialogSelectedPrograms
                                                 .contains(programId),
                                             selectedColor:
-
-                                                    AppTheme
-                                                    .yachtClubBlue,
+                                                AppTheme.yachtClubBlue,
 
                                             checkmarkColor:
-
-                                                    AppTheme
-                                                    .yachtClubBlue,
+                                                AppTheme.yachtClubBlue,
                                             onSelected: (selected) {
                                               setDialogState(() {
                                                 if (selected) {
@@ -593,9 +587,8 @@ class _AddEventPageState extends State<AddEventPage>
                               icon: const Icon(Icons.upload_file),
                               label: const Text('Upload File'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    AppTheme.yachtClubBlue,
-                                foregroundColor: AppTheme.yachtClubBlue,
+                                backgroundColor: AppTheme.yachtClubBlue,
+                                foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -691,7 +684,7 @@ class _AddEventPageState extends State<AddEventPage>
         borderSide: const BorderSide(color: AppTheme.yachtClubBlue, width: 2),
       ),
       filled: true,
-      fillColor: AppTheme.yachtClubBlue,
+      fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
@@ -802,8 +795,8 @@ class _AddEventPageState extends State<AddEventPage>
             onPressed: () => _showAddEditDialog(),
             icon: const Icon(Icons.add),
             label: const Text('Add Event'),
-            backgroundColor: Colors.transparent,
-            foregroundColor: AppTheme.velvetTealDark,
+            backgroundColor: AppTheme.yachtClubBlue,
+            foregroundColor: Colors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),

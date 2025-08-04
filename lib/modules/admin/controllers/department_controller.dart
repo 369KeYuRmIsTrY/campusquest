@@ -274,16 +274,12 @@ class DepartmentController {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(
-          color: AppTheme.yachtClubBlue,
-        ),
+        labelStyle: TextStyle(color: AppTheme.yachtClubBlue),
         prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppTheme.yachtClubBlue,
-          ),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -291,16 +287,10 @@ class DepartmentController {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppTheme.yachtClubBlue,
-            width: 2,
-          ),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
         ),
         filled: true,
-        fillColor:
-            enabled
-                ? AppTheme.yachtClubBlue
-                : Colors.grey.shade100,
+        fillColor: enabled ? Colors.white : Colors.grey.shade100,
         contentPadding: const EdgeInsets.symmetric(
           vertical: 16,
           horizontal: 12,
@@ -425,8 +415,7 @@ class DepartmentController {
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color:
-                                    AppTheme.yachtClubBlue,
+                                color: AppTheme.yachtClubBlue,
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(24),
                                   topRight: Radius.circular(24),
@@ -642,8 +631,7 @@ class DepartmentController {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppTheme.yachtClubBlue
-                                  .withOpacity(0.1),
+                              color: AppTheme.yachtClubBlue.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
