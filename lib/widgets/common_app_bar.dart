@@ -28,6 +28,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       shape:ShapeBorder.lerp(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),

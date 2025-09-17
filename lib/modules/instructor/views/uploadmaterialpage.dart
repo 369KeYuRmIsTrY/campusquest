@@ -11,6 +11,8 @@ import 'package:campusquest/widgets/common_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:campusquest/controllers/login_controller.dart';
 
+import '../../../theme/theme.dart';
+
 class Course {
   final String courseId;
   final String courseName;
@@ -458,6 +460,7 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
           (context) => StatefulBuilder(
             builder:
                 (context, setDialogState) => AlertDialog(
+                  backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -465,13 +468,13 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
                     children: [
                       Icon(
                         isEditing ? Icons.edit_note : Icons.add_box,
-                        color: Colors.deepPurple,
+                        color: AppTheme.yachtClubBlue,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         isEditing ? 'Edit Note' : 'Add New Note',
                         style: const TextStyle(
-                          color: Colors.deepPurple,
+                          color: AppTheme.yachtClubBlue,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -516,10 +519,10 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.deepPurple.shade50,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.deepPurple.shade200,
+                              color: AppTheme.yachtClubBlue,
                             ),
                           ),
                           child: Column(
@@ -529,7 +532,7 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
                                 'Associated Courses',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
+                                  color: AppTheme.yachtClubBlue,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -542,7 +545,7 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
                                         value: dialogSelectedCourses.contains(
                                           courseId,
                                         ),
-                                        activeColor: Colors.deepPurple,
+                                        activeColor: AppTheme.yachtClubBlue,
                                         onChanged: (bool? value) {
                                           setDialogState(() {
                                             if (value == true) {
@@ -570,7 +573,7 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
                               children: [
                                 Icon(
                                   Icons.file_present,
-                                  color: Colors.deepPurple,
+                                  color: AppTheme.yachtClubBlue,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
@@ -584,8 +587,8 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
                           icon: const Icon(Icons.upload_file),
                           label: const Text('Upload File'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple.shade100,
-                            foregroundColor: Colors.deepPurple,
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppTheme.yachtClubBlue,
                           ),
                         ),
                       ],
@@ -602,7 +605,7 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
                     ),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: AppTheme.yachtClubBlue,
                         foregroundColor: Colors.white,
                       ),
                       onPressed: () async {
@@ -653,18 +656,18 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
       onTap: onTap,
       decoration: InputDecoration(
         labelText: labelText,
-        prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+        prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple.shade200),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
         ),
         filled: true,
-        fillColor: Colors.deepPurple.shade50,
+        fillColor: Colors.white,
       ),
     );
   }
@@ -683,11 +686,11 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
       body:
           _isLoading
               ? const Center(
-                child: CircularProgressIndicator(color: Colors.deepPurple),
+                child: CircularProgressIndicator(color: AppTheme.yachtClubBlue),
               )
               : RefreshIndicator(
                 key: _refreshKey,
-                color: Colors.deepPurple,
+                color: AppTheme.yachtClubBlue,
                 onRefresh: _fetchNotes,
                 child:
                     selectedCourseId == null || courses.isEmpty
@@ -723,7 +726,7 @@ class _UploadMaterialsPageState extends State<UploadMaterialsPage>
           onPressed: () => _instructorId != null ? _showAddEditDialog() : null,
           icon: const Icon(Icons.add),
           label: const Text('Add Material'),
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: AppTheme.yachtClubBlue,
           foregroundColor: Colors.white,
         ),
       ),

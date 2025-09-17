@@ -5,6 +5,8 @@ import 'package:campusquest/widgets/common_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:campusquest/controllers/login_controller.dart';
 
+import '../../../theme/theme.dart';
+
 class ClassSchedule extends StatefulWidget {
   const ClassSchedule({super.key});
 
@@ -243,13 +245,11 @@ class _ClassScheduleState extends State<ClassSchedule> {
         _schedule.where((s) => s['day'] == selectedDay).toList();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CommonAppBar(
         title: 'Class Schedule',
         userEmail: Provider.of<LoginController>(context).email.split('@').first,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+
       ),
       body:
           _isLoading
@@ -270,11 +270,16 @@ class _ClassScheduleState extends State<ClassSchedule> {
                     if (instructorName != null && designation != null)
                       Container(
                         padding: const EdgeInsets.all(16),
-                        color: Colors.deepPurple.shade50,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: AppTheme.yachtClubBlue),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+
                         child: Row(
                           children: [
                             CircleAvatar(
-                              backgroundColor: Colors.deepPurple,
+                              backgroundColor: AppTheme.yachtClubBlue,
                               radius: 25,
                               child: Text(
                                 instructorName!.isNotEmpty
@@ -320,7 +325,7 @@ class _ClassScheduleState extends State<ClassSchedule> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
+                        color: AppTheme.yachtClubBlue,
                       ),
                     ),
                     const SizedBox(height: 16),

@@ -171,6 +171,7 @@ class _ProgramScreenState extends State<ProgramScreen>
               end: 1.0,
             ).animate(curvedAnimation),
             child: AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),

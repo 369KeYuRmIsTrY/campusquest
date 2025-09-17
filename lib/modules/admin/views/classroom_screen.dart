@@ -77,6 +77,7 @@ class _ClassroomScreenState extends State<ClassroomScreen>
               end: 1.0,
             ).animate(curvedAnimation),
             child: AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),

@@ -222,6 +222,7 @@ class _StudentScreenState extends State<StudentScreen>
               end: 1.0,
             ).animate(curvedAnimation),
             child: AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -579,10 +580,7 @@ class _StudentScreenState extends State<StudentScreen>
                                     student['users']['email'] ?? 'N/A',
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color:
-                                          AppTheme
-                                              .yachtClubBlue
-
+                                      color: AppTheme.yachtClubBlue,
                                     ),
                                   ),
                                 ],
@@ -719,7 +717,6 @@ class _StudentScreenState extends State<StudentScreen>
         borderSide: BorderSide(color: Colors.grey.shade300),
       ),
       filled: true,
-      fillColor: AppTheme.yachtClubBlue,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
@@ -927,9 +924,7 @@ class _StudentScreenState extends State<StudentScreen>
                         color: AppTheme.yachtClubBlue,
                       ),
                       backgroundColor: AppTheme.yachtClubBlue,
-                      labelStyle: TextStyle(
-                        color: AppTheme.yachtClubBlue,
-                      ),
+                      labelStyle: TextStyle(color: AppTheme.yachtClubBlue),
                     ),
                   ],
                 ),

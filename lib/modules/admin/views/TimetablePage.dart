@@ -1637,6 +1637,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
         return Theme(
           data: ThemeData(primarySwatch: AppTheme.yachtClubBlueSwatch),
           child: AlertDialog(
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -1754,6 +1755,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -1800,6 +1802,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -2015,6 +2018,7 @@ class _TimetablePageAdminState extends State<TimetablePageAdmin> {
           child: StatefulBuilder(
             builder: (context, setDialogState) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),

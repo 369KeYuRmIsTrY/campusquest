@@ -386,10 +386,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                       style: TextStyle(
                         fontSize: isLargeScreen ? 20 : 18,
                         fontWeight: FontWeight.bold,
-                        color:
-                            AppTheme
-                                .yachtClubBlue
-
+                        color: AppTheme.yachtClubBlue,
                       ),
                     ),
                     const Spacer(),
@@ -401,8 +398,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                         style: TextStyle(fontSize: fontSize),
                       ),
                       style: TextButton.styleFrom(
-                        foregroundColor:
-                            AppTheme.yachtClubBlue,
+                        foregroundColor: AppTheme.yachtClubBlue,
                       ),
                     ),
                   ],
@@ -422,12 +418,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color:
-                           AppTheme
-                                .yachtClubBlue
-
-                      ),
+                      borderSide: BorderSide(color: AppTheme.yachtClubBlue),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -439,8 +430,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                     contentPadding: EdgeInsets.symmetric(
                       vertical: isLargeScreen ? 12 : 8,
                     ),
-                    fillColor:
-                        AppTheme.yachtClubBlue,
+
                     filled: true,
                     hintStyle: TextStyle(fontSize: fontSize),
                   ),
@@ -660,8 +650,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                     style: TextStyle(fontSize: fontSize),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        AppTheme.yachtClubBlue,
+                    backgroundColor: AppTheme.yachtClubBlue,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
                       vertical: isLargeScreen ? 14 : 12,
@@ -717,10 +706,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                       style: TextStyle(
                         fontSize: isLargeScreen ? 20 : 18,
                         fontWeight: FontWeight.bold,
-                        color:
-                           AppTheme
-                                .yachtClubBlue
-
+                        color: AppTheme.yachtClubBlue,
                       ),
                     ),
                   ],
@@ -749,6 +735,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                   children: [
                     DropdownButtonFormField<int>(
                       value: _targetSemesterId,
+                      isExpanded: true,
                       decoration: _inputDecoration(
                         'Target Semester',
                         Icons.change_circle,
@@ -762,6 +749,8 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                                   child: Text(
                                     'Semester ${semester['semester_number']} - ${semester['program']['program_name']}',
                                     style: TextStyle(fontSize: fontSize),
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: false,
                                   ),
                                 ),
                               )
@@ -923,10 +912,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                             style: TextStyle(
                               fontSize: isLargeScreen ? 20 : 18,
                               fontWeight: FontWeight.bold,
-                              color:
-                                 AppTheme
-                                      .yachtClubBlue
-
+                              color: AppTheme.yachtClubBlue,
                             ),
                           ),
                           const Spacer(),
@@ -935,9 +921,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                               Checkbox(
                                 value: _selectAll,
                                 onChanged: (_) => _toggleSelectAll(),
-                                activeColor:
-                                    AppTheme
-                                        .yachtClubBlue,
+                                activeColor: AppTheme.yachtClubBlue,
                               ),
                               Text(
                                 'Select All',
@@ -953,8 +937,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                           child: Text(
                             '${_selectedStudents.length} students selected',
                             style: TextStyle(
-                              color:
-                                  AppTheme.yachtClubBlue,
+                              color: AppTheme.yachtClubBlue,
                               fontWeight: FontWeight.bold,
                               fontSize: fontSize,
                             ),
@@ -1010,8 +993,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                                 (_) => _toggleStudentSelection(
                                   student['student_id'],
                                 ),
-                            activeColor:
-                                AppTheme.yachtClubBlue,
+                            activeColor: AppTheme.yachtClubBlue,
                           ),
                           title: Text(
                             student['name'],
@@ -1063,6 +1045,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
         final fontSize = isLargeScreen ? 16.0 : 14.0;
 
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -1162,30 +1145,19 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
   ) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: TextStyle(
-        color: AppTheme.yachtClubBlue,
-        fontSize: fontSize,
-      ),
-      prefixIcon: Icon(
-        prefixIcon,
-        color: AppTheme.yachtClubBlue,
-      ),
+      labelStyle: TextStyle(color: AppTheme.yachtClubBlue, fontSize: fontSize),
+      prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: AppTheme.yachtClubBlue,
-        ),
+        borderSide: BorderSide(color: AppTheme.yachtClubBlue),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: AppTheme.yachtClubBlue,
-          width: 2,
-        ),
+        borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
       ),
       contentPadding: EdgeInsets.symmetric(vertical: fontSize - 2),
-      fillColor: AppTheme.yachtClubBlue,
+
       filled: true,
     );
   }
@@ -1258,9 +1230,7 @@ class _BulkStudentUpdateScreenState extends State<BulkStudentUpdateScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const CircularProgressIndicator(
-                                  color:
-                                      AppTheme
-                                          .yachtClubBlue,
+                                  color: AppTheme.yachtClubBlue,
                                 ),
                                 const SizedBox(height: 16),
                                 Text(

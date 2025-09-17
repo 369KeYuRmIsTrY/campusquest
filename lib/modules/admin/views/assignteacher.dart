@@ -108,7 +108,7 @@ class _TeachesScreenState extends State<TeachesScreen>
     try {
       final response = await _supabase
           .from('semester')
-          .select()
+          .select('*, program(program_name)')
           .order('semester_id');
       setState(() => _semesters = List<Map<String, dynamic>>.from(response));
     } catch (e) {
@@ -127,9 +127,12 @@ class _TeachesScreenState extends State<TeachesScreen>
             final courseName = _getCourseName(teach['course_id']).toLowerCase();
             final semesterNum =
                 _getSemesterNumber(teach['semester_id']).toString();
+            final programName =
+                _getProgramName(teach['semester_id']).toLowerCase();
             return instructorName.contains(query) ||
                 courseName.contains(query) ||
-                semesterNum.contains(query);
+                semesterNum.contains(query) ||
+                programName.contains(query);
           }).toList();
     });
   }
@@ -156,6 +159,17 @@ class _TeachesScreenState extends State<TeachesScreen>
           orElse: () => {'semester_number': 0},
         )['semester_number']
         as int;
+  }
+
+  String _getProgramName(int semesterId) {
+    return _semesters.firstWhere(
+          (semester) => semester['semester_id'] == semesterId,
+          orElse:
+              () => {
+                'program': {'program_name': 'Unknown Program'},
+              },
+        )['program']?['program_name'] ??
+        'Unknown Program';
   }
 
   Future<void> _deleteTeach(int teachesId, int index) async {
@@ -214,6 +228,7 @@ class _TeachesScreenState extends State<TeachesScreen>
               end: 1.0,
             ).animate(curvedAnimation),
             child: AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -347,7 +362,7 @@ class _TeachesScreenState extends State<TeachesScreen>
                                         (semester) => DropdownMenuItem<int>(
                                           value: semester['semester_id'] as int,
                                           child: Text(
-                                            'Semester ${semester['semester_number']}',
+                                            'Semester ${semester['semester_number']} (${semester['program']?['program_name'] ?? 'Unknown Program'})',
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -421,7 +436,10 @@ class _TeachesScreenState extends State<TeachesScreen>
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [AppTheme.yachtClubBlue, AppTheme.yachtClubBlue],
+                        colors: [
+                          AppTheme.yachtClubBlue,
+                          AppTheme.yachtClubBlue,
+                        ],
                       ),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
@@ -574,7 +592,7 @@ class _TeachesScreenState extends State<TeachesScreen>
                                 icon: Icons.calendar_today,
                                 title: 'Semester',
                                 value:
-                                    'Semester ${_getSemesterNumber(teach['semester_id'])}',
+                                    'Semester ${_getSemesterNumber(teach['semester_id'])} (${_getProgramName(teach['semester_id'])})',
                               ),
                               _buildDetailItem(
                                 icon: Icons.tag,
@@ -716,8 +734,6 @@ class _TeachesScreenState extends State<TeachesScreen>
             onTap: () => _showAddEditDialog(),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            
-
             ),
           ),
       ],
@@ -800,7 +816,7 @@ class _TeachesScreenState extends State<TeachesScreen>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Semester ${_getSemesterNumber(teach['semester_id'])}',
+                      'Semester ${_getSemesterNumber(teach['semester_id'])} (${_getProgramName(teach['semester_id'])})',
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],

@@ -493,13 +493,13 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
               children: [
                 Icon(
                   isEditing ? Icons.edit_note : Icons.add_box,
-                  color: Colors.deepPurple,
+                  color: AppTheme.yachtClubBlue,
                 ),
                 const SizedBox(width: 10),
                 Text(
                   isEditing ? 'Edit Assignment' : 'Add New Assignment',
                   style: const TextStyle(
-                    color: Colors.deepPurple,
+                    color: AppTheme.yachtClubBlue,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -552,25 +552,25 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
                     value: dialogSelectedCourseId,
                     decoration: InputDecoration(
                       labelText: 'Course',
-                      prefixIcon: Icon(Icons.book, color: Colors.deepPurple),
+                      prefixIcon: Icon(Icons.book, color: AppTheme.yachtClubBlue),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: Colors.deepPurple.shade200,
+                          color: AppTheme.yachtClubBlue,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: Colors.deepPurple,
+                          color: AppTheme.yachtClubBlue,
                           width: 2,
                         ),
                       ),
-                      filled: true,
-                      fillColor: Colors.deepPurple.shade50,
+
+                      fillColor: AppTheme.yachtClubBlue,
                     ),
                     items:
                         courses.map((course) {
@@ -594,7 +594,7 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          Icon(Icons.file_present, color: Colors.deepPurple),
+                          Icon(Icons.file_present, color: AppTheme.yachtClubBlue),
                           const SizedBox(width: 8),
                           Expanded(child: Text('File: $_uploadedFileName')),
                         ],
@@ -605,8 +605,7 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
                     icon: const Icon(Icons.upload_file),
                     label: const Text('Upload File'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple.shade100,
-                      foregroundColor: Colors.deepPurple,
+                      foregroundColor: AppTheme.yachtClubBlue,
                     ),
                   ),
                 ],
@@ -623,7 +622,7 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
               ),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: AppTheme.yachtClubBlue,
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () async {
@@ -675,18 +674,18 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
       onTap: onTap,
       decoration: InputDecoration(
         labelText: labelText,
-        prefixIcon: Icon(prefixIcon, color: Colors.deepPurple),
+        prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple.shade200),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+          borderSide: BorderSide(color: AppTheme.yachtClubBlue, width: 2),
         ),
-        filled: true,
-        fillColor: Colors.deepPurple.shade50,
+
+        fillColor: AppTheme.yachtClubBlue,
       ),
     );
   }
@@ -697,19 +696,17 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
       appBar: CommonAppBar(
         title: 'Assignments',
         userEmail: Provider.of<LoginController>(context).email.split('@').first,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+
+        
       ),
       body:
           _isLoading
               ? const Center(
-                child: CircularProgressIndicator(color: Colors.deepPurple),
+                child: CircularProgressIndicator(color: AppTheme.yachtClubBlue),
               )
               : RefreshIndicator(
                 key: _refreshKey,
-                color: Colors.deepPurple,
+                color: AppTheme.yachtClubBlue,
                 onRefresh: _fetchAssignments,
                 child:
                     selectedCourseId == null || courses.isEmpty
@@ -751,11 +748,7 @@ class _UploadAssignmentsPageState extends State<UploadAssignmentsPage>
                     () => _instructorId != null ? _showAddEditDialog() : null,
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppTheme.veryDarkBlue, AppTheme.darkBlue],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                   color: AppTheme.yachtClubBlue,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(

@@ -377,7 +377,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
           builder: (context, setDialogState) {
             updateFilters();
             return AlertDialog(
-              backgroundColor: AppTheme.yachtClubLight.withOpacity(0.98),
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32),
               ),

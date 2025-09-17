@@ -404,6 +404,7 @@ class _AddEventPageState extends State<AddEventPage>
               end: 1.0,
             ).animate(curvedAnimation),
             child: AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -1125,6 +1126,7 @@ class _AddEventPageState extends State<AddEventPage>
       context: context,
       builder:
           (context) => AlertDialog(
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),

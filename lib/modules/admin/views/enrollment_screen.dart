@@ -20,6 +20,7 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
   List<Map<String, dynamic>> _students = [];
   List<Map<String, dynamic>> _courses = [];
   List<Map<String, dynamic>> _semesters = [];
+  List<Map<String, dynamic>> _programs = [];
   bool _isLoading = true;
   bool _isSearching = false;
   late AnimationController _animationController;
@@ -62,6 +63,7 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
       _fetchStudents(),
       _fetchCourses(),
       _fetchSemesters(),
+      _fetchPrograms(),
     ]);
     setState(() => _isLoading = false);
   }
@@ -109,11 +111,23 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
     try {
       final response = await _supabase
           .from('semester')
-          .select('semester_id, semester_number')
+          .select('semester_id, semester_number, program_id')
           .order('semester_id');
       setState(() => _semesters = List<Map<String, dynamic>>.from(response));
     } catch (e) {
       _showErrorMessage('Error fetching semesters: $e');
+    }
+  }
+
+  Future<void> _fetchPrograms() async {
+    try {
+      final response = await _supabase
+          .from('program')
+          .select('program_id, program_name')
+          .order('program_id');
+      setState(() => _programs = List<Map<String, dynamic>>.from(response));
+    } catch (e) {
+      _showErrorMessage('Error fetching programs: $e');
     }
   }
 
@@ -129,9 +143,14 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                 _getCourseName(enrollment['course_id']).toLowerCase();
             final semesterNum =
                 _getSemesterNumber(enrollment['semester_id']).toString();
+            final programName =
+                _getSemesterWithProgram(
+                  enrollment['semester_id'] as int,
+                ).toLowerCase();
             return studentName.contains(query) ||
                 courseName.contains(query) ||
-                semesterNum.contains(query);
+                semesterNum.contains(query) ||
+                programName.contains(query);
           }).toList();
     });
   }
@@ -158,6 +177,31 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
           orElse: () => {'semester_number': 0},
         )['semester_number']
         as int;
+  }
+
+  String _getProgramName(int programId) {
+    return _programs.firstWhere(
+          (program) => program['program_id'] == programId,
+          orElse: () => {'program_name': 'Unknown'},
+        )['program_name']
+        as String;
+  }
+
+  String _getSemesterWithProgram(int semesterId) {
+    final semester = _semesters.firstWhere(
+      (semester) => semester['semester_id'] == semesterId,
+      orElse: () => {'semester_number': 0, 'program_id': null},
+    );
+
+    final semesterNumber = semester['semester_number'] as int;
+    final programId = semester['program_id'] as int?;
+
+    if (programId != null) {
+      final programName = _getProgramName(programId);
+      return 'Semester $semesterNumber ($programName)';
+    } else {
+      return 'Semester $semesterNumber';
+    }
   }
 
   // Get the student's most recent semester based on existing enrollments
@@ -261,6 +305,7 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
               end: 1.0,
             ).animate(curvedAnimation),
             child: AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -379,7 +424,9 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                                     (semester) => DropdownMenuItem<int>(
                                       value: semester['semester_id'] as int,
                                       child: Text(
-                                        'Semester ${semester['semester_number']}',
+                                        _getSemesterWithProgram(
+                                          semester['semester_id'] as int,
+                                        ),
                                       ),
                                     ),
                                   )
@@ -525,11 +572,7 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                                     _getCourseName(enrollment['course_id']),
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color:
-
-                                              AppTheme
-                                              .yachtClubBlue
-
+                                      color: AppTheme.yachtClubBlue,
                                     ),
                                   ),
                                 ],
@@ -583,8 +626,9 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                               _buildDetailItem(
                                 icon: Icons.calendar_today,
                                 title: 'Semester',
-                                value:
-                                    'Semester ${_getSemesterNumber(enrollment['semester_id'])}',
+                                value: _getSemesterWithProgram(
+                                  enrollment['semester_id'] as int,
+                                ),
                               ),
                               _buildDetailItem(
                                 icon: Icons.tag,
@@ -724,8 +768,6 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
           style: const TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 24),
-
-
       ],
     );
   }
@@ -808,7 +850,7 @@ class EnrollmentScreenState extends State<EnrollmentScreen>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Semester ${_getSemesterNumber(enrollment['semester_id'])}',
+                      _getSemesterWithProgram(enrollment['semester_id'] as int),
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],

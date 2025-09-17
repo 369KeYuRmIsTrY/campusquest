@@ -185,6 +185,7 @@ class _SemesterScreenState extends State<SemesterScreen>
             child: StatefulBuilder(
               builder:
                   (context, setDialogState) => AlertDialog(
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

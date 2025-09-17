@@ -149,6 +149,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
               end: 1.0,
             ).animate(curvedAnimation),
             child: AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -156,7 +157,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                 children: [
                   Icon(
                     isEditing ? Icons.edit_note : Icons.person_add,
-                    color: Colors.blue,
+                    color: AppTheme.yachtClubBlue,
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -514,7 +515,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
                                   _buildActionButton(
                                     label: 'Edit',
                                     icon: Icons.edit,
-                                    color: Colors.blue,
+                                    color: AppTheme.yachtClubBlue,
                                     onTap: () {
                                       Navigator.pop(context);
                                       _showAddEditDialog(
@@ -589,12 +590,12 @@ class _AddInstructorPageState extends State<AddInstructorPage>
   InputDecoration _inputDecoration(String labelText, IconData prefixIcon) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: TextStyle(color: Colors.blue.shade300),
+      labelStyle: TextStyle(color: AppTheme.yachtClubBlue),
       prefixIcon: Icon(prefixIcon, color: AppTheme.yachtClubBlue),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.blue.shade200),
+        borderSide: BorderSide(color: AppTheme.yachtClubBlue),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -849,6 +850,7 @@ class _AddInstructorPageState extends State<AddInstructorPage>
   Widget build(BuildContext context) {
     final loginController = Provider.of<LoginController>(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CommonAppBar(
         title: 'Instructors',
         userEmail:

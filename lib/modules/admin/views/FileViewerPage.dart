@@ -385,6 +385,7 @@ class _EventsPageState extends State<EventsPage> {
     bool confirm = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         title: const Text('Delete Event'),
         content: Text('Are you sure you want to delete "$title"?'),
         actions: [
@@ -711,6 +712,7 @@ class _EventsPageState extends State<EventsPage> {
                   return await showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
+                      backgroundColor: Colors.white,
                       title: const Text('Delete Event'),
                       content: Text('Are you sure you want to delete "${event['title']}"?'),
                       actions: [
